@@ -30,7 +30,7 @@ jobs:
           haxelib install flixel-ui --quiet
           haxelib install hxcpp-debug-server --quiet
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc --quiet
-          haxelib git SScript https://github.com/AltronMaxX/SScript --quiet
+          haxelib git polymod https://github.com/larsiusprime/polymod.git --quiet
 
       - name: Compile
         run: haxelib run lime build linux -release
