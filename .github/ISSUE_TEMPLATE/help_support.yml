@@ -1,0 +1,15 @@
+name: Help & support
+description: Ask for help or support with any features of the project
+labels: [help wanted]
+body:
+  - type: markdown
+    attributes:
+      value: "Please ensure what you are asking for help with is a feature of LEGACY Forever Engine and not a mod or fork of it."
+
+  - type: textarea
+    id: problem-related
+    attributes:
+      label: "What would you like help with?"
+      description: Give a brief description of what you'd like to be solved/answered.
+    validations:
+      required: true
