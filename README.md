@@ -6,6 +6,8 @@
 
 ----------------------------------------------
 ## Please redirect all future and current enhancements to the [new repository](https://github.com/Yoshubs/FNF-Forever-Engine).
+
+## If you want scripting and the new 1.0 features without waiting for 1.0, try out the [unstable build](https://github.com/Yoshubs/Forever-1.0-Hybrid).
 ----------------------------------------------
 Forever Engine is currently in *legacy* state as it is being rewritten. 
 
