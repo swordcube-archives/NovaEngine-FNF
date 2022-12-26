@@ -52,12 +52,12 @@ cls
 title Forever Engine Legacy Setup - Installing Additional Libraries
 echo After installing Haxe, HaxeFlixel and Git, it is time to install the additional libraries needed for compiling.
 TIMEOUT 2 >nul
-echo Press any key to install polymod.
-pause >nul
-haxelib git polymod https://github.com/larsiusprime/polymod.git
 echo Press any key to install discord-rpc.
 pause >nul
 haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
+echo Press any key to install polymod.
+pause >nul
+haxelib git polymod https://github.com/larsiusprime/polymod.git
 echo Press any key to install hxcpp-debug-server.
 pause >nul
 haxelib install hxcpp-debug-server
