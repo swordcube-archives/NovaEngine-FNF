@@ -1,11 +1,7 @@
-name: Legacy Forever Bug Report
+name: Funkin Forever Bug Report
 description: Report bug(s) from the engine
 labels: [bug]
 body:
-  - type: markdown
-    attributes:
-      value: "PLEASE STOP POSTING ISSUES FROM HYPNO'S LULLABY. THEY WILL BE CLOSED IMMEDIATELY."
-
   - type: textarea
     id: description
     attributes:
