@@ -6,7 +6,7 @@
 
 ----------------------------------------------
 
-# ⚠️⚠️ WARNING: This engine only works on Desktop!!! ⚠️⚠️
+# ⚠️⚠️ This engine only works on Desktop!!! ⚠️⚠️
 
 ----------------------------------------------
 # Features:
