@@ -52,11 +52,20 @@
 	<!-- Allows the "mods" folder to be used. -->
 	<define name="MOD_SUPPORT" unless="web"/>
 
+	<!-- Allows Discord RPC to be used. -->
+	<define name="DISCORD_RPC" unless="web || hl || neko"/>
+
 	<!-- _______________________________ Libraries ______________________________ -->
 
-	<haxelib name="flixel-leather" />
+	<!-- Any libraries shown with links should be installed via "haxelib git libraryName libraryLink" -->
+	<!-- If they show no links, install them via "haxelib install libraryName" -->
+
+	<haxelib name="flixel-leather" /> <!-- https://github.com/Leather128/flixel -->
 	<haxelib name="polymod" if="MOD_SUPPORT"/> <!-- https://github.com/swordcube/scriptless-polymod -->
-	<haxelib name="hscript-improved" />
+	<haxelib name="hscript-improved" /> <!-- https://github.com/YoshiCrafter29/hscript-improved -->
+	<haxelib name="discord_rpc" if="DISCORD_RPC"/> <!-- https://github.com/Aidan63/linc_discord-rpc -->
+	
+	<haxelib name="tjson" />
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
 
@@ -76,6 +85,10 @@
 
 	<!-- Makes HScript Error Handling better -->
 	<haxedef name="hscriptPos" />
+	<haxedef name="HXCPP_CHECK_POINTER" if="release" />
+	<haxedef name="HXCPP_STACK_LINE" if="release" />
+	<haxedef name="HXCPP_DEBUG_LINK" if="release" />
+	<haxedef name="HXCPP_GC_BIG_BLOCKS" />
 
 	<!-- _________________________________ Custom _______________________________ -->
 

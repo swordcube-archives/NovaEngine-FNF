@@ -56,11 +56,18 @@ class Paths {
     }
 
     public static function inst(song:String, ?library:Null<String> = "songs") {
-        return getAsset('songs/$song/Inst.ogg', library);
+        return getAsset('songs/${song.toLowerCase()}/Inst.ogg', library);
     }
 
     public static function voices(song:String, ?library:Null<String> = "songs") {
-        return getAsset('songs/$song/Voices.ogg', library);
+        return getAsset('songs/${song.toLowerCase()}/Voices.ogg', library);
+    }
+
+    public static function chart(song:String, ?diff:String = "normal", ?library:Null<String> = "songs") {
+        var realPath:String = getAsset('songs/${song.toLowerCase()}/$diff.json', library);
+        if(exists(realPath)) return realPath;
+
+        return getAsset('songs/${song.toLowerCase()}/normal.json', library);
     }
 
     public static function json(path:String, ?library:Null<String>) {
@@ -75,12 +82,15 @@ class Paths {
         return getAsset('$path.xml', library);
     }
 
+    public static function font(path:String, ?library:Null<String>) {
+        return getAsset('fonts/$path', library);
+    }
+
     public static function script(path:String, ?library:Null<String>) {
         for(extension in scriptExtensions) {
             var path:String = getAsset('$path.$extension', library);
             if(exists(path)) return path;
         }
-
         return getAsset('$path.hxs', library);
     }
 }

@@ -1,5 +1,6 @@
 package;
 
+import funkin.system.Controls;
 import funkin.system.ModHandler;
 import funkin.scripting.ScriptHandler;
 import funkin.system.Conductor;
@@ -13,6 +14,8 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 
 class Init extends FlxState {
+    public static var controls:Controls = new Controls();
+
     override function create() {
         super.create();
 
@@ -20,9 +23,24 @@ class Init extends FlxState {
         FlxG.fixedTimestep = false;
         FlxG.signals.preStateCreate.add(function(state:FlxState) {
             Conductor.reset();
+
+            #if MOD_SUPPORT
             Polymod.clearCache();
+            Console.info("UNLOADING ALL MODS!");
             Polymod.unloadAllMods();
-            Polymod.loadMods([Paths.currentMod]);
+            Console.info("LOADING ALL ACTIVE MODS!");
+            Polymod.loadMods(ModHandler.getDirectories());
+            Console.info("LOADED ALL ACTIVE MODS SUCCESSFULLY!");
+            #else
+            OpenFLAssets.cache.clear();
+            LimeAssets.cache.clear();
+            #end
+
+            #if cpp
+            cpp.vm.Gc.run(true);
+            #else
+            openfl.system.System.gc();
+            #end
         });
 
         // Initialize transitions
@@ -44,19 +62,18 @@ class Init extends FlxState {
 
         FlxG.save.bind("funkinforever-options", "swordcube");
 
-        if(FlxG.save.data.currentMod != null)
-            Paths.currentMod = FlxG.save.data.currentMod;
-        else {
-            FlxG.save.data.currentMod = Paths.currentMod;
-            FlxG.save.flush();
-        }
+        ModHandler.init();
 
         #if MOD_SUPPORT
         Polymod.init({
             modRoot: "mods",
-            dirs: [Paths.currentMod],
+            dirs: ModHandler.getDirectories(),
             errorCallback: function(error:polymod.Polymod.PolymodError) {
-                trace(error.message);
+                switch(error.severity) {
+                    case ERROR:
+                        Console.error(error.message);
+                    default:
+                }
             },
             framework: OPENFL, // because FLIXEL doesn't work
             frameworkParams: {

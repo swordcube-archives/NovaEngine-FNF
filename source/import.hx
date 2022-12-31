@@ -3,6 +3,7 @@ import flixel.FlxG;
 #if MOD_SUPPORT
 import polymod.Polymod;
 #end
+import funkin.system.DiscordRPC;
 import funkin.system.Paths;
 import funkin.system.Console;
 import funkin.system.CoolUtil;
@@ -14,4 +15,7 @@ import lime.utils.Assets as LimeAssets;
 import sys.io.File;
 import sys.FileSystem;
 #end
+using funkin.system.CoolUtil; 
 #end
+
+import

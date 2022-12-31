@@ -89,6 +89,26 @@ class ScriptModule extends FlxBasic implements IScriptModule {
         create(path);
     }
 
+    /**
+     * Currently executing script.
+     */
+     public static var curScript:ScriptModule = null;
+
+    /**
+	 * Loads the script.
+	 */
+	public function load() {
+        var oldScript = curScript;
+        curScript = this;
+        onLoad();
+        curScript = oldScript;
+    }
+
+    /**
+     * The function that gets executed when the script is loaded.
+     */
+    public function onLoad() {}
+
 	/**
 	 * Hot-reloads the script if possible.
 	 */

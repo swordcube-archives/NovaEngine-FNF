@@ -1,6 +1,7 @@
 package funkin.interfaces;
 
 interface IScriptModule {
+    public function load():Void;
     public function reload():Void;
     public function create(path:String):Void;
     public function get(variable:String):Dynamic;

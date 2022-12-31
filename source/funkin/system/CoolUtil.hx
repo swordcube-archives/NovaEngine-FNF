@@ -52,4 +52,20 @@ class CoolUtil {
         if(section.exists("BPM"))
             Conductor.bpm = Std.parseFloat(section["BPM"]);
     }
+
+    /**
+     * Gets the name of a class from an instance of said class.
+     * @param instance The class instance to get the name of.
+     */
+    public static function getClassName<T>(instance:T):String {
+        return Type.getClassName(Type.getClass(instance));
+    }
+
+    /**
+     * Gets the last item of an array and returns it.
+     * @param array The array to get the item from.
+     */
+     public static function last<T>(array:Array<T>):T {
+        return array[array.length - 1];
+    }
 }
