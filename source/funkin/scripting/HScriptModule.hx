@@ -29,6 +29,7 @@ class HScriptModule extends ScriptModule {
 
 	override function create(path:String) {
         interp = new Interp();
+        interp.errorHandler = _errorHandler;
 
         code = OpenFLAssets.getText(path);
 
@@ -79,9 +80,12 @@ class HScriptModule extends ScriptModule {
 
 	override function call(method:String, ?parameters:Array<Dynamic>):Dynamic {
         var func:Dynamic = interp.variables.get(method);
-
-        if(func != null && Reflect.isFunction(func))
-            return (parameters != null && parameters.length > 0) ? Reflect.callMethod(null, func, parameters) : func();
+        try {
+            if(func != null && Reflect.isFunction(func))
+                return (parameters != null && parameters.length > 0) ? Reflect.callMethod(null, func, parameters) : func();
+        } catch(e) {
+            Console.error(e.details());
+        }
 
 		return null;
 	}

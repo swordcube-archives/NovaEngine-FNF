@@ -15,6 +15,14 @@ class ScriptHandler {
 	 */
 	public static var exp:Map<String, Dynamic>;
 
+    /**
+	 * Essentially just Haxe compiler flags but for HScript.
+     * You would use them exactly how you normally would in Haxe.
+     *  
+	 * All scripts will be able to access these flags globally.
+	 */
+	public static var preprocessorFlags:Map<String, Dynamic>;
+
 	public static var parser:Parser = new Parser();
 
 	/**
@@ -48,15 +56,41 @@ class ScriptHandler {
             "FlxTween" => flixel.tweens.FlxTween,
             "FlxEase" => flixel.tweens.FlxEase,
             "FlxTimer" => flixel.util.FlxTimer,
+            "FlxGroup" => flixel.group.FlxGroup,
+            "FlxTypedGroup" => flixel.group.FlxGroup.FlxTypedGroup,
 
             // Classes (Funkin)
             "CoolUtil" => funkin.system.CoolUtil,
             "MathUtil" => funkin.system.MathUtil,
             "Conductor" => funkin.system.Conductor,
             "PlayState" => funkin.game.PlayState,
-            "Paths" => funkin.system.Paths
+            "Paths" => funkin.system.Paths,
+            "FNFSprite" => funkin.system.FNFSprite
         ];
 
+        preprocessorFlags = [
+            "debug" => #if debug true #else false #end,
+            "release" => #if !debug true #else false #end,
+
+            // OS flags
+            "desktop" => #if desktop true #else false #end,
+            "windows" => #if windows true #else false #end,
+            "macos" => #if macos true #else false #end,
+            "mac" => #if macos true #else false #end,
+            "linux" => #if linux true #else false #end,
+            "hl" => #if hl true #else false #end,
+            "hashlink" => #if hl true #else false #end,
+            "android" => #if android true #else false #end,
+            "web" => #if web true #else false #end,
+            "html5" => #if html5 true #else false #end,
+            "neko" => #if neko true #else false #end,
+
+            // Library/feature flags
+            "MOD_SUPPORT" => #if MOD_SUPPORT true #else false #end,
+            "DISCORD_RPC" => #if DISCORD_RPC true #else false #end,
+        ];
+
+        parser.preprocesorValues = preprocessorFlags;
 		parser.allowJSON = parser.allowMetadata = parser.allowTypes = true;
 	}
 
