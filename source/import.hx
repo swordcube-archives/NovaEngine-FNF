@@ -18,4 +18,4 @@ import sys.FileSystem;
 using funkin.system.CoolUtil; 
 #end
 
-import
+import tjson.TJSON as Json;

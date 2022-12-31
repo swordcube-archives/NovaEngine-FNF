@@ -10,7 +10,7 @@ class Main extends Sprite {
 	 */
 	public static var engineVersion(get, never):String;
 
-	function get_engineVersion():String {
+	static function get_engineVersion():String {
 		return Application.current.meta.get("version");
 	}
 

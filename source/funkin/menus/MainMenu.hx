@@ -1,5 +1,6 @@
 package funkin.menus;
 
+import flixel.text.FlxText;
 import flixel.effects.FlxFlicker;
 import flixel.util.FlxTimer;
 import flixel.tweens.FlxEase;
@@ -79,9 +80,9 @@ class MainMenu extends MusicBeatState {
 
         FlxG.camera.follow(camFollow, null, 0.06);
 
-		var versionShit:FlxText = new FlxText(5, FlxG.height, 0, "v" + Application.current.meta.get('version'), 12);
+		var versionShit = new FlxText(5, FlxG.height, 0, "v" + Main.engineVersion, 12);
 		versionShit.scrollFactor.set();
-		versionShit.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		versionShit.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, OUTLINE, FlxColor.BLACK);
         versionShit.y -= versionShit.height + 5;
 		add(versionShit);
 	}

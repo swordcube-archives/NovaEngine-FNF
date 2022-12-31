@@ -3,6 +3,8 @@ package funkin.game;
 import funkin.system.Section;
 import funkin.system.Song;
 
+using StringTools;
+
 enum abstract EngineFormat(String) {
     var AUTO_DETECT = "AUTO_DETECT"; // Automatically detect the chart format
     var FNF = "FNF"; // Specifically vanilla Funkin' charts
