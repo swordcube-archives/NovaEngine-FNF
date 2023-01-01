@@ -20,6 +20,11 @@ class Conductor {
 		return bpm = v;
 	}
 
+	// compatibility
+	public static function changeBPM(?newBPM:Float = 100) {
+		bpm = newBPM;
+	}
+
 	public static var rate:Float = 1.0;
 
 	/**
@@ -33,6 +38,14 @@ class Conductor {
 	public static var stepCrochet:Float = crochet / 4.0;
 
 	public static var position:Float = 0;
+	
+	public static var songPosition(get, set):Float;
+	static function get_songPosition():Float {
+		return Conductor.position;
+	}
+	static function set_songPosition(v:Float):Float {
+		return Conductor.position = v;
+	}
 
 	public static var safeFrames:Int = 10;
 	public static var safeZoneOffset:Float = (safeFrames / 60) * 1000; // is calculated in create(), is safeFrames in milliseconds

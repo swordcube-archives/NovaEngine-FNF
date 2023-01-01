@@ -65,6 +65,7 @@ class Paths {
 
     public static function chart(song:String, ?diff:String = "normal", ?library:Null<String> = "songs") {
         var realPath:String = getAsset('songs/${song.toLowerCase()}/$diff.json', library);
+        trace("DOES THE THING EXIST: "+realPath+" - "+exists(realPath));
         if(exists(realPath)) return realPath;
 
         return getAsset('songs/${song.toLowerCase()}/normal.json', library);

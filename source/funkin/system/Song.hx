@@ -29,6 +29,10 @@ typedef Song = {
 	var gf:String;
 	var stage:Null<String>;
 
+	var uiSkin:String;
+	var noteSkin:String; // "default" gets replaced with whatever note skin you have selected in options
+	var splashSkin:String;
+
 	var sustainLengthOffset:Int;
 }
 
@@ -44,6 +48,10 @@ typedef LegacySong = {
 	var keyCount:Null<Int>;
 	var keyNumber:Null<Int>;
 	var mania:Null<Int>;
+
+	var uiSkin:Null<String>;
+	var noteSkin:Null<String>; // "default" gets replaced with whatever note skin you have selected in options
+	var splashSkin:Null<String>;
 
 	var player1:String;
 	var player2:String;
@@ -68,9 +76,10 @@ typedef PsychSong = {
 	var player3:String;
 	var gfVersion:String;
 	var stage:Null<String>;
-	var arrowSkin:String;
-	var splashSkin:String;
-	var validScore:Bool;
+	var uiSkin:Null<String>; // not apart of base psych but fuck you
+	var arrowSkin:Null<String>;
+	var splashSkin:Null<String>;
+	var validScore:Null<String>;
 }
 
 @:dox(hide)

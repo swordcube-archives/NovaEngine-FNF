@@ -1,5 +1,8 @@
 package;
 
+import funkin.system.Preferences;
+import funkin.game.ChartLoader;
+import funkin.game.PlayState;
 import funkin.system.Controls;
 import funkin.system.ModHandler;
 import funkin.scripting.ScriptHandler;
@@ -14,16 +17,25 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 
 class Init extends FlxState {
-    public static var controls:Controls = new Controls();
+    public static var controls:Controls;
 
     override function create() {
         super.create();
+
+        FlxG.save.bind("mainSave", "FunkinForever");
+
+        Console.init();
 
         FlxSprite.defaultAntialiasing = true;
         FlxG.fixedTimestep = false;
         FlxG.signals.preStateCreate.add(function(state:FlxState) {
             Conductor.reset();
 
+            @:privateAccess
+            Preferences.__save.bind("preferencesSave");
+
+            OpenFLAssets.cache.clear();
+            LimeAssets.cache.clear();
             #if MOD_SUPPORT
             Polymod.clearCache();
             Console.info("UNLOADING ALL MODS!");
@@ -31,9 +43,6 @@ class Init extends FlxState {
             Console.info("LOADING ALL ACTIVE MODS!");
             Polymod.loadMods(ModHandler.getDirectories());
             Console.info("LOADED ALL ACTIVE MODS SUCCESSFULLY!");
-            #else
-            OpenFLAssets.cache.clear();
-            LimeAssets.cache.clear();
             #end
 
             #if cpp
@@ -53,14 +62,16 @@ class Init extends FlxState {
         FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.4, new FlxPoint(0, 1),
             {asset: diamond, width: 32, height: 32}, new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
 
-        Conductor.init();
-        ScriptHandler.init();
-
         // Flixel is questionable
         if(FlxG.save.data.volume != null)
             FlxG.sound.volume = FlxG.save.data.volume;
 
-        FlxG.save.bind("funkinforever-options", "swordcube");
+        Preferences.init();
+
+        controls = new Controls();
+
+        Conductor.init();
+        ScriptHandler.init();
 
         ModHandler.init();
 
@@ -83,6 +94,8 @@ class Init extends FlxState {
             }
         });
         #end
+
+        PlayState.SONG = ChartLoader.load(FNF, Paths.chart("tutorial"));
 
         FlxG.switchState(new funkin.menus.TitleScreen());
     }

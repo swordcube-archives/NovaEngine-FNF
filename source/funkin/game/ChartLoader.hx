@@ -40,6 +40,10 @@ class ChartLoader {
         gf: "gf",
         bf: "bf",
 
+        uiSkin: "default",
+        noteSkin: "default",
+        splashSkin: "default",
+
         sustainLengthOffset: 0
     };
 
@@ -106,6 +110,10 @@ class ChartLoader {
                         bf: vanillaChart.player1,
                         gf: gfVersion, // Ik base game charts don't have this but i am not hardcoding gfVersion
                         stage: vanillaChart.stage,
+
+                        uiSkin: vanillaChart.uiSkin != null ? vanillaChart.uiSkin : "default",
+                        noteSkin: vanillaChart.noteSkin != null ? vanillaChart.noteSkin : "default",
+                        splashSkin: vanillaChart.splashSkin != null ? vanillaChart.splashSkin : "default",
 
                         sustainLengthOffset: 0
                     };
@@ -216,6 +224,12 @@ class ChartLoader {
                         bf: psychChart.player1,
                         gf: gfVersion,
                         stage: psychChart.stage,
+
+                        uiSkin: psychChart.uiSkin != null ? psychChart.uiSkin : "default",
+
+                        // these don't work exactly how they do in psych
+                        noteSkin: psychChart.arrowSkin != null ? psychChart.arrowSkin : "default",
+                        splashSkin: psychChart.splashSkin != null ? psychChart.splashSkin : "default",
 
                         sustainLengthOffset: 1 // because psych extends sustains by 1 for some reason!!!!
                     };

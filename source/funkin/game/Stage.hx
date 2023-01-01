@@ -1,11 +1,12 @@
 package funkin.game;
 
+import flixel.FlxBasic;
 import flixel.math.FlxPoint;
 import flixel.util.typeLimit.OneOfTwo;
 import funkin.scripting.ScriptHandler;
 import flixel.group.FlxGroup.FlxTypedGroup;
 
-typedef StageLayer = FlxTypedGroup<Dynamic>;
+typedef StageLayer = FlxTypedGroup<FlxBasic>;
 
 class Stage extends StageLayer {
     public var name:String = "";
@@ -25,13 +26,23 @@ class Stage extends StageLayer {
     }
 
     public function load(?stage:String = "default") {
+        var game = PlayState.current;
+
         name = stage;
 
-        if(script != null)
+        if(script != null) {
+            game.scripts.remove(script);
             script.destroy();
+            for(layer in [this, dadLayer, gfLayer, bfLayer]) {
+                layer.forEach(function(fuck:FlxBasic) {
+                    fuck.kill();
+                    fuck.destroy();
+                    layer.remove(fuck, true);
+                });
+            }
+        }
 
         script = ScriptHandler.loadModule(Paths.script('data/stages/$name'));
-        script.setParent(PlayState.current);
         script.set("stage", this);
         script.set("stageImage", function(path:String) {
             return Paths.image('stages/$name/$path');
@@ -55,7 +66,9 @@ class Stage extends StageLayer {
             }
         });
         script.load();
-        script.call("onCreate");
+        if(game.scripts.scripts.contains(script))
+            script.call("onCreate");
+        game.scripts.add(script);
         return this;
     }
 }

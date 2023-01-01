@@ -89,6 +89,7 @@
 	<haxedef name="HXCPP_STACK_LINE" if="release" />
 	<haxedef name="HXCPP_DEBUG_LINK" if="release" />
 	<haxedef name="HXCPP_GC_BIG_BLOCKS" />
+	<haxeflag name="-dce no" />
 
 	<!-- _________________________________ Custom _______________________________ -->
 

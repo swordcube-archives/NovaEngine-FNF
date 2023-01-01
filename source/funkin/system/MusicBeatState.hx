@@ -8,10 +8,35 @@ import funkin.scripting.ScriptHandler;
 
 class MusicBeatState extends FlxUIState implements IBeatReceiver {
     public var controls(get, never):Controls;
-
     function get_controls():Controls {
         return Init.controls;
     }
+
+    public var curBeat(get, never):Int;
+    function get_curBeat():Int {
+        return Conductor.curBeat;
+    }
+
+    public var curStep(get, never):Int;
+    function get_curStep():Int {
+        return Conductor.curStep;
+    }
+
+    public var curDecBeat(get, never):Float;
+    function get_curDecBeat():Float {
+        return Conductor.curDecBeat;
+    }
+
+    public var curDecStep(get, never):Float;
+    function get_curDecStep():Float {
+        return Conductor.curDecStep;
+    }
+
+    public var curSection(get, never):Int;
+    function get_curSection():Int {
+        return Conductor.curSection;
+    }
+
     public var runDefaultCode:Bool = true;
 
     public var script:ScriptModule;
