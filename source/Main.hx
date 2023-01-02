@@ -5,6 +5,8 @@ import openfl.display.Sprite;
 import lime.app.Application;
 
 class Main extends Sprite {
+	public static var engineName:String = "Funkin' Forever";
+	
 	/**
 	 * The version number of the engine.
 	 */
@@ -13,6 +15,9 @@ class Main extends Sprite {
 	static function get_engineVersion():String {
 		return Application.current.meta.get("version");
 	}
+
+	@:dox(hide) public static var audioDisconnected:Bool = false;
+	@:dox(hide) public static var changeID:Int = 0;
 
 	public function new() {
 		super();

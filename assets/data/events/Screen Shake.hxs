@@ -6,7 +6,7 @@
     Value 3: The intensity of the shake.
 */
 
-function onEvent(camera:String, duration:String, intensity:String) {
+function onSongEvent(camera:String, duration:String, intensity:String) {
     duration = Std.parseFloat(duration);
     if(duration == null) duration = 0.0;
 

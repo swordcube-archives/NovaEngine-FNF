@@ -61,11 +61,12 @@
 	<!-- If they show no links, install them via "haxelib install libraryName" -->
 
 	<haxelib name="flixel-leather" /> <!-- https://github.com/Leather128/flixel -->
-	<haxelib name="polymod" if="MOD_SUPPORT"/> <!-- https://github.com/swordcube/scriptless-polymod -->
+	<haxelib name="polymod"/> <!-- https://github.com/swordcube/scriptless-polymod -->
 	<haxelib name="hscript-improved" /> <!-- https://github.com/YoshiCrafter29/hscript-improved -->
 	<haxelib name="discord_rpc" if="DISCORD_RPC"/> <!-- https://github.com/Aidan63/linc_discord-rpc -->
 	
 	<haxelib name="tjson" />
+	<haxelib name="hxcpp-debug-server" />
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
 

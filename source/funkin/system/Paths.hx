@@ -17,6 +17,18 @@ class Paths {
         return OpenFLAssets.exists(path);
     }
 
+    public static function getFolderContents(path:String):Array<String> {
+        var fs = Polymod.getFileSystem();
+        if(!fs.exists(Paths.getAsset(path))) return [];
+        return fs.readDirectory(Paths.getAsset(path));
+    }
+
+    public static function isDirectory(path:String):Bool {
+        var fs = Polymod.getFileSystem();
+        if(!fs.exists(path)) return false;
+        return fs.isDirectory(path);
+    }
+
     public static function getAsset(path:String, ?library:Null<String>) {
         if(library != null && library.length > 0) library += ":";
         if(library == null) library = "";
@@ -65,7 +77,6 @@ class Paths {
 
     public static function chart(song:String, ?diff:String = "normal", ?library:Null<String> = "songs") {
         var realPath:String = getAsset('songs/${song.toLowerCase()}/$diff.json', library);
-        trace("DOES THE THING EXIST: "+realPath+" - "+exists(realPath));
         if(exists(realPath)) return realPath;
 
         return getAsset('songs/${song.toLowerCase()}/normal.json', library);

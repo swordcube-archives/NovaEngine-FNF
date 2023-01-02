@@ -4,7 +4,7 @@
     2 = 1/2 speed, 4 = 1/4 speed etc.
 */
 
-function onEvent(speed:String) {
+function onSongEvent(speed:String) {
     // this function took 4637835674832836473829 centuries for me to make
     // because of how hard it was
     var parsed:Int = Std.parseInt(speed);

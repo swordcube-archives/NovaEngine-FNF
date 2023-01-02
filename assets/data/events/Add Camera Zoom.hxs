@@ -5,7 +5,7 @@
     Leave the values blank if you want to use Default.
 */
 
-function onEvent(game:String, hud:String) {
+function onSongEvent(game:String, hud:String) {
     game = Std.parseFloat(game);
     hud = Std.parseFloat(hud);
 

@@ -8,7 +8,7 @@
     Value 3 (Optional): The duration of the animation. (If not specified, defaults to the full length of the animation)
 */
 
-function onEvent(anim:String, char:String, ?timer:String) {
+function onSongEvent(anim:String, char:String, ?timer:String) {
     var character:Character = null;
     switch(char.toLowerCase()) {
         case "0", "dad", "opponent": character = dad;

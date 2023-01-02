@@ -121,7 +121,7 @@ class ScriptModule extends FlxBasic implements IScriptModule {
         this.path = path;
         fileName = Path.withoutDirectory(path);
 
-        create(path);
+        onCreate(path);
     }
 
     /**
@@ -153,7 +153,7 @@ class ScriptModule extends FlxBasic implements IScriptModule {
 	 * A function that gets ran when the script is created.
 	 * @param path The path to the script.
 	 */
-	public function create(path:String) {}
+	public function onCreate(path:String) {}
 
 	/**
 	 * Gets a variable from the script.

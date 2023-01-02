@@ -1,5 +1,7 @@
 package;
 
+import funkin.windows.WindowsAPI;
+import funkin.system.AudioSwitchFix;
 import funkin.system.Preferences;
 import funkin.game.ChartLoader;
 import funkin.game.PlayState;
@@ -25,6 +27,8 @@ class Init extends FlxState {
         FlxG.save.bind("mainSave", "FunkinForever");
 
         Console.init();
+        AudioSwitchFix.init();
+		WindowsAPI.setDarkMode(true);
 
         FlxSprite.defaultAntialiasing = true;
         FlxG.fixedTimestep = false;
@@ -32,12 +36,12 @@ class Init extends FlxState {
             Conductor.reset();
 
             @:privateAccess
-            Preferences.__save.bind("preferencesSave");
+            Preferences.__save.bind("preferencesSave", "FunkinForever");
 
             OpenFLAssets.cache.clear();
             LimeAssets.cache.clear();
-            #if MOD_SUPPORT
             Polymod.clearCache();
+            #if MOD_SUPPORT
             Console.info("UNLOADING ALL MODS!");
             Polymod.unloadAllMods();
             Console.info("LOADING ALL ACTIVE MODS!");
@@ -68,14 +72,11 @@ class Init extends FlxState {
 
         Preferences.init();
 
-        controls = new Controls();
-
         Conductor.init();
         ScriptHandler.init();
 
         ModHandler.init();
 
-        #if MOD_SUPPORT
         Polymod.init({
             modRoot: "mods",
             dirs: ModHandler.getDirectories(),
@@ -93,7 +94,8 @@ class Init extends FlxState {
                 ]
             }
         });
-        #end
+
+        controls = new Controls();
 
         PlayState.SONG = ChartLoader.load(FNF, Paths.chart("tutorial"));
 

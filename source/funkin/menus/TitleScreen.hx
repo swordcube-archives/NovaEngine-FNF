@@ -1,5 +1,6 @@
 package funkin.menus;
 
+import flixel.input.keyboard.FlxKey;
 import funkin.system.Conductor;
 import funkin.system.MusicBeatState;
 import funkin.system.FNFSprite;

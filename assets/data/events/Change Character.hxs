@@ -3,7 +3,7 @@
     Value 2: New character's name
 */
 
-function onEvent(fromChar:String, toChar:String) {
+function onSongEvent(fromChar:String, toChar:String) {
     var character:Character = null;
     switch(fromChar.toLowerCase()) {
         case "0", "dad", "opponent": character = dad;

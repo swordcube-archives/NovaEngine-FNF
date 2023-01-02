@@ -20,14 +20,14 @@ class HScriptModule extends ScriptModule {
                 savedVariables[k] = e;
         }
         var oldParent = interp.scriptObject;
-        create(path);
+        onCreate(path);
         load();
         setParent(oldParent);
         for(k=>e in savedVariables)
             interp.variables.set(k, e);
     }
 
-	override function create(path:String) {
+	override function onCreate(path:String) {
         interp = new Interp();
         interp.errorHandler = _errorHandler;
 

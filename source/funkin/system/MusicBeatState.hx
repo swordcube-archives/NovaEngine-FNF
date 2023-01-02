@@ -142,13 +142,13 @@ class MusicBeatState extends FlxUIState implements IBeatReceiver {
     }
 
     @:dox(hide) public function sectionHit(curSection:Int) {
+
         for(e in members) if (e is IBeatReceiver) cast(e, IBeatReceiver).sectionHit(curSection);
         call("onSectionHit", [curSection]);
     }
 
     override public function destroy() {
 		script.call("onDestroy");
-		script.call("destroy");
 		script.destroy();
 		super.destroy();
 	}

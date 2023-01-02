@@ -78,6 +78,7 @@ class Conductor {
 		skippedSteps = [];
 		onBeat.removeAll();
 		onStep.removeAll();
+		onSection.removeAll();
 	}
 
 	static var oldStep:Int = 0;

@@ -11,7 +11,7 @@ var speedTweens = [
     null
 ];
 
-function onEvent(strumline:String, mult:String, duration:Float) {
+function onSongEvent(strumline:String, mult:String, duration:Float) {
     // If you set the scroll speed type to be constant, don't run the event
     if(Settings.get("Scroll Type").toLowerCase() == "constant") return;
 

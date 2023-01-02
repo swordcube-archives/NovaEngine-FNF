@@ -78,12 +78,14 @@ class MainMenu extends MusicBeatState {
 			item.y = pos + (160 * i);
 		}
 
+		var item:MainMenuItem = menuItems.members[0];
+		camFollow.setPosition(item.getGraphicMidpoint().x, item.getGraphicMidpoint().y);
         FlxG.camera.follow(camFollow, null, 0.06);
 
-		var versionShit = new FlxText(5, FlxG.height, 0, "v" + Main.engineVersion, 12);
+		var versionShit = new FlxText(5, FlxG.height, 0, '${Main.engineName} v${Main.engineVersion}', 16);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, OUTLINE, FlxColor.BLACK);
-        versionShit.y -= versionShit.height + 5;
+        versionShit.y -= versionShit.height;
 		add(versionShit);
 	}
 
