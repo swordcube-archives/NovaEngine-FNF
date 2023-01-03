@@ -19,7 +19,7 @@ class VideoCutscene extends Cutscene {
         super.create();
         
         cutsceneCamera = new FlxCamera();
-        cutsceneCamera.bgColor = 0;
+        cutsceneCamera.bgColor = 0x0;
         FlxG.cameras.add(cutsceneCamera, false);
         
         #if VIDEO_CUTSCENES

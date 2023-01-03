@@ -147,8 +147,14 @@ class PlayState extends MusicBeatState {
 
 		// CACHING && LOADING!!!
 
-		add(camHUD = new HUDCamera());
-		add(camOther = new FlxCamera());
+		camHUD = new HUDCamera();
+		camHUD.bgColor = 0x0;
+		FlxG.cameras.add(camHUD, false);
+
+		camOther = new FlxCamera();
+		camOther.bgColor = 0x0;
+		FlxG.cameras.add(camOther, false);
+
 		downscroll = Preferences.save.downscroll;
 
 		if(SONG == null)
@@ -156,7 +162,7 @@ class PlayState extends MusicBeatState {
 
 		Conductor.bpm = SONG.bpm;
 		Conductor.mapBPMChanges(SONG);
-		Conductor.position = -5000;
+		Conductor.position = -90000;
 
 		FlxG.sound.playMusic(Paths.inst(SONG.name), 0, false);
 		FlxG.sound.list.add(vocals = (Paths.exists(Paths.voices(SONG.name)) ? new FlxSound().loadEmbedded(Paths.voices(SONG.name), false) : new FlxSound()));
@@ -332,7 +338,7 @@ class PlayState extends MusicBeatState {
 		// If the vocals are out of sync, resync them!
 		@:privateAccess
 		var shouldResync = (vocals._sound != null && SONG.needsVoices && vocals.time < vocals.length) ? !Conductor.isAudioSynced(vocals) : !Conductor.isAudioSynced(FlxG.sound.music);
-		if(shouldResync) resyncVocals();
+		if(shouldResync && !startingSong && !endingSong && !inCutscene) resyncVocals();
 
 		scripts.call("onUpdatePost", [elapsed]);
 	}
