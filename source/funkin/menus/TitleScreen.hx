@@ -121,7 +121,7 @@ class TitleScreen extends MusicBeatState {
 
 	function loadXML() {
 		// Load the intial XML Data.
-		var xml:Xml = Xml.parse(OpenFLAssets.getText(Paths.xml('data/titlescreen/titlescreen'))).firstElement();
+		var xml:Xml = Xml.parse(Assets.getText(Paths.xml('data/titlescreen/titlescreen'))).firstElement();
 		if (xml == null)
 			return Console.error('Occured while loading the title screen XML: Either the XML doesn\'t exist or the "titlescreen" node is missing!');
 
@@ -217,7 +217,7 @@ class TitleScreen extends MusicBeatState {
 	}
 
 	function parseIntroText():Array<Array<String>> {
-		var fullText:String = OpenFLAssets.getText(Paths.txt('data/titlescreen/introText'));
+		var fullText:String = Assets.getText(Paths.txt('data/titlescreen/introText'));
 
 		var firstArray:Array<String> = fullText.split('\n');
 		var swagGoodArray:Array<Array<String>> = [];

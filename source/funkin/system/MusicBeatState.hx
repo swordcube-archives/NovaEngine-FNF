@@ -1,10 +1,13 @@
 package funkin.system;
 
+import flixel.FlxState;
+import flixel.FlxSubState;
 import funkin.scripting.DummyScript;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.ui.FlxUIState;
 import funkin.interfaces.IBeatReceiver;
 import funkin.scripting.ScriptHandler;
+import funkin.scripting.events.*;
 
 class MusicBeatState extends FlxUIState implements IBeatReceiver {
     public var controls(get, never):Controls;
@@ -72,6 +75,7 @@ class MusicBeatState extends FlxUIState implements IBeatReceiver {
         persistentUpdate = false;
         persistentDraw = true;
 
+        Conductor.reset(); 
         Conductor.onBeat.add(beatHit);
         Conductor.onStep.add(stepHit);
         Conductor.onSection.add(sectionHit);
@@ -88,6 +92,12 @@ class MusicBeatState extends FlxUIState implements IBeatReceiver {
 		// calls the function on the assigned script
 		if (script == null) return defaultVal;
 		return script.call(method, parameters);
+	}
+
+    public function event<T:CancellableEvent>(name:String, event:T):T {
+		if (script == null) return event;
+		script.call(name, [event]);
+		return event;
 	}
 
     override function update(elapsed:Float) {
@@ -151,5 +161,24 @@ class MusicBeatState extends FlxUIState implements IBeatReceiver {
 		script.call("onDestroy");
 		script.destroy();
 		super.destroy();
+	}
+
+    override function openSubState(subState:FlxSubState) {
+		var e = event("onOpenSubState", new StateEvent(subState));
+		if (!e.cancelled)
+			super.openSubState(subState);
+	}
+
+
+	override function onResize(w:Int, h:Int) {
+		super.onResize(w, h);
+		event("onResize", new ResizeEvent(w, h));
+	}
+
+    override function switchTo(nextState:FlxState) {
+		var e = event("onStateSwitch", new StateEvent(nextState));
+		if (e.cancelled)
+			return false;
+		return super.switchTo(nextState);
 	}
 }

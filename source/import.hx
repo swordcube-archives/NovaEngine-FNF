@@ -7,7 +7,7 @@ import funkin.system.Console;
 import funkin.system.CoolUtil;
 import funkin.system.MathUtil;
 import flixel.util.FlxColor;
-import openfl.utils.Assets as OpenFLAssets;
+import openfl.utils.Assets;
 import lime.utils.Assets as LimeAssets;
 #if sys
 import sys.io.File;

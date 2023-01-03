@@ -78,8 +78,8 @@ class ScriptPack extends FlxBasic {
     }
 
     public function add(script:ScriptModule) {
+        if (parent != null) script.setParent(parent);
         scripts.push(script);
-        __configureNewScript(script);
     }
 
     public function remove(script:ScriptModule) {
@@ -87,11 +87,7 @@ class ScriptPack extends FlxBasic {
     }
 
     public function insert(pos:Int, script:ScriptModule) {
-        scripts.insert(pos, script);
-        __configureNewScript(script);
-    }
-
-    private function __configureNewScript(script:ScriptModule) {
         if (parent != null) script.setParent(parent);
+        scripts.insert(pos, script);
     }
 }

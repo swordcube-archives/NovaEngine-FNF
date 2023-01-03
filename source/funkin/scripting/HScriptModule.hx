@@ -31,7 +31,7 @@ class HScriptModule extends ScriptModule {
         interp = new Interp();
         interp.errorHandler = _errorHandler;
 
-        code = OpenFLAssets.getText(path);
+        code = Assets.getText(path);
 
         var parser = ScriptHandler.parser;
         var exp = ScriptHandler.exp;

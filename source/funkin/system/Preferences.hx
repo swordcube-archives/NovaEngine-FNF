@@ -4,7 +4,7 @@ import haxe.DynamicAccess;
 import flixel.input.keyboard.FlxKey;
 import flixel.util.FlxSave;
 
-@:keep class PreferenceVariables {
+@:keep class SuperCoolPreferences {
 	/**
 	 * The controls used for menus.
 	 */
@@ -72,10 +72,10 @@ class Preferences {
 		__save = new FlxSave();
 
 		__save.bind("preferencesSave", "FunkinForever");
-		for (k in Type.getClassFields(PreferenceVariables)) {
+		for (k in Type.getClassFields(SuperCoolPreferences)) {
 			var ogVal:Dynamic = Reflect.field(__save.data, k);
 			if (ogVal == null)
-				Reflect.setField(__save.data, k, Reflect.field(PreferenceVariables, k));
+				Reflect.setField(__save.data, k, Reflect.field(SuperCoolPreferences, k));
 		}
 		__save.flush();
 	}

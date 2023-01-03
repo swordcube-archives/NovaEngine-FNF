@@ -1,5 +1,10 @@
 package funkin.game;
 
+import funkin.system.FNFSprite;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxTimer;
+import flixel.addons.transition.FlxTransitionableState;
 import flixel.math.FlxMath;
 import flixel.FlxCamera;
 import flixel.system.FlxSound;
@@ -9,11 +14,16 @@ import flixel.graphics.FlxGraphic;
 import funkin.system.MusicBeatState;
 import funkin.scripting.ScriptHandler;
 import funkin.scripting.ScriptPack;
-import funkin.system.Song;
+import funkin.scripting.events.*;
+import funkin.cutscenes.*;
+import funkin.game.Song;
 
 using StringTools;
 
 class PlayState extends MusicBeatState {
+	/**
+	 * The currently loaded song data.
+	 */
 	public static var SONG:Song;
 	public static var current:PlayState;
 
@@ -30,6 +40,26 @@ class PlayState extends MusicBeatState {
 
 	// Game
 	/**
+	 * Whether or not we're playing a week in story mode.
+	 */
+	public static var isStoryMode:Bool = false;
+
+	/**
+	 * Score for the current week.
+	 */
+	public static var campaignScore:Int = 0;
+
+	/**
+	 * Zoom for the pixel assets.
+	 */
+	public static var daPixelZoom:Float = 6;
+
+	/**
+	 * Whenever the game should play the cutscenes. Defaults to whenever the game is currently in Story Mode or not.
+	 */
+	public var playCutscenes:Bool = isStoryMode;
+
+	/**
 	 * Controls whether or not we are in a cutscene.
 	 */
 	public var inCutscene:Bool = false;
@@ -42,15 +72,21 @@ class PlayState extends MusicBeatState {
 	/**
 	 * Whenever the game is in downscroll or not. (Can be set)
 	 */
-	 public var downscroll(get, set):Bool;
+	public var downscroll(get, set):Bool;
 
-	 @:dox(hide) private function set_downscroll(v:Bool) {return camHUD.downscroll = v;}
-	 @:dox(hide) private function get_downscroll():Bool  {return camHUD.downscroll;}
+	function get_downscroll():Bool {
+		return camHUD.downscroll;
+	}
+	function set_downscroll(v:Bool) {
+		return camHUD.downscroll = v;
+	}
 	
 	/**
 	 * The camera for the UI (score, notes, time, etc)
 	 */
 	public var camHUD:HUDCamera;
+	
+	public var camOther:FlxCamera;
 
 	/**
 	 * Vocals sound (Voices.ogg).
@@ -67,6 +103,41 @@ class PlayState extends MusicBeatState {
 	 */
 	public var endingSong:Bool = false;
 
+	/**
+	 * Length of the intro countdown.
+	 */
+	public var introLength:Int = 5;
+
+	/**
+	 * Array of sprites for the intro.
+	 */
+	public var introSprites:Array<String> = [
+		null, 
+		"game/countdown/default/ready", 
+		"game/countdown/default/set", 
+		"game/countdown/default/go"
+	];
+
+	 /**
+	  * Array of sounds for the intro.
+	  */
+	public var introSounds:Array<String> = [
+		"game/countdown/default/intro3", 
+		"game/countdown/default/intro2", 
+		"game/countdown/default/intro1", 
+		"game/countdown/default/introGo"
+	];
+
+	/**
+	 * Cutscene script path.
+	 */
+	public var cutscene:String = null;
+
+	/**
+	 * End cutscene script path.
+	 */
+	public var endCutscene:String = null;
+
 	override function create() {
 		super.create();
 		
@@ -77,6 +148,7 @@ class PlayState extends MusicBeatState {
 		// CACHING && LOADING!!!
 
 		add(camHUD = new HUDCamera());
+		add(camOther = new FlxCamera());
 		downscroll = Preferences.save.downscroll;
 
 		if(SONG == null)
@@ -84,7 +156,7 @@ class PlayState extends MusicBeatState {
 
 		Conductor.bpm = SONG.bpm;
 		Conductor.mapBPMChanges(SONG);
-		Conductor.position = Conductor.crochet * -5;
+		Conductor.position = -5000;
 
 		FlxG.sound.playMusic(Paths.inst(SONG.name), 0, false);
 		FlxG.sound.list.add(vocals = (Paths.exists(Paths.voices(SONG.name)) ? new FlxSound().loadEmbedded(Paths.voices(SONG.name), false) : new FlxSound()));
@@ -104,7 +176,6 @@ class PlayState extends MusicBeatState {
 			for(extension in Paths.scriptExtensions) {
 				if(path.endsWith("."+extension)) {
 					var script:ScriptModule = ScriptHandler.loadModule(path);
-					script.load();
 					scripts.add(script);
 				}
 			}
@@ -118,7 +189,6 @@ class PlayState extends MusicBeatState {
 			for(extension in Paths.scriptExtensions) {
 				if(path.endsWith("."+extension)) {
 					var script:ScriptModule = ScriptHandler.loadModule(path);
-					script.load();
 					scripts.add(script);
 				}
 			}
@@ -126,12 +196,97 @@ class PlayState extends MusicBeatState {
 
 		// END OF CACHING & LOADING!
 
+		scripts.load();
 		scripts.call("onCreate");
 	}
 
 	override function createPost() {
+		startCutscene();
 		super.createPost();
 		scripts.call("onCreatePost");
+	}
+
+	public function startCutscene() {
+		// If we're not allowed to play a cutscene
+		// Then just start the countdown instead
+		#if !debug
+		if(!playCutscenes) {
+			startCountdown();
+			return;
+		}
+		#end
+
+		var videoCutscene = Paths.video('${PlayState.SONG.name.toLowerCase()}-cutscene');
+		persistentUpdate = false;
+		if (cutscene != null) {
+			openSubState(new ScriptedCutscene(cutscene, function() {
+				startCountdown();
+			}));
+		} 
+		else if (Paths.exists(videoCutscene)) {
+			inCutscene = true;
+			FlxTransitionableState.skipNextTransIn = true;
+			openSubState(new VideoCutscene(videoCutscene, function() {
+				startCountdown();
+			}));
+			persistentDraw = false;
+		} 
+		else
+			startCountdown();
+	}
+
+	public function startCountdown() {
+		Conductor.position = Conductor.crochet * -5;
+		inCutscene = false;
+
+		var swagCounter:Int = 0;
+		new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer) {
+			countdown(swagCounter++);
+		}, introLength);
+	}
+
+	public function countdown(swagCounter:Int) {
+		var event:CountdownEvent = scripts.event("onCountdown", new CountdownEvent(
+			swagCounter, 
+			introSprites[swagCounter],
+			introSounds[swagCounter],
+			1, 1, true
+		));
+
+		var sprite:FNFSprite = null;
+		var sound:FlxSound = null;
+		var tween:FlxTween = null;
+
+		if (!event.cancelled) {
+			if (event.spritePath != null) {
+				var spr = event.spritePath;
+				if (!Assets.exists(spr)) spr = Paths.image('$spr');
+
+				sprite = new FNFSprite().load(IMAGE, spr);
+				sprite.scrollFactor.set();
+				sprite.scale.set(event.scale, event.scale);
+				sprite.updateHitbox();
+				sprite.screenCenter();
+				add(sprite);
+				tween = FlxTween.tween(sprite, {alpha: 0}, Conductor.crochet / 1000, {
+					ease: FlxEase.cubeInOut,
+					onComplete: function(twn:FlxTween) {
+						sprite.destroy();
+					}
+				});
+			}
+			if (event.soundPath != null) {
+				var sfx = event.soundPath;
+				if (!Assets.exists(sfx)) sfx = Paths.sound(sfx);
+				sound = FlxG.sound.play(sfx, event.volume);
+			}
+		}
+		event.sprite = sprite;
+		event.sound = sound;
+		event.spriteTween = tween;
+		event.cancelled = false;
+
+		scripts.event("onCountdownPost", event);
 	}
 
 	public function startSong() {
@@ -172,7 +327,7 @@ class PlayState extends MusicBeatState {
 
 		vocals.pitch = FlxG.sound.music.pitch;
 		if(!inCutscene && !endingSong) Conductor.position += (elapsed * 1000) * FlxG.sound.music.pitch;
-		if(Conductor.position >= 0 && startingSong) startSong();
+		if(Conductor.position >= 0 && startingSong && !inCutscene) startSong();
 
 		// If the vocals are out of sync, resync them!
 		@:privateAccess

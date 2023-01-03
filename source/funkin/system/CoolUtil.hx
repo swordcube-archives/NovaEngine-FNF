@@ -41,7 +41,7 @@ class CoolUtil {
         if(fadeInVolume != null)
             FlxG.sound.music.fadeIn(fadeInDuration, volume, fadeInVolume);
 
-        var ini:Ini = IniParser.parse(OpenFLAssets.getText(path.replace("."+Path.extension(path), ".ini")));
+        var ini:Ini = IniParser.parse(Assets.getText(path.replace("."+Path.extension(path), ".ini")));
 
         // If the "Sound" section doesn't exist, Stop the function right here
         if(!ini.exists("Sound")) return;

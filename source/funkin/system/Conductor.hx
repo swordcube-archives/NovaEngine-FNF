@@ -1,5 +1,6 @@
 package funkin.system;
 
+import funkin.game.Song;
 import funkin.game.PlayState;
 import flixel.system.FlxSound;
 import flixel.util.FlxSignal.FlxTypedSignal;

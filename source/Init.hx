@@ -38,7 +38,7 @@ class Init extends FlxState {
             @:privateAccess
             Preferences.__save.bind("preferencesSave", "FunkinForever");
 
-            OpenFLAssets.cache.clear();
+            Assets.cache.clear();
             LimeAssets.cache.clear();
             Polymod.clearCache();
             #if MOD_SUPPORT
@@ -90,7 +90,8 @@ class Init extends FlxState {
             framework: OPENFL, // because FLIXEL doesn't work
             frameworkParams: {
                 assetLibraryPaths: [
-                    "songs" => "songs"
+                    "songs" => "songs",
+                    "videos" => "videos"
                 ]
             }
         });

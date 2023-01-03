@@ -2,6 +2,8 @@ package funkin.system;
 
 import flixel.graphics.frames.FlxAtlasFrames;
 
+using StringTools;
+
 class Paths {
     public static var currentMod:String = "Friday Night Funkin'";
     
@@ -14,7 +16,7 @@ class Paths {
     ];
 
     public static function exists(path:String) {
-        return OpenFLAssets.exists(path);
+        return Assets.exists(path);
     }
 
     public static function getFolderContents(path:String):Array<String> {
@@ -57,6 +59,10 @@ class Paths {
 
     public static function music(path:String, ?library:Null<String>) {
         return getAsset('music/$path.ogg', library);
+    }
+
+    public static function video(path:String, ?library:Null<String> = "videos") {
+        return getAsset('videos/$path.mp4', library);
     }
 
     public static function frag(path:String, ?library:Null<String>) {

@@ -18,8 +18,8 @@ class CustomShader extends FunkinShader {
     public function new(name:String, glslVersion:String = "120") {
         var fragShaderPath = Paths.frag(name);
         var vertShaderPath = Paths.vert(name);
-        var fragCode = Paths.exists(fragShaderPath) ? OpenFLAssets.getText(fragShaderPath) : null;
-        var vertCode = Paths.exists(vertShaderPath) ? OpenFLAssets.getText(vertShaderPath) : null;
+        var fragCode = Paths.exists(fragShaderPath) ? Assets.getText(fragShaderPath) : null;
+        var vertCode = Paths.exists(vertShaderPath) ? Assets.getText(vertShaderPath) : null;
 
         if (fragCode == null && vertCode == null)
             Console.error('Shader "$name" couldn\'t be found.');

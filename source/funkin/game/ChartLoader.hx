@@ -1,7 +1,6 @@
 package funkin.game;
 
-import funkin.system.Section;
-import funkin.system.Song;
+import funkin.game.Song;
 
 using StringTools;
 
@@ -53,7 +52,7 @@ class ChartLoader {
         switch(format) {
             case FNF:
                 if(Paths.exists(path)) {
-                    var vanillaChart:LegacySong = cast Json.parse(OpenFLAssets.getText(path)).song;
+                    var vanillaChart:LegacySong = cast Json.parse(Assets.getText(path)).song;
 
                     var sections:Array<Section> = [];
                     for(section in vanillaChart.notes) {
@@ -121,7 +120,7 @@ class ChartLoader {
 
             case PSYCH:
                 if(Paths.exists(path)) {
-                    var psychChart:PsychSong = cast Json.parse(OpenFLAssets.getText(path)).song;
+                    var psychChart:PsychSong = cast Json.parse(Assets.getText(path)).song;
                     if(psychChart.stage == null || psychChart.stage == "stage") psychChart.stage = "default";
 
                     var eventList:Array<EventGroup> = [];
@@ -237,7 +236,7 @@ class ChartLoader {
 
             case AUTO_DETECT: // Auto-detect the chart type
                 if(Paths.exists(path)) {
-                    var chart:Dynamic = Json.parse(OpenFLAssets.getText(path)).song;
+                    var chart:Dynamic = Json.parse(Assets.getText(path)).song;
                     if(chart.sections != null && chart.scrollSpeed != null) {
                         // Guessed "FUNKIN_FOREVER"!
                         return ChartLoader.load(FUNKIN_FOREVER, path);
@@ -257,7 +256,7 @@ class ChartLoader {
 
             default:
                 if(Paths.exists(path))
-                    return cast Json.parse(OpenFLAssets.getText(path)).song;
+                    return cast Json.parse(Assets.getText(path)).song;
         }
         // Fallback return
         return fallbackSong;
