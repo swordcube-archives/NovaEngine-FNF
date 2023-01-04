@@ -4,13 +4,9 @@ import funkin.system.FNFSprite;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
-import flixel.addons.transition.FlxTransitionableState;
-import flixel.math.FlxMath;
 import flixel.FlxCamera;
 import flixel.system.FlxSound;
 import funkin.system.Conductor;
-import funkin.system.FunkinAssets;
-import flixel.graphics.FlxGraphic;
 import funkin.system.MusicBeatState;
 import funkin.scripting.ScriptHandler;
 import funkin.scripting.ScriptPack;
@@ -74,6 +70,11 @@ class PlayState extends MusicBeatState {
 	 */
 	public var downscroll(get, set):Bool;
 
+	/**
+	 * Controls how fast the notes move.
+	 */
+	public var scrollSpeed:Float = 2.7;
+
 	function get_downscroll():Bool {
 		return camHUD.downscroll;
 	}
@@ -87,6 +88,8 @@ class PlayState extends MusicBeatState {
 	public var camHUD:HUDCamera;
 	
 	public var camOther:FlxCamera;
+
+	public var UI:UIGroup;
 
 	/**
 	 * Vocals sound (Voices.ogg).
@@ -204,6 +207,9 @@ class PlayState extends MusicBeatState {
 
 		scripts.load();
 		scripts.call("onCreate");
+
+		add(UI = new UIGroup());
+		UI.cameras = [camHUD];
 	}
 
 	override function createPost() {
@@ -215,10 +221,12 @@ class PlayState extends MusicBeatState {
 	public function startCutscene() {
 		// If we're not allowed to play a cutscene
 		// Then just start the countdown instead
+		#if !debug
 		if(!playCutscenes) {
 			startCountdown();
 			return;
 		}
+		#end
 
 		var videoCutscene = Paths.video('${PlayState.SONG.name.toLowerCase()}-cutscene');
 		persistentUpdate = false;
@@ -229,7 +237,6 @@ class PlayState extends MusicBeatState {
 		} 
 		else if (Paths.exists(videoCutscene)) {
 			inCutscene = true;
-			FlxTransitionableState.skipNextTransIn = true;
 			openSubState(new VideoCutscene(videoCutscene, function() {
 				startCountdown();
 			}));

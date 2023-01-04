@@ -15,6 +15,7 @@ import flixel.addons.transition.TransitionData;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
 import flixel.graphics.FlxGraphic;
+import funkin.game.Note;
 import flixel.FlxSprite;
 import flixel.FlxState;
 
@@ -34,7 +35,7 @@ class Init extends FlxState {
         FlxG.fixedTimestep = false;
         FlxG.signals.preStateCreate.add(function(state:FlxState) {
             Conductor.reset();
-
+            
             @:privateAccess
             Preferences.__save.bind("preferencesSave", "FunkinForever");
 
@@ -48,6 +49,8 @@ class Init extends FlxState {
             Polymod.loadMods(ModHandler.getDirectories());
             Console.info("LOADED ALL ACTIVE MODS SUCCESSFULLY!");
             #end
+
+            Note.reloadSkins();
 
             #if cpp
             cpp.vm.Gc.run(true);

@@ -16,7 +16,7 @@ class Paths {
     ];
 
     public static function exists(path:String) {
-        return Assets.exists(path) #if sys || FileSystem.exists(FileSystem.absolutePath(path)) #end;
+        return Assets.exists(path);
     }
 
     public static function getFolderContents(path:String):Array<String> {
@@ -49,7 +49,7 @@ class Paths {
         return FlxAtlasFrames.fromSpriteSheetPacker(image(path, library), txt('images/$path', library));
     }
 
-    public static function getTextureAtlas(path:String, ?library:Null<String>) {
+    public static function getTexturePacker(path:String, ?library:Null<String>) {
         return FlxAtlasFrames.fromTexturePackerJson(image(path, library), json('images/$path', library));
     }
 

@@ -13,6 +13,7 @@ class ScriptedCutscene extends Cutscene {
         script = ScriptHandler.loadModule(Paths.script('data/cutscenes/$scriptPath'));
         script.setParent(this);
         script.load();
+        script.call("onCreate");
     }
 
     override function create() {

@@ -111,8 +111,8 @@ class ChartLoader {
                         stage: vanillaChart.stage,
 
                         uiSkin: vanillaChart.uiSkin != null ? vanillaChart.uiSkin : "default",
-                        noteSkin: vanillaChart.noteSkin != null ? vanillaChart.noteSkin : "default",
-                        splashSkin: vanillaChart.splashSkin != null ? vanillaChart.splashSkin : "default",
+                        noteSkin: vanillaChart.noteSkin != null ? vanillaChart.noteSkin : "Default",
+                        splashSkin: vanillaChart.splashSkin != null ? vanillaChart.splashSkin : "Default",
 
                         sustainLengthOffset: 0
                     };
@@ -227,8 +227,8 @@ class ChartLoader {
                         uiSkin: psychChart.uiSkin != null ? psychChart.uiSkin : "default",
 
                         // these don't work exactly how they do in psych
-                        noteSkin: psychChart.arrowSkin != null ? psychChart.arrowSkin : "default",
-                        splashSkin: psychChart.splashSkin != null ? psychChart.splashSkin : "default",
+                        noteSkin: psychChart.arrowSkin != null ? psychChart.arrowSkin : "Default",
+                        splashSkin: psychChart.splashSkin != null ? psychChart.splashSkin : "Default",
 
                         sustainLengthOffset: 1 // because psych extends sustains by 1 for some reason!!!!
                     };

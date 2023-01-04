@@ -99,6 +99,15 @@
 	<haxedef name="HXCPP_GC_BIG_BLOCKS" />
 	<haxeflag name="-dce no" />
 
+	<haxeflag name="--macro" value="include('funkin')" />
+	<haxeflag name="--macro" value="include('flixel')" />
+	<haxeflag name="--macro" value="include('sys')" unless="web || hl" />
+	<haxeflag name="--macro" value="include('DateTools')" />
+	<haxeflag name="--macro" value="include('EReg')" />
+	<haxeflag name="--macro" value="include('Lambda')" />
+	<haxeflag name="--macro" value="include('StringBuf')" />
+	<haxeflag name="--macro" value="include('haxe.crypto')" />
+
 	<!-- _________________________________ Custom _______________________________ -->
 
 	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
