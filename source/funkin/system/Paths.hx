@@ -16,7 +16,7 @@ class Paths {
     ];
 
     public static function exists(path:String) {
-        return Assets.exists(path);
+        return Assets.exists(path) #if sys || FileSystem.exists(FileSystem.absolutePath(path)) #end;
     }
 
     public static function getFolderContents(path:String):Array<String> {

@@ -1,33 +1,44 @@
 package funkin.cutscenes;
 
+import flixel.FlxSprite;
+import flixel.FlxG;
 import flixel.FlxCamera;
+import openfl.utils.Assets;
 
 class VideoCutscene extends Cutscene {
     var path:String;
+    var localPath:String;
 
     #if VIDEO_CUTSCENES
-    var video:VideoSprite;
+    var video:MP4Handler;
+    var videoSprite:FlxSprite;
     #end
     var cutsceneCamera:FlxCamera;
-
+    
     public function new(path:String, callback:Void->Void) {
         super(callback);
-        this.path = path;
+        localPath = Assets.getPath(this.path = path);
     }
 
     override function create() {
         super.create();
         
         cutsceneCamera = new FlxCamera();
-        cutsceneCamera.bgColor = 0x0;
+        cutsceneCamera.bgColor = 0;
         FlxG.cameras.add(cutsceneCamera, false);
         
         #if VIDEO_CUTSCENES
-        video = new VideoSprite();
+        video = new MP4Handler();
         video.finishCallback = close;
-        video.playVideo(Assets.getPath(path));
-        video.cameras = [cutsceneCamera];
-        add(video);
+        video.canvasWidth = cutsceneCamera.width;
+        video.canvasHeight = cutsceneCamera.height;
+
+        videoSprite = new FlxSprite();
+        videoSprite.cameras = [cutsceneCamera];
+        videoSprite.antialiasing = true;
+        add(videoSprite);
+        
+        video.playMP4(localPath, false, videoSprite);
         #end
 
         cameras = [cutsceneCamera];

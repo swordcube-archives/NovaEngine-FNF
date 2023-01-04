@@ -124,7 +124,7 @@ class WinAPI {
     if (!curAudioFix) curAudioFix = new AudioFixClient();
     ')
     public static function registerAudio() {
-        funkin.system.Main.audioDisconnected = false;
+        Main.audioDisconnected = false;
     }
 
     @:functionCode('

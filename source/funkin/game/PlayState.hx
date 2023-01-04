@@ -215,12 +215,10 @@ class PlayState extends MusicBeatState {
 	public function startCutscene() {
 		// If we're not allowed to play a cutscene
 		// Then just start the countdown instead
-		#if !debug
 		if(!playCutscenes) {
 			startCountdown();
 			return;
 		}
-		#end
 
 		var videoCutscene = Paths.video('${PlayState.SONG.name.toLowerCase()}-cutscene');
 		persistentUpdate = false;
