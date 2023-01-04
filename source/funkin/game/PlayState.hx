@@ -1,5 +1,6 @@
 package funkin.game;
 
+import flixel.addons.transition.FlxTransitionableState;
 import funkin.system.FNFSprite;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -221,12 +222,10 @@ class PlayState extends MusicBeatState {
 	public function startCutscene() {
 		// If we're not allowed to play a cutscene
 		// Then just start the countdown instead
-		#if !debug
 		if(!playCutscenes) {
 			startCountdown();
 			return;
 		}
-		#end
 
 		var videoCutscene = Paths.video('${PlayState.SONG.name.toLowerCase()}-cutscene');
 		persistentUpdate = false;
@@ -236,6 +235,7 @@ class PlayState extends MusicBeatState {
 			}));
 		} 
 		else if (Paths.exists(videoCutscene)) {
+			FlxTransitionableState.skipNextTransIn = true;
 			inCutscene = true;
 			openSubState(new VideoCutscene(videoCutscene, function() {
 				startCountdown();
