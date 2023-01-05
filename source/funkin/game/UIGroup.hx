@@ -45,6 +45,22 @@ class UIGroup extends FlxGroup {
         notes.forEachAlive(function(note:Note) {
             var receptor:Receptor = note.strumLine.members[note.noteData];
             note.y = receptor.y - (Conductor.position - note.strumTime) * (0.45 * getScrollSpeed(note));
+
+            if(!note.mustPress) {
+                // Opponent note logic
+                if(note.strumTime <= Conductor.position) {
+                    note.kill();
+                    note.destroy();
+                    notes.remove(note, true);
+                }
+            } else {
+                // Player note logic
+                if(note.strumTime <= Conductor.position + Conductor.safeZoneOffset) {
+                    note.kill();
+                    note.destroy();
+                    notes.remove(note, true);
+                }
+            }
         });
     }
 }

@@ -10,8 +10,7 @@ class VideoCutscene extends Cutscene {
     var localPath:String;
 
     #if VIDEO_CUTSCENES
-    var video:MP4Handler;
-    var videoSprite:FlxSprite;
+    var videoSprite:VideoSprite;
     #end
     var cutsceneCamera:FlxCamera;
     
@@ -28,17 +27,13 @@ class VideoCutscene extends Cutscene {
         FlxG.cameras.add(cutsceneCamera, false);
         
         #if VIDEO_CUTSCENES
-        video = new MP4Handler();
-        video.finishCallback = close;
-        video.canvasWidth = cutsceneCamera.width;
-        video.canvasHeight = cutsceneCamera.height;
-
-        videoSprite = new FlxSprite();
+        videoSprite = new VideoSprite();
+        videoSprite.finishCallback = close;
         videoSprite.cameras = [cutsceneCamera];
         videoSprite.antialiasing = true;
         add(videoSprite);
         
-        video.playMP4(localPath, false, videoSprite);
+        videoSprite.playVideo(localPath, false);
         #end
 
         cameras = [cutsceneCamera];

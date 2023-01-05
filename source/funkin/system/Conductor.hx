@@ -48,7 +48,7 @@ class Conductor {
 		return Conductor.position = v;
 	}
 
-	public static var safeFrames:Int = 10;
+	public static var safeFrames:Int = 15;
 	public static var safeZoneOffset:Float = (safeFrames / 60) * 1000; // is calculated in create(), is safeFrames in milliseconds
 
 	public static var bpmChangeMap:Array<BPMChangeEvent> = [];

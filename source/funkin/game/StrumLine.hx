@@ -13,8 +13,6 @@ class StrumLine extends FlxTypedSpriteGroup<Receptor> {
     }
 
     public function generateReceptors():StrumLine {
-        var SONG = PlayState.SONG;
-
         for(member in members) {
             member.kill();
             member.destroy();

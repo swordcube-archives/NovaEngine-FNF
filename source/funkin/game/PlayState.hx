@@ -211,6 +211,29 @@ class PlayState extends MusicBeatState {
 
 		add(UI = new UIGroup());
 		UI.cameras = [camHUD];
+
+		for(section in SONG.sections) {
+			if(section == null) continue;
+			for(i => note in section.notes) {
+				var mustHit:Bool = section.playerSection;
+				if (note.direction > (SONG.keyAmount - 1)) mustHit = !section.playerSection;
+
+				var strumLine:StrumLine = mustHit ? UI.playerStrums : UI.cpuStrums;
+
+				var realNote:Note = GameplayUtil.generateNote(note.strumTime, strumLine.keyAmount, note.direction, SONG.noteSkin, mustHit, note.altAnim, strumLine);
+				UI.notes.add(realNote);
+
+				var susLength:Int = Math.floor(note.sustainLength / Conductor.stepCrochet)+SONG.sustainLengthOffset;
+				if(susLength > 0) {
+					for(sus in 0...susLength) {
+						var susNote:Note = GameplayUtil.generateNote(note.strumTime + (Conductor.stepCrochet * sus) + Conductor.stepCrochet, strumLine.keyAmount, note.direction, SONG.noteSkin, mustHit, note.altAnim, strumLine);
+						UI.notes.add(susNote);
+					}
+				}
+			}
+		}
+
+		UI.notes.sortNotes();
 	}
 
 	override function createPost() {
@@ -222,10 +245,10 @@ class PlayState extends MusicBeatState {
 	public function startCutscene() {
 		// If we're not allowed to play a cutscene
 		// Then just start the countdown instead
-		if(!playCutscenes) {
-			startCountdown();
-			return;
-		}
+		// if(!playCutscenes) {
+		// 	startCountdown();
+		// 	return;
+		// }
 
 		var videoCutscene = Paths.video('${PlayState.SONG.name.toLowerCase()}-cutscene');
 		persistentUpdate = false;
