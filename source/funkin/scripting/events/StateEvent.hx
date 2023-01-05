@@ -4,12 +4,12 @@ import flixel.FlxState;
 
 class StateEvent extends CancellableEvent {
     /**
-     * Substate that is about to be opened/closed
+     * State that is about to be created
      */
-    public var substate:FlxState;
+    public var state:FlxState;
 
-    public function new(substate:FlxState) {
+    public function new(state:FlxState) {
         super();
-        this.substate = substate;
+        this.state = state;
     }
 }

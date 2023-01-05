@@ -34,8 +34,8 @@ class UIGroup extends FlxGroup {
 
         var SONG = PlayState.SONG;
 
-        add(cpuStrums = new StrumLine(0, 30, SONG.keyAmount).generateReceptors().positionReceptors(true));
-        add(playerStrums = new StrumLine(0, 30, SONG.keyAmount).generateReceptors().positionReceptors(false));
+        add(cpuStrums = new StrumLine(0, 25, SONG.keyAmount).generateReceptors().positionReceptors(true));
+        add(playerStrums = new StrumLine(0, 25, SONG.keyAmount).generateReceptors().positionReceptors(false));
         add(notes = new NoteGroup());
     }
 

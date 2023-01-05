@@ -164,7 +164,7 @@ class MusicBeatState extends FlxUIState implements IBeatReceiver {
 	}
 
     override function openSubState(subState:FlxSubState) {
-		var e = event("onOpenSubState", new StateEvent(subState));
+		var e = event("onOpenSubState", new SubstateEvent(subState));
 		if (!e.cancelled)
 			super.openSubState(subState);
 	}
