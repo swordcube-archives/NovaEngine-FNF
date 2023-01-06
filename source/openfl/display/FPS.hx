@@ -31,7 +31,7 @@ class FPS extends TextField {
 		currentFPS = 0;
 		selectable = false;
 		mouseEnabled = false;
-		defaultTextFormat = new TextFormat("_sans", 12, color);
+		defaultTextFormat = new TextFormat(Paths.font("vcr.ttf"), 14, color);
 		autoSize = LEFT;
 		multiline = true;
 		text = "FPS: ";
@@ -56,27 +56,12 @@ class FPS extends TextField {
 
 		// Your framerate shouldn't be able to go above the cap!!
 		var cap:Int = Std.int(FlxG.stage.frameRate);
-		if(currentFPS > cap)
-			currentFPS = cap;
+		if(currentFPS > cap) currentFPS = cap;
 
 		if (currentCount != cacheCount /*&& visible*/) {
 			text = "";
-
-			var prefs = PlayerSettings.prefs;
-			if (prefs.get("FPS Counter"))
-				text += 'FPS: $currentFPS\n';
-
-			if (prefs.get("Memory Counter")) {
-				text += 'MEM: ${CoolUtil.getSizeLabel(Memory.getCurrentUsage())}\n';
-				text += 'MEM Peak: ${CoolUtil.getSizeLabel(Memory.getPeakUsage())}\n';
-			}
-
-			if (prefs.get("Version Display")) {
-				text += 'Plasma Engine ${Main.engineVersion}';
-				#if debug
-				text += ' [BUILD ${Main.buildNumber}]';
-				#end
-			}
+			text += 'FPS: $currentFPS\n';
+			text += 'MEM: ${CoolUtil.getSizeLabel(Memory.getCurrentUsage())} / ${CoolUtil.getSizeLabel(Memory.getPeakUsage())}\n';
 		}
 
 		cacheCount = currentCount;

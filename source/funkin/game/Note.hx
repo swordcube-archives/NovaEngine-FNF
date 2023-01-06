@@ -1,5 +1,6 @@
 package funkin.game;
 
+import funkin.system.Conductor;
 import haxe.xml.Access;
 import flixel.math.FlxPoint;
 import funkin.system.FNFSprite;
@@ -8,6 +9,7 @@ using StringTools;
 
 typedef NoteSkin = {
     var scale:Float;
+    var isPixel:Bool;
     var noteTextures:SpritesheetData;
     var splashTextures:SpritesheetData;
     var animations:Array<NoteAnim>;
@@ -70,6 +72,7 @@ class Note extends FNFSprite {
                 var data:Access = new Access(xml);
     
                 var scale:Float = data.has.scale ? Std.parseFloat(data.att.scale) : 0.7;
+                var isPixel:Bool = data.has.isPixel ? data.att.isPixel == "true" : false;
 
                 var noteTexturesNode:Access = data.node.noteTextures;
                 var noteTextures:SpritesheetData = {
@@ -99,6 +102,7 @@ class Note extends FNFSprite {
 
                 noteSkins[skinName] = {
                     scale: scale,
+                    isPixel: isPixel,
                     noteTextures: noteTextures,
                     splashTextures: splashTextures,
                     animations: animArray
@@ -146,7 +150,7 @@ class Note extends FNFSprite {
     /**
      * The original scale of this note when it was loaded.
      */
-    public var noteScale:Float = 0.7;
+    public var initialScale:Float = 0.7;
 
     /**
      * Whether or not you should hit this note.
@@ -154,8 +158,23 @@ class Note extends FNFSprite {
      */
     public var shouldHit:Bool = true;
 
+    /**
+     * Whether or not this note can be hit.
+     */
+    public var canBeHit:Bool = false;
+
+    /**
+     * Whether or not this note was already hit.
+     */
+    public var wasGoodHit:Bool = false;
+
+    public var tooLate:Bool = false;
+
+    public var prevNote:Note;
+
     public var strumLine:StrumLine;
     public var scrollSpeed:Null<Float>;
+    public var stepCrochet:Float = 0;
 
     /**
      * The skin this note has loaded.
@@ -179,12 +198,13 @@ class Note extends FNFSprite {
                 spriteShitName = spriteShitName.replace(d, Note.extraKeyInfo[keyAmount+"K"].directions[noteData]);
             
             if(anim.indices != null && anim.indices.length > 0)
-                addAnimByIndices(anim.name, spriteShitName, anim.indices, anim.fps, anim.loop, anim.offsets);
+                addAnimByIndices(anim.name, spriteShitName+"0", anim.indices, anim.fps, anim.loop, anim.offsets);
             else
-                addAnim(anim.name, spriteShitName, anim.fps, anim.loop, anim.offsets);
+                addAnim(anim.name, spriteShitName+"0", anim.fps, anim.loop, anim.offsets);
         }
-        noteScale = data.scale;
+        initialScale = data.scale;
         scale.set(data.scale, data.scale);
+        updateHitbox();
         playCorrectAnim();
 
         return value;
@@ -204,6 +224,33 @@ class Note extends FNFSprite {
         this.skin = skin;
     }
 
+    override function update(elapsed:Float) {
+        super.update(elapsed);
+
+        if (mustPress) {
+            if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset
+                && strumTime < Conductor.songPosition + Conductor.safeZoneOffset)
+                canBeHit = true;
+            else
+                canBeHit = false;
+
+            if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit)
+                tooLate = true;
+        }
+        else
+            canBeHit = false;
+
+        if (tooLate) alpha = 0.3;
+
+        if(isSustainNote) {
+            if(!isSustainTail)
+                scale.y = initialScale * ((stepCrochet / 100 * 1.5) * strumLine.getScrollSpeed(this));
+
+            updateHitbox();
+            centerXOffset();
+        }
+    }
+
     override function playAnim(name:String, force:Bool = false, reversed:Bool = false, frame:Int = 0) {
         if(!animation.exists(name)) return Console.warn('Animation "$name" doesn\'t exist!');
         animation.play(name, force, reversed, frame);
@@ -211,5 +258,15 @@ class Note extends FNFSprite {
         centerOrigin(); // sonic origins reference?!?!!?
         if(offsets.exists(name))
             offset.add(offsets[name].x, offsets[name].y);
+    }
+
+    public function centerXOffset() {
+        var data:NoteSkin = Note.noteSkins[skin];
+        if(data == null) data = Note.noteSkins["Default"];
+
+        if(!data.isPixel) {
+            offset.x = frameWidth * 0.5;
+            offset.x -= 156 * (initialScale * 0.5);
+        } else offset.x = (frameWidth - width) * 0.5;
     }
 }

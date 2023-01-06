@@ -32,8 +32,6 @@ typedef Song = {
 	var uiSkin:String;
 	var noteSkin:String; // "default" gets replaced with whatever note skin you have selected in options
 	var splashSkin:String;
-
-	var sustainLengthOffset:Int;
 }
 
 // Base Game

@@ -20,6 +20,27 @@ class CoolUtil {
 		return daList;
 	}
 
+	public static function addZeros(str:String, num:Int) {
+		while(str.length < num) str = '0${str}';
+		return str;
+	}
+
+	/**
+	 * Converts bytes into a human-readable format `(Examples: 1b, 256kb, 1024mb, 2048gb, 4096tb)`
+	 * @param num The bytes to convert.
+	 * @return String
+	 */
+	public static function getSizeLabel(size:Float):String {
+		var labels = ["B", "KB", "MB", "GB", "TB"];
+		var rSize:Float = size;
+		var label:Int = 0;
+		while(rSize > 1024 && label < labels.length-1) {
+			label++;
+			rSize /= 1024;
+		}
+		return '${Std.int(rSize) + "." + addZeros(Std.string(Std.int((rSize % 1) * 100)), 2)}${labels[label]}';
+	}
+
 	/**
 	 * Trims everything in an array of strings and returns it.
 	 * @param a The array to modify.

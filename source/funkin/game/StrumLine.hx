@@ -5,11 +5,14 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 
 class StrumLine extends FlxTypedSpriteGroup<Receptor> {
+    public var input:InputSystem;
     public var keyAmount:Null<Int>;
 
     public function new(?x:Float = 0, ?y:Float = 0, ?keyAmount:Int = 4) {
         super(x, y);
         this.keyAmount = keyAmount;
+
+        input = new InputSystem(this);
     }
 
     public function generateReceptors():StrumLine {
@@ -34,4 +37,15 @@ class StrumLine extends FlxTypedSpriteGroup<Receptor> {
         x += left ? -mult : mult;
         return this;
     }
+
+    public function getScrollSpeed(?note:Note):Float {
+		if (note != null && note.scrollSpeed != null)
+			return note.scrollSpeed;
+		var receptor:Receptor = note != null ? note.strumLine.members[note.noteData] : null;
+		if (receptor != null && receptor.scrollSpeed != null)
+			return receptor.scrollSpeed;
+		if (PlayState.current != null)
+			return PlayState.current.scrollSpeed;
+		return 1.0;
+	}
 }

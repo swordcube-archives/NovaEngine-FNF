@@ -41,9 +41,7 @@ class ChartLoader {
 
         uiSkin: "default",
         noteSkin: "default",
-        splashSkin: "default",
-
-        sustainLengthOffset: 0
+        splashSkin: "default"
     };
 
     public static function load(?format:Null<EngineFormat> = AUTO_DETECT, path:String):Song {
@@ -112,9 +110,7 @@ class ChartLoader {
 
                         uiSkin: vanillaChart.uiSkin != null ? vanillaChart.uiSkin : "default",
                         noteSkin: vanillaChart.noteSkin != null ? vanillaChart.noteSkin : "Default",
-                        splashSkin: vanillaChart.splashSkin != null ? vanillaChart.splashSkin : "Default",
-
-                        sustainLengthOffset: 0
+                        splashSkin: vanillaChart.splashSkin != null ? vanillaChart.splashSkin : "Default"
                     };
                 }
 
@@ -228,9 +224,7 @@ class ChartLoader {
 
                         // these don't work exactly how they do in psych
                         noteSkin: psychChart.arrowSkin != null ? psychChart.arrowSkin : "Default",
-                        splashSkin: psychChart.splashSkin != null ? psychChart.splashSkin : "Default",
-
-                        sustainLengthOffset: 1 // because psych extends sustains by 1 for some reason!!!!
+                        splashSkin: psychChart.splashSkin != null ? psychChart.splashSkin : "Default"
                     };
                 }
 

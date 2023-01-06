@@ -219,14 +219,25 @@ class PlayState extends MusicBeatState {
 				if (note.direction > (SONG.keyAmount - 1)) mustHit = !section.playerSection;
 
 				var strumLine:StrumLine = mustHit ? UI.playerStrums : UI.cpuStrums;
+				var prevNote:Note = UI.notes.length > 0 ? UI.notes.members[UI.notes.length - 1] : null;
 
 				var realNote:Note = GameplayUtil.generateNote(note.strumTime, strumLine.keyAmount, note.direction, SONG.noteSkin, mustHit, note.altAnim, strumLine);
+				realNote.prevNote = prevNote;
 				UI.notes.add(realNote);
 
-				var susLength:Int = Math.floor(note.sustainLength / Conductor.stepCrochet)+SONG.sustainLengthOffset;
-				if(susLength > 0) {
-					for(sus in 0...susLength) {
-						var susNote:Note = GameplayUtil.generateNote(note.strumTime + (Conductor.stepCrochet * sus) + Conductor.stepCrochet, strumLine.keyAmount, note.direction, SONG.noteSkin, mustHit, note.altAnim, strumLine);
+				var susLength:Float = note.sustainLength / Conductor.stepCrochet;
+				if(susLength > 0.75) susLength++;
+
+				var flooredSus:Int = Math.floor(susLength);
+				if(flooredSus > 0) {
+					for(sus in 0...flooredSus) {
+						var susNote:Note = GameplayUtil.generateNote(note.strumTime + (Conductor.stepCrochet * sus), strumLine.keyAmount, note.direction, SONG.noteSkin, mustHit, note.altAnim, strumLine);
+						susNote.isSustainNote = true;
+						susNote.stepCrochet = Conductor.stepCrochet;
+						susNote.isSustainTail = sus >= flooredSus-1;
+						susNote.alpha = 0.6;
+						susNote.playCorrectAnim();
+						susNote.prevNote = prevNote;
 						UI.notes.add(susNote);
 					}
 				}
@@ -251,22 +262,24 @@ class PlayState extends MusicBeatState {
 		// }
 
 		var videoCutscene = Paths.video('${PlayState.SONG.name.toLowerCase()}-cutscene');
-		persistentUpdate = false;
-		if (cutscene != null) {
-			openSubState(new ScriptedCutscene(cutscene, function() {
-				startCountdown();
-			}));
-		} 
-		else if (Paths.exists(videoCutscene)) {
-			FlxTransitionableState.skipNextTransIn = true;
-			inCutscene = true;
-			openSubState(new VideoCutscene(videoCutscene, function() {
-				startCountdown();
-			}));
-			persistentDraw = false;
-		} 
-		else
-			startCountdown();
+		var video = new VideoHandler();
+		video.playVideo(Assets.getPath(videoCutscene));
+		// persistentUpdate = false;
+		// if (cutscene != null) {
+		// 	openSubState(new ScriptedCutscene(cutscene, function() {
+		// 		startCountdown();
+		// 	}));
+		// } 
+		// else if (Paths.exists(videoCutscene)) {
+		// 	FlxTransitionableState.skipNextTransIn = true;
+		// 	inCutscene = true;
+		// 	openSubState(new VideoCutscene(videoCutscene, function() {
+		// 		startCountdown();
+		// 	}));
+		// 	persistentDraw = false;
+		// } 
+		// else
+		// 	startCountdown();
 	}
 
 	public function startCountdown() {

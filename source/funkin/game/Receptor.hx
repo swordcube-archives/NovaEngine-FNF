@@ -9,7 +9,7 @@ class Receptor extends FNFSprite {
     /**
      * The original scale of this receptor when it was loaded.
      */
-    public var noteScale:Float = 0.7;
+    public var initialScale:Float = 0.7;
 
     /**
      * The skin this receptor has loaded.
@@ -36,12 +36,13 @@ class Receptor extends FNFSprite {
                 spriteShitName = spriteShitName.replace(d, Note.extraKeyInfo[keyAmount+"K"].directions[noteData]);
             
             if(anim.indices != null && anim.indices.length > 0)
-                addAnimByIndices(anim.name, spriteShitName, anim.indices, anim.fps, anim.loop, anim.offsets);
+                addAnimByIndices(anim.name, spriteShitName+"0", anim.indices, anim.fps, anim.loop, anim.offsets);
             else
-                addAnim(anim.name, spriteShitName, anim.fps, anim.loop, anim.offsets);
+                addAnim(anim.name, spriteShitName+"0", anim.fps, anim.loop, anim.offsets);
         }
-        noteScale = data.scale;
+        initialScale = data.scale;
         scale.set(data.scale, data.scale);
+        updateHitbox();
         playAnim("static");
 
         return value;
