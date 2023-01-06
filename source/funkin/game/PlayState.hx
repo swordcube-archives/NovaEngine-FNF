@@ -262,24 +262,22 @@ class PlayState extends MusicBeatState {
 		// }
 
 		var videoCutscene = Paths.video('${PlayState.SONG.name.toLowerCase()}-cutscene');
-		var video = new VideoHandler();
-		video.playVideo(Assets.getPath(videoCutscene));
-		// persistentUpdate = false;
-		// if (cutscene != null) {
-		// 	openSubState(new ScriptedCutscene(cutscene, function() {
-		// 		startCountdown();
-		// 	}));
-		// } 
-		// else if (Paths.exists(videoCutscene)) {
-		// 	FlxTransitionableState.skipNextTransIn = true;
-		// 	inCutscene = true;
-		// 	openSubState(new VideoCutscene(videoCutscene, function() {
-		// 		startCountdown();
-		// 	}));
-		// 	persistentDraw = false;
-		// } 
-		// else
-		// 	startCountdown();
+		persistentUpdate = false;
+		if (cutscene != null) {
+			openSubState(new ScriptedCutscene(cutscene, function() {
+				startCountdown();
+			}));
+		} 
+		else if (Paths.exists(videoCutscene)) {
+			FlxTransitionableState.skipNextTransIn = true;
+			inCutscene = true;
+			openSubState(new VideoCutscene(videoCutscene, function() {
+				startCountdown();
+			}));
+			persistentDraw = false;
+		} 
+		else
+			startCountdown();
 	}
 
 	public function startCountdown() {
