@@ -133,6 +133,24 @@ class PlayState extends MusicBeatState {
 	];
 
 	/**
+	 * Whether or not the camera should zoom in every 4 beats.
+	 */
+	public var camBumping:Bool = true;
+
+	/**
+	 * How much the camera should zoom to the beat.
+	 * 4 = Every 4 beats.
+	 * 2 = Every 2 beats.
+	 * 1 = Every beat.
+	 */
+	public var camBumpingInterval:Int = 4;
+
+	/**
+	 * Whether or not the camera should zoom out after bumping.
+	 */
+	public var camZooming:Bool = true;
+
+	/**
 	 * Cutscene script path.
 	 */
 	public var cutscene:String = null;
@@ -176,31 +194,19 @@ class PlayState extends MusicBeatState {
 		add(stage.gfLayer);
 		add(stage.bfLayer);
 
-		FlxG.camera.zoom = defaultCamZoom;
-
 		// Load global song scripts
-		for(item in Paths.getFolderContents("songs")) {
-			var path:String = Paths.getAsset('songs/$item');
-			if(Paths.isDirectory(path)) continue;
-			
+		for(item in Paths.getFolderContents("songs", true, true)) {
 			for(extension in Paths.scriptExtensions) {
-				if(path.endsWith("."+extension)) {
-					var script:ScriptModule = ScriptHandler.loadModule(path);
-					scripts.add(script);
-				}
+				if(item.endsWith("."+extension))
+					scripts.add(ScriptHandler.loadModule(item));
 			}
 		}
 
 		// Load song specific scripts
-		for(item in Paths.getFolderContents('songs/${SONG.name.toLowerCase()}')) {
-			var path:String = Paths.getAsset('songs/${SONG.name.toLowerCase()}/$item');
-			if(Paths.isDirectory(path)) continue;
-			
+		for(item in Paths.getFolderContents('songs/${SONG.name.toLowerCase()}', true, true)) {
 			for(extension in Paths.scriptExtensions) {
-				if(path.endsWith("."+extension)) {
-					var script:ScriptModule = ScriptHandler.loadModule(path);
-					scripts.add(script);
-				}
+				if(item.endsWith("."+extension))
+					scripts.add(ScriptHandler.loadModule(item));
 			}
 		}
 
@@ -208,10 +214,12 @@ class PlayState extends MusicBeatState {
 
 		scripts.load();
 		scripts.call("onCreate");
+		FlxG.camera.zoom = defaultCamZoom;
 
 		add(UI = new UIGroup());
 		UI.cameras = [camHUD];
 
+		var oldNotes:Array<Note> = [];
 		for(section in SONG.sections) {
 			if(section == null) continue;
 			for(i => note in section.notes) {
@@ -219,11 +227,12 @@ class PlayState extends MusicBeatState {
 				if (note.direction > (SONG.keyAmount - 1)) mustHit = !section.playerSection;
 
 				var strumLine:StrumLine = mustHit ? UI.playerStrums : UI.cpuStrums;
-				var prevNote:Note = UI.notes.length > 0 ? UI.notes.members[UI.notes.length - 1] : null;
+				var prevNote:Note = oldNotes.length > 0 ? oldNotes.last() : null;
 
 				var realNote:Note = GameplayUtil.generateNote(note.strumTime, strumLine.keyAmount, note.direction, SONG.noteSkin, mustHit, note.altAnim, strumLine);
 				realNote.prevNote = prevNote;
-				UI.notes.add(realNote);
+				oldNotes.push(realNote);
+				strumLine.notes.add(realNote);
 
 				var susLength:Float = note.sustainLength / Conductor.stepCrochet;
 				if(susLength > 0.75) susLength++;
@@ -231,6 +240,7 @@ class PlayState extends MusicBeatState {
 				var flooredSus:Int = Math.floor(susLength);
 				if(flooredSus > 0) {
 					for(sus in 0...flooredSus) {
+						prevNote = oldNotes.last();
 						var susNote:Note = GameplayUtil.generateNote(note.strumTime + (Conductor.stepCrochet * sus), strumLine.keyAmount, note.direction, SONG.noteSkin, mustHit, note.altAnim, strumLine);
 						susNote.isSustainNote = true;
 						susNote.stepCrochet = Conductor.stepCrochet;
@@ -238,13 +248,15 @@ class PlayState extends MusicBeatState {
 						susNote.alpha = 0.6;
 						susNote.playCorrectAnim();
 						susNote.prevNote = prevNote;
-						UI.notes.add(susNote);
+						oldNotes.push(susNote);
+						strumLine.notes.add(susNote);
 					}
 				}
 			}
 		}
 
-		UI.notes.sortNotes();
+		UI.cpuStrums.notes.sortNotes();
+		UI.playerStrums.notes.sortNotes();
 	}
 
 	override function createPost() {
@@ -334,11 +346,36 @@ class PlayState extends MusicBeatState {
 		scripts.event("onCountdownPost", event);
 	}
 
+	public function finishSong(?ignoreNoteOffset:Bool = false) {
+		endingSong = true;
+		FlxG.sound.music.onComplete = null;
+
+        persistentUpdate = false;
+        persistentDraw = true;
+
+		if((Preferences.save.noteOffset * FlxG.sound.music.pitch) <= 0 || ignoreNoteOffset) {
+			endSong();
+		} else {
+			new FlxTimer().start((Preferences.save.noteOffset * FlxG.sound.music.pitch) / 1000, function(tmr:FlxTimer) {
+				endSong();
+			});
+		}
+	}
+
+	public function endSong() {
+		var ret:Dynamic = scripts.call("onEndSong", [], true);
+        if(ret != false) {
+			CoolUtil.playMusic(Paths.music("freakyMenu"));
+			FlxG.switchState(new funkin.menus.MainMenu());
+		}
+	}
+
 	public function startSong() {
 		startingSong = false;
 		
 		FlxG.sound.music.pause();
 		FlxG.sound.music.time = Conductor.position = 0;
+		FlxG.sound.music.onComplete = finishSong.bind();
 		FlxG.sound.music.volume = 1;
 		FlxG.sound.music.play();
 		vocals.play();
@@ -374,6 +411,11 @@ class PlayState extends MusicBeatState {
 		if(!inCutscene && !endingSong) Conductor.position += (elapsed * 1000) * FlxG.sound.music.pitch;
 		if(Conductor.position >= 0 && startingSong && !inCutscene) startSong();
 
+		if(camZooming) {
+			FlxG.camera.zoom = MathUtil.fixedLerp(FlxG.camera.zoom, defaultCamZoom, 0.05);
+			camHUD.zoom = MathUtil.fixedLerp(camHUD.zoom, camHUD.initialZoom, 0.05);
+		}
+
 		// If the vocals are out of sync, resync them!
 		@:privateAccess
 		var shouldResync = (vocals._sound != null && SONG.needsVoices && vocals.time < vocals.length) ? !Conductor.isAudioSynced(vocals) : !Conductor.isAudioSynced(FlxG.sound.music);
@@ -383,6 +425,11 @@ class PlayState extends MusicBeatState {
 	}
 
 	@:dox(hide) override function beatHit(curBeat:Int) {
+		if(camBumpingInterval < 1) camBumpingInterval = 1;
+		if(camBumping && FlxG.camera.zoom < 1.35 && curBeat % camBumpingInterval == 0) {
+			FlxG.camera.zoom += 0.015;
+			camHUD.zoom += 0.03;
+		}
 		scripts.call("onBeatHit", [curBeat]);
 		super.beatHit(curBeat);
 	}

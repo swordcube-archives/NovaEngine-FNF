@@ -19,10 +19,20 @@ class Paths {
         return Assets.exists(path);
     }
 
-    public static function getFolderContents(path:String):Array<String> {
+    public static function getFolderContents(path:String, ?returnPaths:Bool = false, ?removeDirectories:Bool = false):Array<String> {
         var fs = Polymod.getFileSystem();
         if(!fs.exists(Paths.getAsset(path))) return [];
-        return fs.readDirectory(Paths.getAsset(path));
+        
+        var itemList:Array<String> = [];
+
+        for(item in fs.readDirectory(Paths.getAsset(path))) {
+            var fullPath:String = Paths.getAsset('$path/$item');
+
+            if(!(removeDirectories && fs.isDirectory(fullPath)))
+                itemList.push(returnPaths ? fullPath : item);
+        }
+
+        return itemList;
     }
 
     public static function isDirectory(path:String):Bool {

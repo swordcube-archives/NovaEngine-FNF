@@ -8,6 +8,9 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 
 typedef StageLayer = FlxTypedGroup<FlxBasic>;
 
+/**
+ * The class used for handling backgrounds in gameplay.
+ */
 class Stage extends StageLayer {
     public var firstLoad:Bool = true;
 

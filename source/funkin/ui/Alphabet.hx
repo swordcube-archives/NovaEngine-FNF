@@ -144,46 +144,44 @@ class AlphabetChar extends FNFSprite {
         super.draw();
     }
 
+    public function convertChar(char:String) {
+        switch(char) {
+            case "😠" | "😡": return "-angry faic-";
+            case "'": return "-apostraphie-";
+            case "\\": return "-back slash-";
+            case "/": return "-forward slash-";
+            case "“": return "-start quote-";
+            case "”": return "-end quote-";
+            case "?": return "-question mark-";
+            case "!": return "-exclamation point-";
+            case ".": return "-period-";
+            case ",": return "-comma-";
+            case "-": return "-dash-";
+            case "_": return "_";
+            case "←": return "-left arrow-";
+            case "↓": return "-down arrow-";
+            case "↑": return "-up arrow-";
+            case "→": return "-right arrow-";
+        }
+        return char;
+    }
+
     public function loadFont() {
         switch(font) {
             case Bold:
-                load(SPARROW, Paths.getSparrowAtlas("ui/alphabet/bold"));
+                load(SPARROW, Paths.getSparrowAtlas("fonts/alphabet/bold"));
                 var offsets:FlxPoint = new FlxPoint(0, 0);
-                var anim:String = char.toUpperCase();
+                var anim:String = convertChar(char.toUpperCase());
                 switch(char.toUpperCase()) {
                     case " ":
                         visible = false;
                         alpha = 0;
-                    case "😠", "😡":
-                        anim = "-angry faic-";
-                    case "'":
-                        anim = "-apostraphie-";
-                    case "\\":
-                        anim = "-back slash-";
-                    case "/":
-                        anim = "-forward slash-";
-                    case "“":
-                        anim = "-start quote-";
-                    case "”":
-                        anim = "-end quote-";
-                    case "?":
-                        anim = "-question mark-";
-                    case "!":
-                        anim = "-exclamation point-";
-                    case ".":
-                        anim = "-period-";
-                        offsets.y += 42 * size;
-                    case ",":
-                        anim = "-comma-";
-                        offsets.y += 42 * size;
-                    case "-":
-                        anim = "-dash-";
-                        offsets.y += 14 * size;
+                    case ".": offsets.y += 42 * size;
+                    case ",": offsets.y += 42 * size;
+                    case "-": offsets.y += 14 * size;
                 }
                 addAnim("idle", anim+"0", 24, true, offsets);
-
-                if(animation.exists("idle"))
-                    playAnim("idle");
+                if(animation.exists("idle")) playAnim("idle");
 
                 scale.set(size, size);
                 updateHitbox();
@@ -198,76 +196,35 @@ class AlphabetChar extends FNFSprite {
                 }
 
             case Default:
-                load(SPARROW, Paths.getSparrowAtlas("ui/alphabet/default"));
+                load(SPARROW, Paths.getSparrowAtlas("fonts/alphabet/default"));
                 var offsets:FlxPoint = new FlxPoint(0, 0);
-                var anim:String = char;
+                var anim:String = convertChar(char);
                 switch(char) {
                     case " ":
                         visible = false;
                         alpha = 0;
-                    case "😠" | "😡":
-                        anim = "-angry faic-";
-                    case "'":
-                        anim = "-apostraphie-";
-                    case "\\":
-                        anim = "-back slash-";
-                    case "/":
-                        anim = "-forward slash-";
-                    case "“":
-                        anim = "-start quote-";
-                    case "”":
-                        anim = "-end quote-";
-                    case "?":
-                        anim = "-question mark-";
-                    case "!":
-                        anim = "-exclamation point-";
-                    case ".":
-                        anim = "-period-";
-                        offsets.y += 42 * size;
-                    case ",":
-                        anim = "-comma-";
-                        offsets.y += 42 * size;
-                    case "-":
-                        anim = "-dash-";
-                        offsets.y += 14 * size;
-                    case "_":
-                        anim = "_";
-                        offsets.y += 34 * size;
-                    case "←":
-                        anim = "-left arrow-";
-                        offsets.y += 16 * size;
-                    case "↓":
-                        anim = "-down arrow-";
-                        offsets.y += 12 * size;
-                    case "↑":
-                        anim = "-up arrow-";
-                        offsets.y += 12 * size;
-                    case "→":
-                        anim = "-right arrow-";
-                        offsets.y += 16 * size;
+                    case ".": offsets.y += 42 * size;
+                    case ",": offsets.y += 42 * size;
+                    case "-": offsets.y += 14 * size;
+                    case "_": offsets.y += 34 * size;
+                    case "←": offsets.y += 16 * size;
+                    case "↓": offsets.y += 12 * size;
+                    case "↑": offsets.y += 12 * size;
+                    case "→": offsets.y += 16 * size;
 
                     // letter offsets
-                    case "a":
-                        offsets.y += 15 * size;
-                    case "b", "f":
-                        offsets.y += 3 * size;
-                    case "c":
-                        offsets.y += 20 * size;
-                    case "t", "h", "i", "j", "k", "l":
-                        offsets.y += 5 * size;
-                    case "e", "g":
-                        offsets.y += 16 * size;
-                    case "m", "n", "o", "p", "q", "r", "s", "u", "v", "w", "x", "y", "z":
-                        offsets.y += 20 * size;
+                    case "a": offsets.y += 15 * size;
+                    case "b", "f": offsets.y += 3 * size;
+                    case "c": offsets.y += 20 * size;
+                    case "t", "h", "i", "j", "k", "l": offsets.y += 5 * size;
+                    case "e", "g": offsets.y += 16 * size;
+                    case "m", "n", "o", "p", "q", "r", "s", "u", "v", "w", "x", "y", "z": offsets.y += 20 * size;
 
                     // Symbol Offsets
-                    case ":", ";", "*":
-                        offsets.y += 5 * size;
+                    case ":", ";", "*": offsets.y += 5 * size;
                 }
                 addAnim("idle", anim+"0", 24, true, offsets);
-
-                if(animation.exists("idle"))
-                    playAnim("idle");
+                if(animation.exists("idle")) playAnim("idle");
 
                 scale.set(size, size);
                 updateHitbox();

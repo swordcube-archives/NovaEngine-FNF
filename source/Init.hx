@@ -101,7 +101,7 @@ class Init extends FlxState {
 
         controls = new Controls();
 
-        PlayState.SONG = ChartLoader.load(FNF, Paths.chart("massacre", "hard"));
+        PlayState.SONG = ChartLoader.load(FNF, Paths.chart("reactor", "hard"));
 
         FlxG.switchState(new funkin.menus.TitleScreen());
     }

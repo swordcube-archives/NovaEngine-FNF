@@ -1,11 +1,11 @@
 package funkin.game;
 
+import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxSort;
 import flixel.FlxCamera;
 import funkin.system.Conductor;
-import flixel.group.FlxGroup.FlxTypedGroup;
 
-class NoteGroup extends FlxTypedGroup<Note> {
+class NoteGroup extends FlxTypedSpriteGroup<Note> {
     var __loopSprite:Note;
     var i:Int = 0;
     var __currentlyLooping:Bool = false;
@@ -100,13 +100,14 @@ class NoteGroup extends FlxTypedGroup<Note> {
 
         if (Splice) {
             members.splice(index, 1);
-            length--;
+            group.length--;
         }
         else
             members[index] = null;
 
-        if (_memberRemoved != null)
-            _memberRemoved.dispatch(Object);
+        @:privateAccess
+        if (group._memberRemoved != null)
+            group._memberRemoved.dispatch(Object);
 
         return Object;
     }

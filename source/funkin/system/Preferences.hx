@@ -54,6 +54,11 @@ import flixel.util.FlxSave;
 	 * Whether or not the camera should zoom in every 4 beats.
 	 */
 	@:keep public static final cameraZoomsOnBeat:Bool = true;
+
+	/**
+	 * Whether or not the camera should zoom in every 4 beats.
+	 */
+	@:keep public static final noteOffset:Float = 0;
 }
 
 class Preferences {
