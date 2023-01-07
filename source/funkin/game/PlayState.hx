@@ -366,7 +366,8 @@ class PlayState extends MusicBeatState {
 		var ret:Dynamic = scripts.call("onEndSong", [], true);
         if(ret != false) {
 			CoolUtil.playMusic(Paths.music("freakyMenu"));
-			FlxG.switchState(new funkin.menus.MainMenu());
+			// story mode prob gonna be added last
+			FlxG.switchState(isStoryMode ? new funkin.system.MusicBeatState() : new funkin.menus.FreeplayState());
 		}
 	}
 

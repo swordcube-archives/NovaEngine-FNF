@@ -31,7 +31,7 @@ class IntroText {
 	}
 
 	public function show() {
-		var state = cast(FlxG.state, TitleScreen);
+		var state = cast(FlxG.state, TitleState);
 		state.deleteCoolText();
 
 		for(sprite in state.shownSprites)
@@ -60,7 +60,7 @@ class IntroText {
 	}
 }
 
-class TitleScreen extends MusicBeatState {
+class TitleState extends MusicBeatState {
 	public static var hasCheckedUpdates:Bool = false;
 
 	public var shownSprites:Array<Dynamic> = [];
@@ -248,7 +248,7 @@ class TitleScreen extends MusicBeatState {
 				transitioning = true;
 
 				new FlxTimer().start(2, function(tmr:FlxTimer) {
-					FlxG.switchState(new MainMenu());
+					FlxG.switchState(new MainMenuState());
 				});
 			}
 

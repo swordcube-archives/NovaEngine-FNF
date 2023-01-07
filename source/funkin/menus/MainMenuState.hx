@@ -13,7 +13,7 @@ import funkin.ui.MenuTypedList;
 import funkin.system.FNFSprite;
 import funkin.system.MusicBeatState;
 
-class MainMenu extends MusicBeatState {
+class MainMenuState extends MusicBeatState {
 	public var bg:FNFSprite;
     public var magenta:FNFSprite;
 
@@ -23,8 +23,10 @@ class MainMenu extends MusicBeatState {
 	override function create() {
 		super.create();
 
-		if (!runDefaultCode)
-			return;
+		if (FlxG.sound.music == null || (FlxG.sound.music != null && !FlxG.sound.music.playing))
+			CoolUtil.playMusic(Paths.music("freakyMenu"));
+
+		if (!runDefaultCode) return;
 
         // Initializing the background
 		bg = new FNFSprite().load(IMAGE, Paths.image("menus/menuBG"));
@@ -61,7 +63,7 @@ class MainMenu extends MusicBeatState {
 			startExitState(new MusicBeatState());
 		});
 		menuItems.createItem(null, null, "freeplay", function() {
-			startExitState(new funkin.game.PlayState());
+			startExitState(new FreeplayState());
 		});
         menuItems.createItem(null, null, "credits", function() {
 			startExitState(new MusicBeatState());
@@ -109,7 +111,7 @@ class MainMenu extends MusicBeatState {
         if (_exiting) menuItems.enabled = false;
 
 		if (controls.BACK && menuItems.enabled && !menuItems.busy)
-			FlxG.switchState(new TitleScreen());
+			FlxG.switchState(new TitleState());
 	}
 }
 

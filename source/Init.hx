@@ -46,7 +46,7 @@ class Init extends FlxState {
             Console.info("UNLOADING ALL MODS!");
             Polymod.unloadAllMods();
             Console.info("LOADING ALL ACTIVE MODS!");
-            Polymod.loadMods(ModHandler.getDirectories());
+            Polymod.loadMods([#if MOD_SUPPORT Paths.currentMod #end]);
             Console.info("LOADED ALL ACTIVE MODS SUCCESSFULLY!");
             #end
 
@@ -82,7 +82,7 @@ class Init extends FlxState {
 
         Polymod.init({
             modRoot: "mods",
-            dirs: ModHandler.getDirectories(),
+            dirs: [#if MOD_SUPPORT Paths.currentMod #end],
             errorCallback: function(error:polymod.Polymod.PolymodError) {
                 switch(error.severity) {
                     case ERROR:
@@ -103,6 +103,6 @@ class Init extends FlxState {
 
         PlayState.SONG = ChartLoader.load(FNF, Paths.chart("reactor", "hard"));
 
-        FlxG.switchState(new funkin.menus.TitleScreen());
+        FlxG.switchState(new funkin.menus.TitleState());
     }
 }
