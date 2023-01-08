@@ -4,6 +4,7 @@ import funkin.scripting.events.*;
 import flixel.input.keyboard.FlxKey;
 import openfl.events.KeyboardEvent;
 import flixel.util.FlxDestroyUtil.IFlxDestroyable;
+import funkin.game.Ranking;
 
 /**
  * The class for handling note input in gameplay.
@@ -55,21 +56,23 @@ class InputSystem implements IFlxDestroyable {
                     stackedTimes[note.noteData] = note.strumTime;
                     dontHit[note.noteData] = true;
 
-                    var rating:String = "sick";
-                    var score:Int = 350;
-                    var accuracyGain:Float = 1;
+                    var data:Judgement = Ranking.judgeTime(note.strumTime);
 
-                    var event = game.scripts.event("onPlayerHit", new NoteHitEvent(note, rating, score, accuracyGain));
+                    var rating:String = data.name;
+                    var score:Int = data.score;
+                    var accuracyGain:Float = data.accuracyGain;
+
+                    var event = game.scripts.event("onPlayerHit", new NoteHitEvent(note, rating, true, true, true, score, accuracyGain));
 					game.eventOnNoteType(note.noteType, "onPlayerHit", event);
 
                     if(!event.cancelled) {
                         game.characterSing(BF, note.strumLine.keyAmount, note.noteData);
                         receptor.playAnim("confirm");
 
-                        game.health += 0.023;
+                        game.health += event.healthGain > 0 ? event.healthGain * 0.5 : 0;
                         game.vocals.volume = 1;
 
-                        parent.deleteNote(note);
+                        parent.goodNoteHit(event, note);
                     }
                     continue;
                 }

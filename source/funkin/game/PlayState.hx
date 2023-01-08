@@ -1,5 +1,6 @@
 package funkin.game;
 
+import flixel.group.FlxSpriteGroup;
 import flixel.addons.transition.FlxTransitionableState;
 import funkin.system.FNFSprite;
 import flixel.tweens.FlxEase;
@@ -234,6 +235,38 @@ class PlayState extends MusicBeatState {
 	 */
 	public var noteTypes:Map<String, ScriptModule> = [];
 
+	/**
+	 * The group of sprites used to display your ratings and combo
+	 * when hitting notes.
+	 */
+	public var comboGroup:FlxTypedSpriteGroup<FNFSprite>;
+
+	// Accuracy related variables
+	public var songScore:Int = 0;
+	public var songMisses:Int = 0;
+
+	public var score(get, set):Int;
+	function get_score():Int {
+		return songScore;
+	}
+	function set_score(value:Int):Int {
+		return songScore = value;
+	}
+
+	public var misses(get, set):Int;
+	function get_misses():Int {
+		return songMisses;
+	}
+	function set_misses(value:Int):Int {
+		return songMisses = value;
+	}
+
+	public var sicks:Int = 0;
+	public var goods:Int = 0;
+	public var bads:Int = 0;
+	public var shits:Int = 0;
+	public var combo:Int = 0;
+
 	override function create() {
 		super.create();
 		
@@ -271,6 +304,8 @@ class PlayState extends MusicBeatState {
 		add(gf = new Character(stage.gfPos.x, stage.gfPos.y, "gf"));
 		add(dad = new Character(stage.dadPos.x, stage.dadPos.y, "dad"));
 		add(boyfriend = new Character(stage.bfPos.x, stage.bfPos.y, "bf", true));
+
+		add(comboGroup = new FlxTypedSpriteGroup<FNFSprite>(FlxG.width * 0.55, (FlxG.height * 0.5) - 60));
 
 		gfs = [gf];
 		dads = [dad];
@@ -352,6 +387,54 @@ class PlayState extends MusicBeatState {
 
 		UI.cpuStrums.notes.sortNotes();
 		UI.playerStrums.notes.sortNotes();
+	}
+
+	public function popUpScore(event:NoteHitEvent, rating:String, combo:Int) {
+		var rating:FNFSprite = comboGroup.recycle(FNFSprite).load(IMAGE, Paths.image(event.ratingSprites+'/$rating'));
+		comboGroup.remove(rating, true);
+		rating.setPosition(-40, -60);
+		rating.antialiasing = event.ratingAntialiasing;
+		rating.scale.set(event.ratingScale, event.ratingScale);
+		rating.updateHitbox();
+		rating.alpha = 1;
+
+		rating.acceleration.y = 550;
+		rating.velocity.y = -FlxG.random.int(140, 175);
+		rating.velocity.x = -FlxG.random.int(0, 10);
+
+		var separatedScore:String = Std.string(combo).addZeros(3);
+		if (combo == 0 || combo >= 10) {
+			for (i in 0...separatedScore.length) {
+				var numScore:FNFSprite = comboGroup.recycle(FNFSprite).load(IMAGE, Paths.image(event.comboSprites+'/num${separatedScore.charAt(i)}'));
+				comboGroup.remove(numScore, true);
+				numScore.setPosition((43 * i) - 90, 80);
+				numScore.antialiasing = event.comboAntialiasing;
+				numScore.scale.set(event.comboScale, event.comboScale);
+				numScore.updateHitbox();
+				numScore.alpha = 1;
+	
+				numScore.acceleration.y = FlxG.random.int(200, 300);
+				numScore.velocity.y = -FlxG.random.int(140, 160);
+				numScore.velocity.x = FlxG.random.float(-5, 5);
+	
+				comboGroup.add(numScore);
+	
+				FlxTween.tween(numScore, {alpha: 0}, 0.2, {
+					onComplete: function(tween:FlxTween) {
+						numScore.kill();
+					},
+					startDelay: Conductor.crochet * 0.002
+				});
+			}
+		}
+		comboGroup.add(rating);
+
+		FlxTween.tween(rating, {alpha: 0}, 0.2, {
+			onComplete: function(tween:FlxTween) {
+				rating.kill();
+			},
+			startDelay: Conductor.crochet * 0.001
+		});
 	}
 
 	public function switchIcon(player:Int, name:String) {

@@ -73,7 +73,7 @@ class StrumLine extends FlxSpriteGroup {
 				if (note.strumTime <= Conductor.position && !note.wasGoodHit) {
 					note.wasGoodHit = true;
 
-					var event = game.scripts.event("onOpponentHit", new NoteHitEvent(note, "sick", 350, 1));
+					var event = game.scripts.event("onOpponentHit", new NoteHitEvent(note, "sick", true, true, true, 350, 1));
 					game.eventOnNoteType(note.noteType, "onOpponentHit", event);
 
 					if(!note.isSustainTail && !event.cancelled) {
@@ -96,12 +96,12 @@ class StrumLine extends FlxSpriteGroup {
                 if (input.pressed[note.noteData] && note.strumTime <= Conductor.position && !note.wasGoodHit && note.isSustainNote) {
 					note.wasGoodHit = true;
 
-					var event = game.scripts.event("onPlayerHit", new NoteHitEvent(note, "sick", 0, 0));
+					var event = game.scripts.event("onPlayerHit", new NoteHitEvent(note, "sick", true, true, true, 0, 0));
 					game.eventOnNoteType(note.noteType, "onPlayerHit", event);
 
 					if(!note.isSustainTail && !event.cancelled) {
 						receptor.playAnim("confirm", true);
-						game.health += 0.013;
+						game.health += event.healthGain > 0 ? event.healthGain * 0.5 : 0;
 						game.vocals.volume = 1;
 						game.characterSing(BF, note.strumLine.keyAmount, note.noteData, note.altAnim ? "-alt" : "");
 					}
@@ -121,6 +121,14 @@ class StrumLine extends FlxSpriteGroup {
 				}
 			}
 		});
+	}
+
+	public function goodNoteHit(event:NoteHitEvent, note:Note) {
+		var game = PlayState.current;
+		if(!note.isSustainNote) {
+			game.popUpScore(event, Ranking.judgeTime(note.strumTime).name, game.combo++);
+		}
+		deleteNote(note);
 	}
 
 	public function deleteNote(note:Note) {
