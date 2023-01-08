@@ -98,6 +98,14 @@ class UIGroup extends FlxGroup {
 		positionIcons();
 	}
 
+	override function draw() {
+		for(icon in [iconP2, iconP1])
+			if(PlayState.current.downscroll) icon.offset.y *= -1;
+		super.draw();
+		for(icon in [iconP2, iconP1])
+			if(PlayState.current.downscroll) icon.offset.y *= -1;
+	}
+
 	public function positionIcons() {
 		var iconOffset:Int = 26;
 		iconP1.health = healthBar.percent / 100;
