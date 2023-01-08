@@ -77,6 +77,7 @@ class StrumLine extends FlxSpriteGroup {
 					game.eventOnNoteType(note.noteType, "onOpponentHit", event);
 
 					if(!note.isSustainTail && !event.cancelled) {
+						game.vocals.volume = 1;
 						receptor.playAnim("confirm", true);
 						game.characterSing(DAD, note.strumLine.keyAmount, note.noteData);
 
