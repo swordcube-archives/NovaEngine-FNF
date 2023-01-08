@@ -3,17 +3,11 @@
     <intro length="16">
         <text beat="1">
             <line text="swordcube" />
-            <line text="Leather128" />
-            <line text="Stilic" />
-            <line text="Raf" />
         </text>
     
         <text beat="3">
             <line text="swordcube" />
-            <line text="Leather128" />
-            <line text="Stilic" />
-            <line text="Raf" />
-            <line text="present" />
+            <line text="presents" />
         </text>
         
         <text beat="4" /> <!-- Clears the screen! -->

@@ -31,13 +31,14 @@ class Init extends FlxState {
         AudioSwitchFix.init();
 		WindowsAPI.setDarkMode(true);
 
-        FlxSprite.defaultAntialiasing = true;
         FlxG.fixedTimestep = false;
         FlxG.signals.preStateCreate.add(function(state:FlxState) {
             Conductor.reset();
             
-            @:privateAccess
-            Preferences.__save.bind("preferencesSave", "FunkinForever");
+            @:privateAccess {
+                Preferences.__save.bind("preferencesSave", "FunkinForever");
+                FlxSprite.defaultAntialiasing = Preferences.__save.data.antialiasing;
+            }
 
             Assets.cache.clear();
             LimeAssets.cache.clear();
@@ -51,6 +52,7 @@ class Init extends FlxState {
             #end
 
             Note.reloadSkins();
+            Note.reloadSplashSkins();
 
             #if cpp
             cpp.vm.Gc.run(true);
@@ -74,6 +76,7 @@ class Init extends FlxState {
             FlxG.sound.volume = FlxG.save.data.volume;
 
         Preferences.init();
+        FlxSprite.defaultAntialiasing = Preferences.save.antialiasing;
 
         Conductor.init();
         ScriptHandler.init();
@@ -100,8 +103,6 @@ class Init extends FlxState {
         });
 
         controls = new Controls();
-
-        PlayState.SONG = ChartLoader.load(FNF, Paths.chart("reactor", "hard"));
 
         FlxG.switchState(new funkin.menus.TitleState());
     }

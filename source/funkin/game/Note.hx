@@ -11,8 +11,13 @@ typedef NoteSkin = {
     var scale:Float;
     var isPixel:Bool;
     var noteTextures:SpritesheetData;
-    var splashTextures:SpritesheetData;
     var animations:Array<NoteAnim>;
+}
+
+typedef SplashSkin = {
+    var scale:Float;
+    var texture:SpritesheetData;
+    var animations:Array<SplashAnim>;
 }
 
 typedef SpritesheetData = {
@@ -27,6 +32,14 @@ typedef NoteAnim = {
     var offsets:FlxPoint;
     var fps:Int;
     var loop:Bool;
+}
+
+typedef SplashAnim = {
+    var name:String;
+    var spritesheetName:String;
+    var indices:Array<Int>;
+    var offsets:FlxPoint;
+    var fps:Int;
 }
 
 typedef EKInfo = {
@@ -53,6 +66,7 @@ class Note extends FNFSprite {
         },
     ];
     public static var noteSkins:Map<String, NoteSkin> = [];
+    public static var splashSkins:Map<String, SplashSkin> = [];
 
     public static function reloadSkins() {
         noteSkins = [];
@@ -61,6 +75,11 @@ class Note extends FNFSprite {
             if(Paths.isDirectory(path)) continue;
 
             var skinName:String = item.removeExtension();
+
+            if(!Paths.exists(path)) {
+                Console.error('Occured while loading note skin: $skinName | The XML doesn\'t exist!');
+                continue;
+            }
 
             var xml:Xml = Xml.parse(Assets.getText(path)).firstElement();
             if(xml == null) {
@@ -78,12 +97,6 @@ class Note extends FNFSprite {
                 var noteTextures:SpritesheetData = {
                     name: noteTexturesNode.has.name ? noteTexturesNode.att.name : "NOTE_assets",
                     type: noteTexturesNode.has.type ? noteTexturesNode.att.type : SPARROW
-                };
-
-                var splashTexturesNode:Access = data.node.splashTextures;
-                var splashTextures:SpritesheetData = {
-                    name: splashTexturesNode.has.name ? splashTexturesNode.att.name : "NOTE_splashes",
-                    type: splashTexturesNode.has.type ? splashTexturesNode.att.type : SPARROW
                 };
 
                 var animArray:Array<NoteAnim> = [];
@@ -104,7 +117,6 @@ class Note extends FNFSprite {
                     scale: scale,
                     isPixel: isPixel,
                     noteTextures: noteTextures,
-                    splashTextures: splashTextures,
                     animations: animArray
                 };
                 Console.debug('Loaded note skin: $skinName successfully');
@@ -113,13 +125,80 @@ class Note extends FNFSprite {
             }
         }
     }
+
+    public static function reloadSplashSkins() {
+        splashSkins = [];
+        for(item in Paths.getFolderContents("data/splashes")) {
+            var path = Paths.getAsset('data/splashes/$item');
+            if(Paths.isDirectory(path)) continue;
+
+            var skinName:String = item.removeExtension();
+
+            if(!Paths.exists(path)) {
+                Console.error('Occured while loading note splash skin: $skinName | The XML doesn\'t exist!');
+                continue;
+            }
+
+            var xml:Xml = Xml.parse(Assets.getText(path)).firstElement();
+            if(xml == null) {
+                Console.error('Occured while loading note splash skin: $skinName | Either the XML doesn\'t exist or the "splashskin" node is missing!');
+                continue;
+            }
+
+            try {
+                var data:Access = new Access(xml);
+    
+                var scale:Float = data.has.scale ? Std.parseFloat(data.att.scale) : 0.7;
+
+                var textureNode:Access = data.node.texture;
+                var texture:SpritesheetData = {
+                    name: textureNode.has.name ? textureNode.att.name : "NOTE_splashes",
+                    type: textureNode.has.type ? textureNode.att.type : SPARROW
+                };
+
+                var animArray:Array<SplashAnim> = [];
+                var animations:Access = data.node.anims; // <- This is done to make the code look cleaner (aka instead of data.node.animations.nodes.animation)
+
+                for (anim in animations.nodes.anim) {
+                    animArray.push({
+                        name: anim.att.name,
+                        spritesheetName: anim.att.anim,
+                        indices: anim.has.indices ? CoolUtil.splitInt(anim.att.indices, ",") : [],
+                        fps: anim.has.fps ? Std.parseInt(anim.att.fps) : 24,
+                        offsets: FlxPoint.get(anim.has.x ? Std.parseFloat(anim.att.x) : 0.0, anim.has.y ? Std.parseFloat(anim.att.y) : 0.0)
+                    });
+                }
+
+                splashSkins[skinName] = {
+                    scale: scale,
+                    texture: texture,
+                    animations: animArray
+                };
+                Console.debug('Loaded note splash skin: $skinName successfully');
+            } catch(e) {
+                Console.error('Failed to load a note splash skin: $skinName - ${e.details()}');
+            }
+        }
+    }
+
+    public static function getSingAnim(keyAmount:Int = 4, noteData:Int = 0) {
+		var dir:String = Note.extraKeyInfo[keyAmount+"K"].directions[noteData].toUpperCase();
+		switch (dir) {
+			case "MIDDLE":
+				dir = "UP";
+		}
+		return "sing" + dir;
+	}
     
     // -------------------------------------------------------------------------------------------- //
 
     /**
      * The position of this note in the song.
      */
-    public var strumTime:Float = 0;
+    public var strumTime(get, default):Float = 0;
+    function get_strumTime():Float {
+        return strumTime + (Preferences.save.noteOffset * FlxG.sound.music.pitch);
+    }
 
     /**
      * The direction of the note.
@@ -151,6 +230,11 @@ class Note extends FNFSprite {
      * The original scale of this note when it was loaded.
      */
     public var initialScale:Float = 0.7;
+
+    /**
+     * The note type.
+     */
+    public var noteType:String = "Default";
 
     /**
      * Whether or not you should hit this note.
@@ -210,6 +294,11 @@ class Note extends FNFSprite {
         return value;
     }
 
+    /**
+     * The skin used for the note splash that occurs when hitting a "SiCK!!" on this note.
+     */
+    public var splashSkin:String = "Default";
+
     public function playCorrectAnim() {
         if(isSustainNote)
             playAnim(isSustainTail ? "sustainEnd" : "sustain");
@@ -251,8 +340,9 @@ class Note extends FNFSprite {
         }
     }
 
-    override function playAnim(name:String, force:Bool = false, reversed:Bool = false, frame:Int = 0) {
+    override function playAnim(name:String, force:Bool = false, ?context:AnimationContext = NORMAL, reversed:Bool = false, frame:Int = 0) {
         if(!animation.exists(name)) return Console.warn('Animation "$name" doesn\'t exist!');
+        lastAnimContext = context;
         animation.play(name, force, reversed, frame);
         centerOffsets();
         centerOrigin(); // sonic origins reference?!?!!?

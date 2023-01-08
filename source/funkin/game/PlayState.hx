@@ -13,9 +13,22 @@ import funkin.scripting.ScriptHandler;
 import funkin.scripting.ScriptPack;
 import funkin.scripting.events.*;
 import funkin.cutscenes.*;
+import flixel.math.FlxMath;
 import funkin.game.Song;
+import haxe.io.Path;
 
 using StringTools;
+
+enum abstract CharacterType(String) to String from String {
+	var DAD = "DAD";
+	var OPPONENT = "OPPONENT";
+	var GF = "GF";
+	var GIRLFRIEND = "GIRLFRIEND";
+	var SPEAKERS = "SPEAKERS";
+	var BF = "BF";
+	var PLAYER = "PLAYER";
+	var BOYFRIEND = "BOYFRIEND";
+}
 
 class PlayState extends MusicBeatState {
 	/**
@@ -151,6 +164,62 @@ class PlayState extends MusicBeatState {
 	public var camZooming:Bool = true;
 
 	/**
+	 * Dad character
+	 */
+	public var dad:Character;
+	public var dads:Array<Character> = [];
+
+	/**
+	 * Girlfriend character
+	 */
+	public var gf:Character;
+	public var gfs:Array<Character> = [];
+
+	/**
+	 * Boyfriend character
+	 */
+	public var boyfriend:Character;
+	public var boyfriends:Array<Character> = [];
+
+	/**
+	 * Boyfriend character
+	 */
+	public var bf(get, set):Character;
+	function get_bf():Character {
+		return boyfriend;
+	}
+	function set_bf(newChar:Character):Character {
+		return boyfriend = newChar;
+	}
+
+	public var bfs(get, set):Array<Character>;
+	function get_bfs():Array<Character> {
+		return boyfriends;
+	}
+	function set_bfs(newChars:Array<Character>):Array<Character> {
+		return boyfriends = newChars;
+	}
+
+	/**
+	 * The amount of health the player has.
+	 * Limited to the values of `minHealth` and `maxHealth`.
+	 */
+	public var health(default, set):Float = 1;
+	function set_health(value:Float) {
+		return health = FlxMath.bound(value, minHealth, maxHealth);
+	}
+
+	/**
+	 * The minimum amount of health the player can have.
+	 */
+	public var minHealth:Float = 0;
+
+	/**
+	 * The maximum amount of health the player can have.
+	 */
+	public var maxHealth:Float = 2;
+
+	/**
 	 * Cutscene script path.
 	 */
 	public var cutscene:String = null;
@@ -159,6 +228,11 @@ class PlayState extends MusicBeatState {
 	 * End cutscene script path.
 	 */
 	public var endCutscene:String = null;
+
+	/**
+	 * A map containing all scripts for note types.
+	 */
+	public var noteTypes:Map<String, ScriptModule> = [];
 
 	override function create() {
 		super.create();
@@ -194,6 +268,14 @@ class PlayState extends MusicBeatState {
 		add(stage.gfLayer);
 		add(stage.bfLayer);
 
+		add(gf = new Character(stage.gfPos.x, stage.gfPos.y, "gf"));
+		add(dad = new Character(stage.dadPos.x, stage.dadPos.y, "dad"));
+		add(boyfriend = new Character(stage.bfPos.x, stage.bfPos.y, "bf", true));
+
+		gfs = [gf];
+		dads = [dad];
+		boyfriends = [bf];
+
 		// Load global song scripts
 		for(item in Paths.getFolderContents("songs", true, true)) {
 			for(extension in Paths.scriptExtensions) {
@@ -207,6 +289,19 @@ class PlayState extends MusicBeatState {
 			for(extension in Paths.scriptExtensions) {
 				if(item.endsWith("."+extension))
 					scripts.add(ScriptHandler.loadModule(item));
+			}
+		}
+
+		// Load note types
+		for(item in Paths.getFolderContents('data/notetypes', true, true)) {
+			for(extension in Paths.scriptExtensions) {
+				if(item.endsWith("."+extension)) {
+					var typeName:String = Path.withoutDirectory(item.removeExtension());
+					var script = ScriptHandler.loadModule(item);
+					script.load();
+					script.call("onCreate");
+					noteTypes[typeName] = script;
+				}
 			}
 		}
 
@@ -229,7 +324,7 @@ class PlayState extends MusicBeatState {
 				var strumLine:StrumLine = mustHit ? UI.playerStrums : UI.cpuStrums;
 				var prevNote:Note = oldNotes.length > 0 ? oldNotes.last() : null;
 
-				var realNote:Note = GameplayUtil.generateNote(note.strumTime, strumLine.keyAmount, note.direction, SONG.noteSkin, mustHit, note.altAnim, strumLine);
+				var realNote:Note = GameplayUtil.generateNote(note.strumTime, strumLine.keyAmount, note.direction, SONG.noteSkin, mustHit, note.altAnim, strumLine, note.type);
 				realNote.prevNote = prevNote;
 				oldNotes.push(realNote);
 				strumLine.notes.add(realNote);
@@ -241,7 +336,7 @@ class PlayState extends MusicBeatState {
 				if(flooredSus > 0) {
 					for(sus in 0...flooredSus) {
 						prevNote = oldNotes.last();
-						var susNote:Note = GameplayUtil.generateNote(note.strumTime + (Conductor.stepCrochet * sus), strumLine.keyAmount, note.direction, SONG.noteSkin, mustHit, note.altAnim, strumLine);
+						var susNote:Note = GameplayUtil.generateNote(note.strumTime + (Conductor.stepCrochet * sus), strumLine.keyAmount, note.direction, SONG.noteSkin, mustHit, note.altAnim, strumLine, note.type);
 						susNote.isSustainNote = true;
 						susNote.stepCrochet = Conductor.stepCrochet;
 						susNote.isSustainTail = sus >= flooredSus-1;
@@ -259,10 +354,56 @@ class PlayState extends MusicBeatState {
 		UI.playerStrums.notes.sortNotes();
 	}
 
+	public function switchIcon(player:Int, name:String) {
+		switch(player) {
+			case 0: 
+				UI.iconP2.loadIcon(name);
+				UI.iconP2.scale.set(1, 1);
+				UI.iconP2.updateHitbox();
+				UI.iconP2.y = UI.healthBar.y - (UI.iconP2.height * 0.5);
+
+			default:
+				UI.iconP1.loadIcon(name);
+				UI.iconP1.scale.set(1, 1);
+				UI.iconP1.updateHitbox();
+				UI.iconP1.y = UI.healthBar.y - (UI.iconP1.height * 0.5);
+		}
+	}
+
 	override function createPost() {
 		startCutscene();
 		super.createPost();
 		scripts.call("onCreatePost");
+	}
+
+	public function callOnNoteType(noteType:String, method:String, ?parameters:Array<String>) {
+		if(!noteTypes.exists(noteType)) return;
+		noteTypes[noteType].call(method, parameters);
+	}
+
+	public function eventOnNoteType<T:CancellableEvent>(noteType:String, method:String, event:T):T {
+		if(!noteTypes.exists(noteType)) return event;
+		noteTypes[noteType].call(method, [event]);
+		return event;
+	}
+
+	public function characterSing(?type:Null<CharacterType>, ?keyAmount:Null<Int> = 4, noteData:Int, ?suffix:String = "") {
+		if(type == null) type = DAD;
+		if(keyAmount == null) keyAmount = 4;
+
+		switch(type) {
+			case DAD, OPPONENT: 
+				for(character in dads)
+					character.playAnim(Note.getSingAnim(keyAmount, noteData)+suffix, true);
+
+			case GF, GIRLFRIEND, SPEAKERS:
+				for(character in gfs)
+					character.playAnim(Note.getSingAnim(keyAmount, noteData)+suffix, true);
+
+			case BF, PLAYER, BOYFRIEND:
+				for(character in boyfriends)
+					character.playAnim(Note.getSingAnim(keyAmount, noteData)+suffix, true);
+		}
 	}
 
 	public function startCutscene() {
@@ -297,7 +438,11 @@ class PlayState extends MusicBeatState {
 		inCutscene = false;
 
 		var swagCounter:Int = 0;
+
 		new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer) {
+			for(character in dads) character.dance();
+			for(character in gfs) character.dance();
+			for(character in bfs) character.dance();
 			countdown(swagCounter++);
 		}, introLength);
 	}
@@ -363,11 +508,20 @@ class PlayState extends MusicBeatState {
 	}
 
 	public function endSong() {
+		if(inCutscene) return;
+		
+		endingSong = true;
+
+		// story mode prob gonna be added last
+
 		var ret:Dynamic = scripts.call("onEndSong", [], true);
         if(ret != false) {
+			if(FlxG.sound.music != null) FlxG.sound.music.stop();
+			if(vocals != null) vocals.stop();
+
 			CoolUtil.playMusic(Paths.music("freakyMenu"));
-			// story mode prob gonna be added last
-			FlxG.switchState(isStoryMode ? new funkin.system.MusicBeatState() : new funkin.menus.FreeplayState());
+			FlxG.sound.music.time = 0;
+			FlxG.switchState(new funkin.menus.FreeplayState());
 		}
 	}
 
@@ -415,6 +569,15 @@ class PlayState extends MusicBeatState {
 		if(camZooming) {
 			FlxG.camera.zoom = MathUtil.fixedLerp(FlxG.camera.zoom, defaultCamZoom, 0.05);
 			camHUD.zoom = MathUtil.fixedLerp(camHUD.zoom, camHUD.initialZoom, 0.05);
+		}
+
+		if(UI.playerStrums.input.pressed.contains(true)) {
+			for(character in bfs)
+				character.holdTimer = 0;
+		}
+		else if(!UI.playerStrums.input.pressed.contains(true) && boyfriend.lastAnimContext == SING && boyfriend.holdTimer >= Conductor.stepCrochet * boyfriend.singDuration * 0.0011) {
+			for(character in bfs)
+				character.dance();
 		}
 
 		// If the vocals are out of sync, resync them!

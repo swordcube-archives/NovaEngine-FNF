@@ -1,7 +1,6 @@
 <!DOCTYPE funkin-forever-noteskin/>
 <noteskin scale="0.7" isPixel="false">
     <noteTextures name="NOTE_assets" type="SPARROW"/>
-    <splashTextures name="NOTE_splashes" type="SPARROW"/>
     <anims>
         <!-- notes are centered, x and y add offset to the notes -->
         <anim name="static"     anim="${DIRECTION} static"     x="0" y="0" fps="24" loop="false"/>

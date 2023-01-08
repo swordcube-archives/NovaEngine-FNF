@@ -1,5 +1,6 @@
 package funkin.game;
 
+import funkin.scripting.events.*;
 import flixel.math.FlxMath;
 import flixel.math.FlxRect;
 import funkin.system.Conductor;
@@ -45,6 +46,8 @@ class StrumLine extends FlxSpriteGroup {
 	override function update(elapsed:Float) {
 		super.update(elapsed);
 
+		var game = PlayState.current;
+
 		notes.forEachAlive(function(note:Note) {
 			if (note.noteData < 0) return;
 
@@ -69,17 +72,52 @@ class StrumLine extends FlxSpriteGroup {
 				// Opponent note logic
 				if (note.strumTime <= Conductor.position && !note.wasGoodHit) {
 					note.wasGoodHit = true;
-					receptor.playAnim("confirm", true);
-					if(!note.isSustainNote) deleteNote(note);
+
+					var event = game.scripts.event("onOpponentHit", new NoteHitEvent(note, "sick", 350, 1));
+					game.eventOnNoteType(note.noteType, "onOpponentHit", event);
+
+					if(!note.isSustainTail && !event.cancelled) {
+						receptor.playAnim("confirm", true);
+						game.characterSing(DAD, note.strumLine.keyAmount, note.noteData);
+
+						if(!note.isSustainNote) deleteNote(note);
+					}
 				}
-				if (note.isSustainNote && note.wasGoodHit && note.strumTime <= Conductor.position - noteKillRange) deleteNote(note);
-			} else if(note.mustPress && handleInput) {
+				if (note.isSustainNote && note.wasGoodHit && note.strumTime <= Conductor.position - noteKillRange) {
+					var event = game.scripts.event("onOpponentMiss", new SimpleNoteEvent(note));
+					game.eventOnNoteType(note.noteType, "onOpponentMiss", event);
+
+					deleteNote(note);
+				}
+			} 
+			else if(note.mustPress && handleInput) {
 				// Player note logic
-                if (input.pressed[note.noteData] && note.canBeHit && !note.wasGoodHit && note.isSustainNote) {
+                if (input.pressed[note.noteData] && note.strumTime <= Conductor.position && !note.wasGoodHit && note.isSustainNote) {
 					note.wasGoodHit = true;
-					receptor.playAnim("confirm", true);
+
+					var event = game.scripts.event("onPlayerHit", new NoteHitEvent(note, "sick", 0, 0));
+					game.eventOnNoteType(note.noteType, "onPlayerHit", event);
+
+					if(!note.isSustainTail && !event.cancelled) {
+						receptor.playAnim("confirm", true);
+						game.health += 0.013;
+						game.vocals.volume = 1;
+						game.characterSing(BF, note.strumLine.keyAmount, note.noteData, note.altAnim ? "-alt" : "");
+					}
 				}
-				if (note.strumTime <= Conductor.position - noteKillRange) deleteNote(note);
+				if (note.strumTime <= Conductor.position - noteKillRange) {
+					if(!note.wasGoodHit) {
+						var event = game.scripts.event("onPlayerMiss", new SimpleNoteEvent(note));
+						game.eventOnNoteType(note.noteType, "onPlayerMiss", event);
+
+						if(!note.isSustainTail && !event.cancelled) {
+							game.health -= 0.0475;
+							game.vocals.volume = 0;
+							game.characterSing(BF, note.strumLine.keyAmount, note.noteData, "miss");
+						}
+					}
+					deleteNote(note);
+				}
 			}
 		});
 	}
@@ -116,11 +154,14 @@ class StrumLine extends FlxSpriteGroup {
     public function getScrollSpeed(?note:Note):Float {
 		if (note != null && note.scrollSpeed != null)
 			return note.scrollSpeed;
+
 		var receptor:Receptor = note != null ? receptors.members[note.noteData] : null;
 		if (receptor != null && receptor.scrollSpeed != null)
 			return receptor.scrollSpeed;
+
 		if (PlayState.current != null)
 			return PlayState.current.scrollSpeed;
+
 		return 1.0;
 	}
 }

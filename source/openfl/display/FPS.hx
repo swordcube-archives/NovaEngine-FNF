@@ -18,9 +18,9 @@ class FPS extends TextField {
 	**/
 	public var currentFPS(default, null):Int;
 
-	@:noCompletion private var cacheCount:Int;
-	@:noCompletion private var currentTime:Float;
-	@:noCompletion private var times:Array<Float>;
+	var __fps:Int = 0;
+
+	@:noCompletion private var currentTime:Float = 1.0;
 
 	public function new(x:Float = 10, y:Float = 10, color:Int = 0x000000) {
 		super();
@@ -36,34 +36,27 @@ class FPS extends TextField {
 		multiline = true;
 		text = "FPS: ";
 
-		cacheCount = 0;
 		currentTime = 0;
-		times = [];
 	}
 
-	// Event Handlers
-	@:noCompletion
-	private #if !flash override #end function __enterFrame(deltaTime:Float):Void {
-		currentTime += deltaTime;
-		times.push(currentTime);
+	// fuck u we're not using flash
+	@:noCompletion override function __enterFrame(deltaTime:Float):Void {
+		currentTime += FlxG.elapsed;
+		__fps++;
 
-		while (times[0] < currentTime - 1000) {
-			times.shift();
-		}
+		if(currentTime >= 1.0) {
+			currentFPS = __fps;
 
-		var currentCount = times.length;
-		currentFPS = Math.round((currentCount + cacheCount) / 2);
+			// Your framerate shouldn't be able to go above the cap!!
+			var cap:Int = Std.int(FlxG.stage.frameRate);
+			if(currentFPS > cap) currentFPS = cap;
 
-		// Your framerate shouldn't be able to go above the cap!!
-		var cap:Int = Std.int(FlxG.stage.frameRate);
-		if(currentFPS > cap) currentFPS = cap;
-
-		if (currentCount != cacheCount /*&& visible*/) {
 			text = "";
 			text += 'FPS: $currentFPS\n';
 			text += 'MEM: ${CoolUtil.getSizeLabel(Memory.getCurrentUsage())} / ${CoolUtil.getSizeLabel(Memory.getPeakUsage())}\n';
-		}
 
-		cacheCount = currentCount;
+			__fps = 0;
+			currentTime = 0.0;
+		}
 	}
 }

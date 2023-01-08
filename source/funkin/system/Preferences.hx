@@ -5,6 +5,8 @@ import flixel.input.keyboard.FlxKey;
 import flixel.util.FlxSave;
 
 @:keep class SuperCoolPreferences {
+	// Serious options
+
 	/**
 	 * The controls used for menus.
 	 */
@@ -51,6 +53,11 @@ import flixel.util.FlxSave;
 	@:keep public static final middlescroll:Bool = false;
 
 	/**
+	 * Whether or not sprites should be antialiased.
+	 */
+	@:keep public static final antialiasing:Bool = true;
+
+	/**
 	 * Whether or not the camera should zoom in every 4 beats.
 	 */
 	@:keep public static final cameraZoomsOnBeat:Bool = true;
@@ -59,6 +66,15 @@ import flixel.util.FlxSave;
 	 * Whether or not the camera should zoom in every 4 beats.
 	 */
 	@:keep public static final noteOffset:Float = 0;
+
+	// funny options
+
+	/**
+	 * Turns your Friday Night Funkin' experience into a shitty mobile game!
+	 * This will absolutely break on lots of mods!
+	 */
+	@:keep public static final mobileRipoffMode:Bool = false;
+
 }
 
 class Preferences {

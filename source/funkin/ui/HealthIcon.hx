@@ -19,16 +19,6 @@ class HealthIcon extends TrackingSprite {
      * The amount of icons detected.
      */
     public var iconAmount:Int = 0;
-    
-    /**
-        Ranges from 0-100.
-    **/
-    public var iconHealth(get, default):Float = 50;
-    function get_iconHealth():Float {
-		var boundedAss = FlxMath.bound(iconHealth, 0, 100);
-        iconHealth = boundedAss;
-        return boundedAss;
-	}
 
     public function new(?x:Float = 0, ?y:Float = 0, ?icon:String = "face") {
         super(x, y);
@@ -98,6 +88,6 @@ class HealthIcon extends TrackingSprite {
 
     override function update(elapsed:Float) {
         super.update(elapsed);
-        if(FlxG.state == PlayState.current) animation.curAnim.curFrame = getIconIndex(iconHealth, iconAmount);
+        if(FlxG.state == PlayState.current) animation.curAnim.curFrame = getIconIndex(health * 100, iconAmount);
     }
 }

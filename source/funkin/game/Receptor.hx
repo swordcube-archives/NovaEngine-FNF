@@ -58,8 +58,9 @@ class Receptor extends FNFSprite {
         this.skin = skin;
     }
 
-    override function playAnim(name:String, force:Bool = false, reversed:Bool = false, frame:Int = 0) {
+    override function playAnim(name:String, force:Bool = false, ?context:AnimationContext = NORMAL, reversed:Bool = false, frame:Int = 0) {
         if(!animation.exists(name)) return Console.warn('Animation "$name" doesn\'t exist!');
+        lastAnimContext = context;
         animation.play(name, force, reversed, frame);
         centerOffsets();
         centerOrigin(); // sonic origins reference?!?!!?

@@ -1,5 +1,6 @@
 package funkin.game;
 
+import funkin.scripting.events.*;
 import flixel.input.keyboard.FlxKey;
 import openfl.events.KeyboardEvent;
 import flixel.util.FlxDestroyUtil.IFlxDestroyable;
@@ -20,6 +21,8 @@ class InputSystem implements IFlxDestroyable {
 
     public function onKeyPress(event:KeyboardEvent) {
         var direction:Int = directionFromEvent(event);
+
+        var game = PlayState.current;
 
         if(pressed[direction] || direction == -1 || !parent.handleInput) return;
         pressed[direction] = true;
@@ -51,12 +54,27 @@ class InputSystem implements IFlxDestroyable {
                 if(!dontHit[note.noteData] && note.noteData == direction) {
                     stackedTimes[note.noteData] = note.strumTime;
                     dontHit[note.noteData] = true;
-                    receptor.playAnim("confirm");
-                    parent.deleteNote(note);
+
+                    var rating:String = "sick";
+                    var score:Int = 350;
+                    var accuracyGain:Float = 1;
+
+                    var event = game.scripts.event("onPlayerHit", new NoteHitEvent(note, rating, score, accuracyGain));
+					game.eventOnNoteType(note.noteType, "onPlayerHit", event);
+
+                    if(!event.cancelled) {
+                        game.characterSing(BF, note.strumLine.keyAmount, note.noteData);
+                        receptor.playAnim("confirm");
+
+                        game.health += 0.023;
+                        game.vocals.volume = 1;
+
+                        parent.deleteNote(note);
+                    }
                     continue;
                 }
                 // Get rid of any stacked notes
-                if(note.noteData == direction && note.strumTime - stackedTimes[note.noteData] <= 5)
+                if(note.noteData == direction && note.strumTime - stackedTimes[note.noteData] <= 2)
                     parent.deleteNote(note);
             }
         }

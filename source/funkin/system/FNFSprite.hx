@@ -9,6 +9,11 @@ enum abstract SpriteType(String) to String from String {
     var PACKER = "PACKER";
 }
 
+enum abstract AnimationContext(String) to String from String {
+    var NORMAL = "NORMAL";
+    var SING = "SING";
+}
+
 /**
  * An extension of `FlxSprite` with offsets for specific animations.
  */
@@ -76,8 +81,11 @@ enum abstract SpriteType(String) to String from String {
         this.offsets.set(name, new FlxPoint(-x, -y));
     }
 
-    public function playAnim(name:String, force:Bool = false, reversed:Bool = false, frame:Int = 0) {
+    public var lastAnimContext:AnimationContext = NORMAL;
+
+    public function playAnim(name:String, force:Bool = false, ?context:AnimationContext = NORMAL, reversed:Bool = false, frame:Int = 0) {
         if(!animation.exists(name)) return Console.warn('Animation "$name" doesn\'t exist!');
+        lastAnimContext = context;
         animation.play(name, force, reversed, frame);
         if(offsets.exists(name))
             offset.copyFrom(offsets[name]);

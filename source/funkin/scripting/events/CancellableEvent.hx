@@ -4,7 +4,11 @@ import funkin.scripting.ScriptPack;
 
 @:allow(ScriptPack)
 class CancellableEvent {
-    @:dox(hide) public var cancelled:Bool = false;
+    /**
+     * Whether or not this event has been cancelled.
+     */
+    public var cancelled:Bool = false;
+    
     @:dox(hide) private var __continueCalls:Bool = true;
 
     /**
