@@ -164,4 +164,9 @@ class StrumLine extends FlxSpriteGroup {
 
 		return 1.0;
 	}
+
+	override function destroy() {
+		input.destroy();
+		super.destroy();
+	}
 }
