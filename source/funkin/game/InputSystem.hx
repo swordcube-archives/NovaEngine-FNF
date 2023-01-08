@@ -94,12 +94,8 @@ class InputSystem implements IFlxDestroyable {
     }
 
     public function directionFromEvent(event:KeyboardEvent) {
-        var keyList:Array<FlxKey> = cast Reflect.field(Preferences.save.GAME_controls, parent.keyAmount+"K");
-        for(i => key in keyList) {
-            if(event.keyCode == key)
-                return i;
-        }
-        return -1;
+        var keyList:Array<FlxKey> = Reflect.field(Preferences.save.GAME_controls, parent.keyAmount+"K");
+        return keyList.indexOf(event.keyCode);
     }
 
 	public function destroy() {
