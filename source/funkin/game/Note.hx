@@ -16,6 +16,7 @@ typedef NoteSkin = {
 
 typedef SplashSkin = {
     var scale:Float;
+    var alpha:Float;
     var texture:SpritesheetData;
     var animations:Array<SplashAnim>;
 }
@@ -149,6 +150,7 @@ class Note extends FNFSprite {
                 var data:Access = new Access(xml);
     
                 var scale:Float = data.has.scale ? Std.parseFloat(data.att.scale) : 0.7;
+                var alpha:Float = data.has.alpha ? Std.parseFloat(data.att.alpha) : 0.6;
 
                 var textureNode:Access = data.node.texture;
                 var texture:SpritesheetData = {
@@ -171,6 +173,7 @@ class Note extends FNFSprite {
 
                 splashSkins[skinName] = {
                     scale: scale,
+                    alpha: alpha,
                     texture: texture,
                     animations: animArray
                 };

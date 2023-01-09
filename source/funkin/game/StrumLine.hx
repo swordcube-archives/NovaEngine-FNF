@@ -20,6 +20,7 @@ class StrumLine extends FlxSpriteGroup {
     public var handleInput:Bool = false;
 
     public var receptors:FlxTypedSpriteGroup<Receptor>;
+	public var splashes:FlxTypedSpriteGroup<NoteSplash>;
 
     public var input:InputSystem;
     public var keyAmount(default, set):Null<Int>;
@@ -32,7 +33,16 @@ class StrumLine extends FlxSpriteGroup {
     public function new(?x:Float = 0, ?y:Float = 0, ?keyAmount:Int = 4, ?handleInput:Bool = false) {
         super(x, y);
         add(receptors = new FlxTypedSpriteGroup<Receptor>());
+		add(splashes = new FlxTypedSpriteGroup<NoteSplash>());
         add(notes = new NoteGroup());
+
+		// precache splashes
+		var splash = new NoteSplash();
+		var skin:String = PlayState.SONG.splashSkin;
+		splash.setup(0, 0, skin, keyAmount, 0);
+		splash.alpha = 0.001;
+		splashes.add(splash);
+
         input = new InputSystem(this);
         this.keyAmount = keyAmount;
         this.handleInput = handleInput;
@@ -73,7 +83,7 @@ class StrumLine extends FlxSpriteGroup {
 				if (note.strumTime <= Conductor.position && !note.wasGoodHit) {
 					note.wasGoodHit = true;
 
-					var event = game.scripts.event("onOpponentHit", new NoteHitEvent(note, "sick", true, true, true, 350, 1));
+					var event = game.scripts.event("onOpponentHit", new NoteHitEvent(note, "sick", "Default", true, true, true, 350, 1));
 					game.eventOnNoteType(note.noteType, "onOpponentHit", event);
 
 					if(!note.isSustainTail && !event.cancelled) {
@@ -96,7 +106,7 @@ class StrumLine extends FlxSpriteGroup {
                 if (input.pressed[note.noteData] && note.strumTime <= Conductor.position && !note.wasGoodHit && note.isSustainNote) {
 					note.wasGoodHit = true;
 
-					var event = game.scripts.event("onPlayerHit", new NoteHitEvent(note, "sick", true, true, true, 0, 0));
+					var event = game.scripts.event("onPlayerHit", new NoteHitEvent(note, "sick", "Default", true, true, true, 0, 0));
 					game.eventOnNoteType(note.noteType, "onPlayerHit", event);
 
 					if(!note.isSustainTail && !event.cancelled) {
@@ -124,9 +134,19 @@ class StrumLine extends FlxSpriteGroup {
 	}
 
 	public function goodNoteHit(event:NoteHitEvent, note:Note) {
+		var receptor:Receptor = receptors.members[note.noteData];
+
 		var game = PlayState.current;
-		if(!note.isSustainNote) {
+		if(!note.isSustainNote && !event.cancelled) {
 			game.popUpScore(event, Ranking.judgeTime(note.strumTime).name, game.combo++);
+
+			if(event.doSplash) {
+				var splash = splashes.recycle(NoteSplash);
+				splashes.remove(splash, true);
+				var skin:String = event.splashSkin != "Default" ? event.splashSkin : note.splashSkin;
+				splash.setup(receptor.x - x, receptor.y - y, skin, keyAmount, note.noteData);
+				splashes.add(splash);
+			}
 		}
 		deleteNote(note);
 	}

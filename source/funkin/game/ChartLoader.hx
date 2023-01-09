@@ -105,7 +105,9 @@ class ChartLoader {
             
                         dad: vanillaChart.player2,
                         bf: vanillaChart.player1,
-                        gf: gfVersion, // Ik base game charts don't have this but i am not hardcoding gfVersion
+
+                        // Ik base game charts don't have this but i am not hardcoding these shits
+                        gf: gfVersion,
                         stage: vanillaChart.stage,
 
                         uiSkin: vanillaChart.uiSkin != null ? vanillaChart.uiSkin : "default",

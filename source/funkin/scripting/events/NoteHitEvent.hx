@@ -15,6 +15,18 @@ class NoteHitEvent extends CancellableEvent {
     public var rating:String = "sick";
 
     /**
+     * The skin used for the note splash that occurs when hitting a "SiCK!!" on this note.
+     * 
+     * "Default" uses the note's splash skin instead of the one from this event.
+     */
+    public var splashSkin:String = "Default";
+
+    /**
+     * Whether or not a note splash should occur when hitting this note.
+     */
+    public var doSplash:Bool = true;
+
+    /**
      * Whether or not the rating you got hitting this note
      * should show up in gameplay.
      */
@@ -64,13 +76,15 @@ class NoteHitEvent extends CancellableEvent {
      */
     public var healthGain:Float = 0.023;
 
-    public function new(note:Note, rating:String, showRating:Bool, showCombo:Bool, countAsCombo:Bool, score:Int, accuracyGain:Float) {
+    public function new(note:Note, rating:String, splashSkin:String, doSplash:Bool, showRating:Bool, showCombo:Bool, score:Int, accuracyGain:Float) {
         super();
         this.note = note;
         this.rating = rating;
-        this.showRating = showRating;
-        this.showCombo = showCombo;
-        this.countAsCombo = countAsCombo;
+        this.splashSkin = splashSkin;
+        this.doSplash = doSplash;
+        this.countAsCombo = !note.isSustainNote && note.mustPress;
+        this.showRating = showRating && this.countAsCombo;
+        this.showCombo = showCombo && this.countAsCombo;
         this.score = score;
         this.accuracyGain = accuracyGain;
     }

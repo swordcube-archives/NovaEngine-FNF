@@ -1,6 +1,5 @@
 package funkin.system;
 
-import haxe.DynamicAccess;
 import flixel.input.FlxInput.FlxInputState;
 import flixel.input.keyboard.FlxKey;
 

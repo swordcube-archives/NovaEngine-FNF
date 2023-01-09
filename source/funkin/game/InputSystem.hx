@@ -61,8 +61,9 @@ class InputSystem implements IFlxDestroyable {
                     var rating:String = data.name;
                     var score:Int = data.score;
                     var accuracyGain:Float = data.accuracyGain;
+                    var doSplash:Bool = data.doSplash;
 
-                    var event = game.scripts.event("onPlayerHit", new NoteHitEvent(note, rating, true, true, true, score, accuracyGain));
+                    var event = game.scripts.event("onPlayerHit", new NoteHitEvent(note, rating, "Default", doSplash, true, true, score, accuracyGain));
 					game.eventOnNoteType(note.noteType, "onPlayerHit", event);
 
                     if(!event.cancelled) {

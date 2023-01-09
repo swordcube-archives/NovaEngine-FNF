@@ -11,6 +11,7 @@ class GameplayUtil {
         realNote.altAnim = altAnim;
         realNote.strumLine = strumLine;
         realNote.noteType = noteType;
+        realNote.splashSkin = PlayState.SONG.splashSkin;
         return realNote;
     }
 }

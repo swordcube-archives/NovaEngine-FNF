@@ -7,12 +7,14 @@ class Judgement {
     public var msTiming:Float = 0;
     public var score:Int = 0;
     public var accuracyGain:Float = 0;
+    public var doSplash:Bool = true;
 
-    public function new(name:String, msTiming:Float, score:Int, accuracyGain:Float) {
+    public function new(name:String, msTiming:Float, score:Int, accuracyGain:Float, doSplash:Bool) {
         this.name = name;
         this.msTiming = msTiming;
         this.score = score;
         this.accuracyGain = accuracyGain;
+        this.doSplash = doSplash;
     }
 }
 
@@ -28,10 +30,10 @@ class Rank {
 
 class Ranking {
     public static final judgements:Array<Judgement> = [
-        new Judgement("sick", 0, 350, 1),
-        new Judgement("good", 45, 200, 0.7),
-        new Judgement("bad",  85, 100, 0.3),
-        new Judgement("shit", 100, 50,  0),
+        new Judgement("sick", 0, 350, 1, true),
+        new Judgement("good", 45, 200, 0.7, false),
+        new Judgement("bad",  85, 100, 0.3, false),
+        new Judgement("shit", 100, 50,  0, false),
     ];
 
     public static final ranks:Array<Rank> = [
@@ -48,7 +50,7 @@ class Ranking {
 
     public static function judgeTime(strumTime:Float) {
         for(judgement in judgements) {
-            if(strumTime <= Conductor.position + judgement.msTiming)
+            if(Math.abs(strumTime) <= Conductor.position + judgement.msTiming)
                 return judgement;
         }
         return judgements.last();

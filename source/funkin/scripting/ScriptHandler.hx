@@ -6,7 +6,7 @@ import flixel.FlxBasic;
 import hscript.Parser;
 
 /**
- * Handles the Backend and Script interfaces of the engine, as well as exceptions and crashes.
+ * Handles the scripting features of the engine.
  */
 class ScriptHandler {
 	/**

@@ -50,6 +50,9 @@ class MusicBeatState extends FlxUIState implements IBeatReceiver {
     public function new(?scriptName:Null<String>) {
         super();
 
+        persistentUpdate = false;
+        persistentDraw = true;
+
         this.scriptName = scriptName;
         loadScript();
     }
