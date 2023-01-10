@@ -32,7 +32,7 @@ class PlayState extends MusicBeatState {
 	public static var isStoryMode:Bool = false;
 	public static var storyWeek:Int = 0;
 	public static var storyPlaylist:Array<String> = [];
-	public static var storyDifficulty:Int = 1;
+	public static var curDifficulty:String = "normal";
 
 	private var vocals:FlxSound;
 
@@ -83,7 +83,6 @@ class PlayState extends MusicBeatState {
 
 	#if discord_rpc
 	// Discord RPC variables
-	var storyDifficultyText:String = "";
 	var iconRPC:String = "";
 	var songLength:Float = 0;
 	var detailsText:String = "";
@@ -112,15 +111,6 @@ class PlayState extends MusicBeatState {
 
 		#if discord_rpc
 		// Making difficulty text for Discord Rich Presence.
-		switch (storyDifficulty) {
-			case 0:
-				storyDifficultyText = "Easy";
-			case 1:
-				storyDifficultyText = "Normal";
-			case 2:
-				storyDifficultyText = "Hard";
-		}
-
 		iconRPC = SONG.player2;
 
 		// To avoid having duplicate images in Discord assets
@@ -144,7 +134,7 @@ class PlayState extends MusicBeatState {
 		detailsPausedText = "Paused - " + detailsText;
 
 		// Updating Discord Rich Presence.
-		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+		DiscordClient.changePresence(detailsText, SONG.song + " (" + curDifficulty + ")", iconRPC);
 		#end
 
 		Conductor.songPosition = Conductor.crochet * -5;
@@ -317,7 +307,7 @@ class PlayState extends MusicBeatState {
 		songLength = FlxG.sound.music.length;
 
 		// Updating Discord Rich Presence (with Time Left)
-		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, songLength);
+		DiscordClient.changePresence(detailsText, SONG.song + " (" + curDifficulty.toUpperCase() + ")", iconRPC, true, songLength);
 		#end
 	}
 
@@ -406,7 +396,6 @@ class PlayState extends MusicBeatState {
 					babyArrow.animation.addByPrefix('purple', 'arrowLEFT');
 					babyArrow.animation.addByPrefix('red', 'arrowRIGHT');
 
-					babyArrow.antialiasing = true;
 					babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
 
 					switch (Math.abs(i)) {
@@ -481,9 +470,9 @@ class PlayState extends MusicBeatState {
 
 			#if discord_rpc
 			if (startTimer.finished) {
-				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, songLength - Conductor.songPosition);
+				DiscordClient.changePresence(detailsText, SONG.song + " (" + curDifficulty + ")", iconRPC, true, songLength - Conductor.songPosition);
 			} else {
-				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+				DiscordClient.changePresence(detailsText, SONG.song + " (" + curDifficulty + ")", iconRPC);
 			}
 			#end
 		}
@@ -495,9 +484,9 @@ class PlayState extends MusicBeatState {
 		#if discord_rpc
 		if (health > 0 && !paused) {
 			if (Conductor.songPosition > 0.0) {
-				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, songLength - Conductor.songPosition);
+				DiscordClient.changePresence(detailsText, SONG.song + " (" + curDifficulty + ")", iconRPC, true, songLength - Conductor.songPosition);
 			} else {
-				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+				DiscordClient.changePresence(detailsText, SONG.song + " (" + curDifficulty + ")", iconRPC);
 			}
 		}
 		#end
@@ -508,7 +497,7 @@ class PlayState extends MusicBeatState {
 	override public function onFocusLost():Void {
 		#if discord_rpc
 		if (health > 0 && !paused) {
-			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + curDifficulty + ")", iconRPC);
 		}
 		#end
 
@@ -541,7 +530,7 @@ class PlayState extends MusicBeatState {
 			openSubState(new PauseSubState());
 
 			#if discord_rpc
-			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + curDifficulty + ")", iconRPC);
 			#end
 		}
 
@@ -670,7 +659,7 @@ class PlayState extends MusicBeatState {
 		FlxG.sound.music.volume = 0;
 		vocals.volume = 0;
 		if (SONG.validScore) {
-			Highscore.saveScore(SONG.song, songScore, storyDifficulty);
+			Highscore.saveScore(SONG.song, songScore, curDifficulty);
 		}
 
 		if (isStoryMode) {
@@ -686,23 +675,10 @@ class PlayState extends MusicBeatState {
 
 				FlxG.switchState(new StoryMenuState());
 
-				StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
-
 				if (SONG.validScore) {
-					Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
+					Highscore.saveWeekScore(storyWeek, campaignScore, curDifficulty);
 				}
-
-				FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
-				FlxG.save.flush();
 			} else {
-				var difficulty:String = "";
-
-				if (storyDifficulty == 0)
-					difficulty = '-easy';
-
-				if (storyDifficulty == 2)
-					difficulty = '-hard';
-
 				if (SONG.song.toLowerCase() == 'eggnog') {
 					var blackShit:FlxSprite = new FlxSprite(-FlxG.width * FlxG.camera.zoom,
 						-FlxG.height * FlxG.camera.zoom).makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
@@ -717,7 +693,7 @@ class PlayState extends MusicBeatState {
 				FlxTransitionableState.skipNextTransOut = true;
 				prevCamFollow = camFollow;
 
-				PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0]);
+				PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + '-' + curDifficulty, PlayState.storyPlaylist[0]);
 				FlxG.sound.music.stop();
 
 				FlxG.switchState(new PlayState());
@@ -779,9 +755,7 @@ class PlayState extends MusicBeatState {
 		add(rating);
 
 		rating.setGraphicSize(Std.int(rating.width * 0.7));
-		rating.antialiasing = true;
 		comboSpr.setGraphicSize(Std.int(comboSpr.width * 0.7));
-		comboSpr.antialiasing = true;
 
 		comboSpr.updateHitbox();
 		rating.updateHitbox();
@@ -799,12 +773,11 @@ class PlayState extends MusicBeatState {
 			numScore.x = coolText.x + (43 * daLoop) - 90;
 			numScore.y += 80;
 
-			if (!curStage.startsWith('school')) {
-				numScore.antialiasing = true;
+			if (!curStage.startsWith('school'))
 				numScore.setGraphicSize(Std.int(numScore.width * 0.5));
-			} else {
+			else
 				numScore.setGraphicSize(Std.int(numScore.width * daPixelZoom));
-			}
+			
 			numScore.updateHitbox();
 
 			numScore.acceleration.y = FlxG.random.int(200, 300);

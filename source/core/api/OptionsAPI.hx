@@ -1,4 +1,4 @@
-package;
+package core.api;
 
 class OptionsAPI {
 	

@@ -18,6 +18,17 @@
 	<!--Desktop-specific-->
 	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" vsync="false"/>
 
+	<!-- _____________________________ Custom Defines ___________________________ -->
+
+	<!-- Allows the "mods" folder to be used. -->
+	<define name="MOD_SUPPORT" unless="web"/>
+
+	<!-- Allows video cutscenes to work. -->
+	<define name="VIDEO_CUTSCENES" unless="web || hl"/>
+
+	<!-- Allows Discord RPC to be used. -->
+	<define name="DISCORD_RPC" unless="web || hl || neko"/>
+
 	<!-- _____________________________ Path Settings ____________________________ -->
 
 	<set name="BUILD_DIR" value="export/debug" if="debug" />
@@ -25,8 +36,6 @@
 	<set name="BUILD_DIR" value="export/32bit" if="32bit" />
 
 	<classpath name="source" />
-
-	<assets path="assets"/>
 	
 	<!-- <define name="PRELOAD_ALL" /> -->
 	<define name="PRELOAD_ALL" unless="web" />
@@ -34,22 +43,25 @@
 	
 	<section if="PRELOAD_ALL">
 		<library name="songs"    preload="true" />
+		<library name="videos"   preload="true" />
 	</section>
 	
 	<section if="NO_PRELOAD_ALL">
 		<library name="songs"    preload="false" />
+		<library name="videos"   preload="false" />
 	</section>
 	
+	<assets path="assets"/>
 	<assets path="assets/songs"  library="songs"/>
+	<assets path="assets/videos" library="videos"/>
 	
-	<assets path='example_mods' rename='mods' embed='false'/>
-	<assets path="assets/fonts"/>
+	<assets path="mods"/>
 	<!-- _______________________________ Libraries ______________________________ -->
 
 	<haxelib name="flixel-leather" />
 	<haxelib name="hscript-improved" />
 	<haxelib name="polymod"/>
-	<haxelib name="discord_rpc" unless="web || hl || neko"/>
+	<haxelib name="discord_rpc" if="DISCORD_RPC"/>
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
 

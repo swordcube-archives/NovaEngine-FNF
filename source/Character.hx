@@ -1,7 +1,6 @@
 package;
 
 import flixel.FlxSprite;
-import flixel.graphics.frames.FlxAtlasFrames;
 
 using StringTools;
 
@@ -18,8 +17,6 @@ class Character extends FlxSprite {
 
 		curCharacter = character;
 		this.isPlayer = isPlayer;
-
-		antialiasing = true;
 
 		dance();
 	}
