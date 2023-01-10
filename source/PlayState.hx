@@ -82,7 +82,6 @@ class PlayState extends MusicBeatState {
 	private var healthBarBG:FlxSprite;
 	private var healthBar:FlxBar;
 
-	private var generatedMusic:Bool = false;
 	private var startingSong:Bool = false;
 
 	private var iconP1:HealthIcon;
@@ -409,8 +408,6 @@ class PlayState extends MusicBeatState {
 		}
 
 		unspawnNotes.sort(sortByShit);
-
-		generatedMusic = true;
 	}
 
 	function sortByShit(Obj1:Note, Obj2:Note):Int {
@@ -646,66 +643,64 @@ class PlayState extends MusicBeatState {
 			}
 		}
 
-		if (generatedMusic) {
-			notes.forEachAlive(function(daNote:Note) {
-				if (daNote.y > FlxG.height) {
-					daNote.active = false;
-					daNote.visible = false;
-				} else {
-					daNote.visible = true;
-					daNote.active = true;
+		notes.forEachAlive(function(daNote:Note) {
+			if (daNote.y > FlxG.height) {
+				daNote.active = false;
+				daNote.visible = false;
+			} else {
+				daNote.visible = true;
+				daNote.active = true;
+			}
+
+			daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
+
+			// i am so fucking sorry for this if condition
+			if (daNote.isSustainNote
+				&& daNote.y + daNote.offset.y <= strumLine.y + Note.swagWidth / 2
+				&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit)))) {
+				var swagRect = new FlxRect(0, strumLine.y + Note.swagWidth / 2 - daNote.y, daNote.width * 2, daNote.height * 2);
+				swagRect.y /= daNote.scale.y;
+				swagRect.height -= swagRect.y;
+
+				daNote.clipRect = swagRect;
+			}
+
+			if (!daNote.mustPress && daNote.wasGoodHit) {
+				if (SONG.song != 'Tutorial')
+					camZooming = true;
+
+				var altAnim:String = "";
+
+				if (SONG.notes[Math.floor(curStep / 16)] != null) {
+					if (SONG.notes[Math.floor(curStep / 16)].altAnim)
+						altAnim = '-alt';
 				}
 
-				daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
+				if (SONG.needsVoices)
+					vocals.volume = 1;
 
-				// i am so fucking sorry for this if condition
-				if (daNote.isSustainNote
-					&& daNote.y + daNote.offset.y <= strumLine.y + Note.swagWidth / 2
-					&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit)))) {
-					var swagRect = new FlxRect(0, strumLine.y + Note.swagWidth / 2 - daNote.y, daNote.width * 2, daNote.height * 2);
-					swagRect.y /= daNote.scale.y;
-					swagRect.height -= swagRect.y;
+				daNote.kill();
+				notes.remove(daNote, true);
+				daNote.destroy();
+			}
 
-					daNote.clipRect = swagRect;
+			// WIP interpolation shit? Need to fix the pause issue
+			// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
+
+			if (daNote.y < -daNote.height) {
+				if (daNote.tooLate || !daNote.wasGoodHit) {
+					health -= 0.0475;
+					vocals.volume = 0;
 				}
 
-				if (!daNote.mustPress && daNote.wasGoodHit) {
-					if (SONG.song != 'Tutorial')
-						camZooming = true;
+				daNote.active = false;
+				daNote.visible = false;
 
-					var altAnim:String = "";
-
-					if (SONG.notes[Math.floor(curStep / 16)] != null) {
-						if (SONG.notes[Math.floor(curStep / 16)].altAnim)
-							altAnim = '-alt';
-					}
-
-					if (SONG.needsVoices)
-						vocals.volume = 1;
-
-					daNote.kill();
-					notes.remove(daNote, true);
-					daNote.destroy();
-				}
-
-				// WIP interpolation shit? Need to fix the pause issue
-				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
-
-				if (daNote.y < -daNote.height) {
-					if (daNote.tooLate || !daNote.wasGoodHit) {
-						health -= 0.0475;
-						vocals.volume = 0;
-					}
-
-					daNote.active = false;
-					daNote.visible = false;
-
-					daNote.kill();
-					notes.remove(daNote, true);
-					daNote.destroy();
-				}
-			});
-		}
+				daNote.kill();
+				notes.remove(daNote, true);
+				daNote.destroy();
+			}
+		});
 
 		if (!inCutscene)
 			keyShit();
@@ -911,7 +906,7 @@ class PlayState extends MusicBeatState {
 
 		var controlArray:Array<Bool> = [leftP, downP, upP, rightP];
 
-		if ((upP || rightP || downP || leftP) && generatedMusic) {
+		if (upP || rightP || downP || leftP) {
 			var possibleNotes:Array<Note> = [];
 
 			var ignoreList:Array<Int> = [];
@@ -991,7 +986,7 @@ class PlayState extends MusicBeatState {
 			}
 		}
 
-		if ((up || right || down || left) && generatedMusic) {
+		if (up || right || down || left) {
 			notes.forEachAlive(function(daNote:Note) {
 				if (daNote.canBeHit && daNote.mustPress && daNote.isSustainNote) {
 					switch (daNote.noteData) {
@@ -1122,15 +1117,8 @@ class PlayState extends MusicBeatState {
 	override function beatHit(beat:Int) {
 		super.beatHit(beat);
 
-		if (generatedMusic) {
-			notes.sort(FlxSort.byY, FlxSort.DESCENDING);
-		}
-
-		if (SONG.notes[Math.floor(curStep / 16)] != null) {
-			if (SONG.notes[Math.floor(curStep / 16)].changeBPM) {
-				Conductor.changeBPM(SONG.notes[Math.floor(curStep / 16)].bpm);
-				FlxG.log.add('CHANGED BPM!');
-			}
+		if (SONG.notes[Math.floor(curStep / 16)] != null && SONG.notes[Math.floor(curStep / 16)].changeBPM) {
+			Conductor.changeBPM(SONG.notes[Math.floor(curStep / 16)].bpm);
 		}
 
 		// HARDCODING FOR MILF ZOOMS!
