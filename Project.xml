@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project xmlns="http://lime.software/project/1.0.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://lime.software/project/1.0.2 http://lime.software/xsd/project-1.0.2.xsd">
-
+<project>
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="Funkin' Forever" file="FunkinForever" main="Main" version="0.1.0" company="swordcube" />
+	<app title="Funkin'" file="FunkinForever" packageName="com.ninjamuffin99.funkin" package="com.ninjamuffin99.funkin" main="Main" version="0.2.7.1" company="ninjamuffin99" />
 
-	<!--The flixel preloader is not accurate in Chrome. You can use it regularly if you embed the swf into a html file
-		or you can set the actual size of your file manually at "FlxPreloaderBase-onUpdate-bytesTotal"-->
 	<app preloader="flixel.system.FlxPreloader" />
-
-	<!--Minimum without FLX_NO_GAMEPAD: 11.8, without FLX_NO_NATIVE_CURSOR: 11.2-->
 	<set name="SWF_VERSION" value="11.8" />
 
 	<!-- ____________________________ Window Settings ___________________________ -->
@@ -22,65 +16,42 @@
 	<window if="html5" resizable="true" />
 
 	<!--Desktop-specific-->
-	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" />
+	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" vsync="false"/>
 
 	<!-- _____________________________ Path Settings ____________________________ -->
 
 	<set name="BUILD_DIR" value="export/debug" if="debug" />
 	<set name="BUILD_DIR" value="export/release" unless="debug" />
+	<set name="BUILD_DIR" value="export/32bit" if="32bit" />
 
-	<source path="source" />
+	<classpath name="source" />
 
+	<assets path="assets"/>
+	
+	<!-- <define name="PRELOAD_ALL" /> -->
 	<define name="PRELOAD_ALL" unless="web" />
 	<define name="NO_PRELOAD_ALL" unless="PRELOAD_ALL"/>
 	
 	<section if="PRELOAD_ALL">
-		<library name="songs" preload="true" />
-		<library name="videos" preload="true" />
+		<library name="songs"    preload="true" />
 	</section>
 	
 	<section if="NO_PRELOAD_ALL">
-		<library name="songs" preload="false" />
-		<library name="videos" preload="false" />
+		<library name="songs"    preload="false" />
 	</section>
-
-	<assets path="assets" />
-	<assets path="assets/songs" library="songs" />
-	<assets path="assets/videos" library="videos" />
-
-	<assets path="mods" />
-
-	<!-- _____________________________ Custom Defines ___________________________ -->
-
-	<!-- Allows the "mods" folder to be used. -->
-	<define name="MOD_SUPPORT" unless="web"/>
-
-	<!-- Allows video cutscenes to work. -->
-	<define name="VIDEO_CUTSCENES" unless="web || hl"/>
-
-	<!-- Allows Discord RPC to be used. -->
-	<define name="DISCORD_RPC" unless="web || hl || neko"/>
-
+	
+	<assets path="assets/songs"  library="songs"/>
+	
+	<assets path='example_mods' rename='mods' embed='false'/>
+	<assets path="assets/fonts"/>
 	<!-- _______________________________ Libraries ______________________________ -->
 
-	<!-- Any libraries shown with links should be installed via "haxelib git libraryName libraryLink" -->
-	<!-- If they show no links, install them via "haxelib install libraryName" -->
-
-	<haxelib name="flixel-leather" /> <!-- https://github.com/Leather128/flixel -->
-	<haxelib name="polymod"/> <!-- https://github.com/swordcube/scriptless-polymod -->
-	<haxelib name="hscript-improved" /> <!-- https://github.com/YoshiCrafter29/hscript-improved -->
-	<haxelib name="discord_rpc" if="DISCORD_RPC"/> <!-- https://github.com/Aidan63/linc_discord-rpc -->
-	<haxelib name="hxCodec" if="VIDEO_CUTSCENES"/>
-	
-	<haxelib name="tjson" />
-	<haxelib name="hxcpp-debug-server" />
+	<haxelib name="flixel-leather" />
+	<haxelib name="hscript-improved" />
+	<haxelib name="polymod"/>
+	<haxelib name="discord_rpc" unless="web || hl || neko"/>
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
-
-	<!--Optimise inputs, be careful you will get null errors if you don't use conditionals in your game-->
-	<haxedef name="FLX_NO_MOUSE" if="mobile" />
-	<haxedef name="FLX_NO_KEYBOARD" if="mobile" />
-	<haxedef name="FLX_NO_TOUCH" if="desktop" />
 
 	<!--Disable the Flixel core focus lost screen-->
 	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN" />
@@ -88,27 +59,14 @@
 	<!--Disable the Flixel core debugger. Automatically gets set whenever you compile in release mode!-->
 	<haxedef name="FLX_NO_DEBUG" unless="debug" />
 
-	<!--Enable this for Nape release builds for a serious peformance improvement-->
-	<haxedef name="NAPE_RELEASE_BUILD" unless="debug" />
-
-	<!-- Makes HScript Error Handling better -->
-	<haxedef name="hscriptPos" />
-	<haxedef name="HXCPP_CHECK_POINTER" if="release" />
-	<haxedef name="HXCPP_STACK_LINE" if="release" />
-	<haxedef name="HXCPP_DEBUG_LINK" if="release" />
-	<haxedef name="HXCPP_GC_BIG_BLOCKS" />
-	<haxeflag name="-dce no" />
-
-	<haxeflag name="--macro" value="include('funkin')" />
-	<haxeflag name="--macro" value="include('flixel')" />
-	<haxeflag name="--macro" value="include('sys')" unless="web || hl" />
-	<haxeflag name="--macro" value="include('DateTools')" />
-	<haxeflag name="--macro" value="include('EReg')" />
-	<haxeflag name="--macro" value="include('Lambda')" />
-	<haxeflag name="--macro" value="include('StringBuf')" />
-	<haxeflag name="--macro" value="include('haxe.crypto')" />
-
 	<!-- _________________________________ Custom _______________________________ -->
 
-	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
+	<icon path="art/icon16.png" size='16'/>
+	<icon path="art/icon32.png" size='32'/>
+	<icon path="art/icon64.png" size='64'/>
+	<icon path="art/iconOG.png" />
+
+	<!-- <haxedef name="SKIP_TO_PLAYSTATE" if="debug" /> -->
+	<haxedef name="NG_LOGIN" if="newgrounds" />
+	
 </project>
