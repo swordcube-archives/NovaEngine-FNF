@@ -8,6 +8,7 @@ class NoteSplash extends FNFSprite {
     public function setup(x:Float, y:Float, skinName:String, keyAmount:Int, noteData:Int) {
         setPosition(x, y);
         var data = Note.splashSkins[skinName];
+        if(data == null) data = Note.splashSkins["Default"];
 
         var path:String = 'game/splashes/${data.texture.name}';
         frames = data.texture.type == PACKER ? Paths.getPackerAtlas(path) : Paths.getSparrowAtlas(path);
