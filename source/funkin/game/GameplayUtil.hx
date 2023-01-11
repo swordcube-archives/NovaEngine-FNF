@@ -1,5 +1,7 @@
 package funkin.game;
 
+import funkin.system.Conductor;
+
 /**
  * A class full of utilities for gameplay.
  */
@@ -12,6 +14,7 @@ class GameplayUtil {
         realNote.strumLine = strumLine;
         realNote.noteType = noteType;
         realNote.splashSkin = PlayState.SONG.splashSkin;
+        realNote.row = Conductor.secsToRow(strumTime);
         return realNote;
     }
 }

@@ -12,6 +12,13 @@ typedef BPMChangeEvent = {
 	var bpm:Float;
 }
 
+// totally not half stolen from vs impostor no i would never that's fucking impossiblre
+// https://github.com/Clowfoe/IMPOSTOR-UPDATE/blob/main/source/hx
+// https://github.com/Clowfoe/IMPOSTOR-UPDATE/blob/main/source/hx
+// https://github.com/Clowfoe/IMPOSTOR-UPDATE/blob/main/source/hx
+// https://github.com/Clowfoe/IMPOSTOR-UPDATE/blob/main/source/hx
+// credit to whoever the fuck coded this LoL!
+
 class Conductor {
 	public static var bpm(default, set):Float = 100;
 
@@ -39,19 +46,21 @@ class Conductor {
 	public static var stepCrochet:Float = crochet / 4.0;
 
 	public static var position:Float = 0;
-	
+
 	public static var songPosition(get, set):Float;
 	static function get_songPosition():Float {
-		return Conductor.position;
+		return position;
 	}
 	static function set_songPosition(v:Float):Float {
-		return Conductor.position = v;
+		return position = v;
 	}
 
 	public static var safeFrames:Int = 10;
 	public static var safeZoneOffset:Float = (safeFrames / 60) * 1000; // is calculated in create(), is safeFrames in milliseconds
-
-	public static var bpmChangeMap:Array<BPMChangeEvent> = [];
+	public static var ROWS_PER_BEAT = 48; // from Stepmania
+	public static var BEATS_PER_MEASURE = 4; // TODO: time sigs
+	public static var ROWS_PER_MEASURE = ROWS_PER_BEAT * BEATS_PER_MEASURE; // from Stepmania
+	public static var MAX_NOTE_ROW = 1 << 30; // from Stepmania
 
 	public static var onBeat:FlxTypedSignal<Int->Void> = new FlxTypedSignal<Int->Void>();
 	public static var onStep:FlxTypedSignal<Int->Void> = new FlxTypedSignal<Int->Void>();
@@ -85,46 +94,6 @@ class Conductor {
 	static var oldStep:Int = 0;
 	static var storedSteps:Array<Int> = [];
 	static var skippedSteps:Array<Int> = [];
-
-	public static function update() {
-		var lastChange:BPMChangeEvent = {
-			stepTime: 0,
-			songTime: 0,
-			bpm: 0
-		}
-		for (i in 0...Conductor.bpmChangeMap.length) {
-			if (Conductor.position >= Conductor.bpmChangeMap[i].songTime)
-				lastChange = Conductor.bpmChangeMap[i];
-		}
-
-		curStep = lastChange.stepTime + Math.floor((Conductor.position - lastChange.songTime) / Conductor.stepCrochet);
-		curDecStep = lastChange.stepTime + ((Conductor.position - lastChange.songTime) / Conductor.stepCrochet);
-
-		curBeat = Math.floor(curDecStep / 4.0);
-		curDecBeat = curDecStep / 4.0;
-
-		var trueStep:Int = curStep;
-		for (i in storedSteps)
-			if (i < oldStep)
-				storedSteps.remove(i);
-
-		for (i in oldStep...trueStep) {
-			if (!storedSteps.contains(i) && i > 0) {
-				curStep = i;
-				stepHit();
-				skippedSteps.push(i);
-			}
-		}
-		if (skippedSteps.length > 0)
-			skippedSteps = [];
-
-		curStep = trueStep;
-
-		if (oldStep != curStep && curStep > 0 && !storedSteps.contains(curStep))
-			stepHit();
-
-		oldStep = curStep;
-	}
 
 	static function getSectionSteps(song:Song, section:Int):Int {
 		var val:Null<Int> = null;
@@ -178,6 +147,104 @@ class Conductor {
 
 		if (curSection > lastSection)
 			onSection.dispatch(curSection);
+	}
+
+	public static function update() {
+		curStep = getStepRounded(position);
+		curDecStep = getStep(position);
+
+		curBeat = getBeatRounded(position);
+		curDecBeat = getBeat(position);
+
+		var trueStep:Int = curStep;
+		for (i in storedSteps)
+			if (i < oldStep)
+				storedSteps.remove(i);
+
+		for (i in oldStep...trueStep) {
+			if (!storedSteps.contains(i) && i > 0) {
+				curStep = i;
+				stepHit();
+				skippedSteps.push(i);
+			}
+		}
+		if (skippedSteps.length > 0)
+			skippedSteps = [];
+
+		curStep = trueStep;
+
+		if (oldStep != curStep && curStep > 0 && !storedSteps.contains(curStep))
+			stepHit();
+
+		oldStep = curStep;
+	}
+
+	public inline static function beatToRow(beat:Float):Int
+		return Math.round(beat * ROWS_PER_BEAT);
+
+	public inline static function rowToBeat(row:Int):Float
+		return row / ROWS_PER_BEAT;
+
+	public inline static function secsToRow(sex:Float):Int
+		return Math.round(getBeat(sex) * ROWS_PER_BEAT);
+
+	public static var bpmChangeMap:Array<BPMChangeEvent> = [];
+
+	public static function getBPMFromStep(step:Float) {
+		var lastChange:BPMChangeEvent = {
+			stepTime: 0,
+			songTime: 0,
+			bpm: bpm
+		}
+		for (i in 0...bpmChangeMap.length) {
+			if (bpmChangeMap[i].stepTime <= step)
+				lastChange = bpmChangeMap[i];
+		}
+
+		return lastChange;
+	}
+
+	public static function getBPMFromSeconds(time:Float) {
+		var lastChange:BPMChangeEvent = {
+			stepTime: 0,
+			songTime: 0,
+			bpm: bpm
+		}
+		for (i in 0...bpmChangeMap.length) {
+			if (time >= bpmChangeMap[i].songTime)
+				lastChange = bpmChangeMap[i];
+		}
+
+		return lastChange;
+	}
+
+	public static function stepToSeconds(step:Float) {
+		var lastChange = getBPMFromStep(step);
+		return step * (((60 / lastChange.bpm) * 1000) / 4);
+	}
+
+	public static function beatToSeconds(beat:Float) {
+		var step = beat * 4;
+		var lastChange = getBPMFromStep(step);
+		return lastChange.songTime + ((step - lastChange.stepTime) / (lastChange.bpm / 60) / 4) * 1000;
+	}
+
+	public static function getStep(time:Float) {
+		var lastChange = getBPMFromSeconds(time);
+		return lastChange.stepTime + (time - lastChange.songTime) / (((60 / lastChange.bpm) * 1000) / 4);
+	}
+
+	public static function getStepRounded(time:Float) {
+		var lastChange = getBPMFromSeconds(time);
+		return Math.floor(lastChange.stepTime + (time - lastChange.songTime) / (((60 / lastChange.bpm) * 1000) / 4));
+	}
+
+	public static function getBeat(time:Float) {
+		return getStep(time) / 4;
+	}
+
+	public static function getBeatRounded(time:Float) {
+		return Math.floor(getStepRounded(time) / 4);
 	}
 
 	public static function mapBPMChanges(song:Song) {

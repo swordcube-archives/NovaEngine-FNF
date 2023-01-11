@@ -176,7 +176,7 @@ class Character extends FNFSprite implements IBeatReceiver {
 	 * @param name The character to check.
 	 */
 	public static function charExists(name:String, ?mod:Null<String>) {
-		return FileSystem.exists(Paths.getAsset('data/characters/$name'));
+		return Paths.exists(Paths.getAsset('data/characters/$name'));
 	}
 
 	/**
@@ -229,7 +229,7 @@ class Character extends FNFSprite implements IBeatReceiver {
 	public function loadPsych(?mod:Null<String>) {
 		// Error handling
 		var jsonPath:String = Paths.json('data/characters/$curCharacter/config');
-		if (!FileSystem.exists(jsonPath))
+		if (!Paths.exists(jsonPath))
 			return Console.error('Occured on character: $curCharacter | The JSON config file doesn\'t exist!');
 
 		// JSON Data
@@ -238,7 +238,7 @@ class Character extends FNFSprite implements IBeatReceiver {
 		// Loading frames
 		var spritesheetPath:String = 'characters/${data.image}';
 		var xmlPath:String = Paths.xml("images/"+spritesheetPath);
-		if (FileSystem.exists(xmlPath))
+		if (Paths.exists(xmlPath))
 			load(SPARROW, Paths.getSparrowAtlas(spritesheetPath));
 		else
 			load(PACKER, Paths.getSparrowAtlas(spritesheetPath));
@@ -284,7 +284,7 @@ class Character extends FNFSprite implements IBeatReceiver {
 	public function loadYoshi(?mod:Null<String>) {
 		// Error handling
 		var jsonPath:String = Paths.json('data/characters/$curCharacter/config');
-		if (!FileSystem.exists(jsonPath))
+		if (!Paths.exists(jsonPath))
 			return Console.error('Occured on character: $curCharacter | The JSON config file doesn\'t exist!');
 
 		// JSON Data
@@ -293,7 +293,7 @@ class Character extends FNFSprite implements IBeatReceiver {
 		// Loading frames
 		var spritesheetPath:String = 'characters/$curCharacter';
 		var xmlPath:String = Paths.xml("images/"+spritesheetPath);
-		if (FileSystem.exists(xmlPath))
+		if (Paths.exists(xmlPath))
 			load(SPARROW, Paths.getSparrowAtlas(spritesheetPath));
 		else
 			load(PACKER, Paths.getSparrowAtlas(spritesheetPath));

@@ -10,7 +10,7 @@ using StringTools;
 typedef NoteSkin = {
     var scale:Float;
     var isPixel:Bool;
-    var noteTextures:SpritesheetData;
+    var texture:SpritesheetData;
     var animations:Array<NoteAnim>;
 }
 
@@ -70,6 +70,7 @@ class Note extends FNFSprite {
     public static var splashSkins:Map<String, SplashSkin> = [];
 
     public static function reloadSkins() {
+        #if sys
         noteSkins = [];
         for(item in Paths.getFolderContents("data/noteskins")) {
             var path = Paths.getAsset('data/noteskins/$item');
@@ -117,7 +118,7 @@ class Note extends FNFSprite {
                 noteSkins[skinName] = {
                     scale: scale,
                     isPixel: isPixel,
-                    noteTextures: noteTextures,
+                    texture: noteTextures,
                     animations: animArray
                 };
                 Console.debug('Loaded note skin: $skinName successfully');
@@ -125,9 +126,72 @@ class Note extends FNFSprite {
                 Console.error('Failed to load a note skin: $skinName - ${e.details()}');
             }
         }
+        #else
+        // dumbass html5 hardcoding but i don't know how to read
+        // directories in html5
+        noteSkins = [
+            "Default" => {
+                scale: 0.7,
+                isPixel: false,
+                texture: {name: "NOTE_assets", type: SPARROW},
+                animations: [
+                    {
+                        name: "static",
+                        spritesheetName: "${DIRECTION} static",
+                        indices: [],
+                        offsets: FlxPoint.get(0, 0),
+                        fps: 24,
+                        loop: false
+                    },
+                    {
+                        name: "pressed",
+                        spritesheetName: "${DIRECTION} pressed",
+                        indices: [],
+                        offsets: FlxPoint.get(0, 0),
+                        fps: 24,
+                        loop: false
+                    },
+                    {
+                        name: "confirm",
+                        spritesheetName: "${DIRECTION} confirm",
+                        indices: [],
+                        offsets: FlxPoint.get(0, 0),
+                        fps: 24,
+                        loop: false
+                    },
+
+                    {
+                        name: "note",
+                        spritesheetName: "${DIRECTION}",
+                        indices: [],
+                        offsets: FlxPoint.get(0, 0),
+                        fps: 24,
+                        loop: false
+                    },
+                    {
+                        name: "sustain",
+                        spritesheetName: "${DIRECTION} hold piece",
+                        indices: [],
+                        offsets: FlxPoint.get(0, 0),
+                        fps: 24,
+                        loop: false
+                    },
+                    {
+                        name: "sustainEnd",
+                        spritesheetName: "${DIRECTION} hold end",
+                        indices: [],
+                        offsets: FlxPoint.get(0, 0),
+                        fps: 24,
+                        loop: false
+                    }
+                ]
+            }
+        ];
+        #end
     }
 
     public static function reloadSplashSkins() {
+        #if sys
         splashSkins = [];
         for(item in Paths.getFolderContents("data/splashes")) {
             var path = Paths.getAsset('data/splashes/$item');
@@ -182,6 +246,33 @@ class Note extends FNFSprite {
                 Console.error('Failed to load a note splash skin: $skinName - ${e.details()}');
             }
         }
+        #else
+        // dumbass html5 hardcoding but i don't know how to read
+        // directories in html5
+        splashSkins = [
+            "Default" => {
+                scale: 0.7,
+                alpha: 0.6,
+                texture: {name: "NOTE_splashes", type: SPARROW},
+                animations: [
+                    {
+                        name: "splash1",
+                        spritesheetName: "splash ${DIRECTION} 1",
+                        indices: [],
+                        offsets: FlxPoint.get(-80, -80),
+                        fps: 24
+                    },
+                    {
+                        name: "splash2",
+                        spritesheetName: "splash ${DIRECTION} 2",
+                        indices: [],
+                        offsets: FlxPoint.get(-80, -80),
+                        fps: 24
+                    }
+                ]
+            }
+        ];
+        #end
     }
 
     public static function getSingAnim(keyAmount:Int = 4, noteData:Int = 0) {
@@ -263,6 +354,8 @@ class Note extends FNFSprite {
     public var scrollSpeed:Null<Float>;
     public var stepCrochet:Float = 0;
 
+    public var row:Int = 0;
+
     /**
      * The skin this note has loaded.
      */
@@ -273,8 +366,8 @@ class Note extends FNFSprite {
         var data:NoteSkin = Note.noteSkins[skin];
         if(data == null) data = Note.noteSkins["Default"];
 
-        var funnyPath:String = 'game/notes/${data.noteTextures.name}';
-        frames = data.noteTextures.type == PACKER ? Paths.getPackerAtlas(funnyPath) : Paths.getSparrowAtlas(funnyPath);
+        var funnyPath:String = 'game/notes/${data.texture.name}';
+        frames = data.texture.type == PACKER ? Paths.getPackerAtlas(funnyPath) : Paths.getSparrowAtlas(funnyPath);
         for(anim in data.animations) {
             var directionShit:Array<String> = [
                 "$DIRECTION",

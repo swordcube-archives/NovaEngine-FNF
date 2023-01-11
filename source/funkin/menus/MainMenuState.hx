@@ -60,7 +60,7 @@ class MainMenuState extends MusicBeatState {
 
         // VVV -- ADD MENU ITEMS HERE!! --
 		menuItems.createItem(null, null, "story mode", function() {
-			startExitState(new MusicBeatState());
+			startExitState(new StoryMenuState());
 		});
 		menuItems.createItem(null, null, "freeplay", function() {
 			startExitState(new FreeplayState());
@@ -112,6 +112,12 @@ class MainMenuState extends MusicBeatState {
 
 		if (controls.BACK && menuItems.enabled && !menuItems.busy)
 			FlxG.switchState(new TitleState());
+
+		if (FlxG.keys.justPressed.TAB) {
+			persistentUpdate = false;
+			persistentDraw = true;
+			openSubState(new ModSwitcher());
+		}
 	}
 }
 

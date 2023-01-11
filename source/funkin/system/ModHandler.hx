@@ -11,4 +11,13 @@ class ModHandler {
         }
         #end
     }
+
+    public static function switchMod(mod:String) {
+        Paths.currentMod = FlxG.save.data.currentMod = mod;
+        #if MOD_SUPPORT
+        Polymod.unloadAllMods();
+        Polymod.loadMods([Paths.currentMod]);
+        #end
+        FlxG.save.flush();
+    }
 }

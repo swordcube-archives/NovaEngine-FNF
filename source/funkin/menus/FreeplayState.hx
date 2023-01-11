@@ -110,11 +110,17 @@ class FreeplayState extends MusicBeatState {
         if(controls.UI_UP_P) changeSelection(-1);
         if(controls.UI_DOWN_P) changeSelection(1);
 
+        if (FlxG.keys.justPressed.TAB) {
+			persistentUpdate = false;
+			persistentDraw = true;
+			openSubState(new ModSwitcher());
+		}
+
         if(controls.BACK) FlxG.switchState(new MainMenuState());
     }
 
     function changeSelection(?change:Int = 0) {
-        curSelected = Std.int(FlxMath.wrap(curSelected + change, 0, grpSongs.length - 1));
+        curSelected = FlxMath.wrap(curSelected + change, 0, grpSongs.length - 1);
         for(i => member in grpSongs.members) {
             member.targetY = i - curSelected;
             member.alpha = curSelected == i ? 1 : 0.6;

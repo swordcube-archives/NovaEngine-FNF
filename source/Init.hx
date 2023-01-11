@@ -31,6 +31,8 @@ class Init extends FlxState {
         AudioSwitchFix.init();
 		WindowsAPI.setDarkMode(true);
 
+        FlxG.keys.preventDefaultKeys = [TAB];
+
         FlxG.fixedTimestep = false;
         FlxG.signals.preStateCreate.add(function(state:FlxState) {
             Conductor.reset();
@@ -43,12 +45,10 @@ class Init extends FlxState {
             Assets.cache.clear();
             LimeAssets.cache.clear();
             Polymod.clearCache();
+
             #if MOD_SUPPORT
-            Console.info("UNLOADING ALL MODS!");
             Polymod.unloadAllMods();
-            Console.info("LOADING ALL ACTIVE MODS!");
-            Polymod.loadMods([#if MOD_SUPPORT Paths.currentMod #end]);
-            Console.info("LOADED ALL ACTIVE MODS SUCCESSFULLY!");
+            Polymod.loadMods([Paths.currentMod]);
             #end
 
             Note.reloadSkins();

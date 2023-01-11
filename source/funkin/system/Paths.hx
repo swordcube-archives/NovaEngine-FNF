@@ -5,7 +5,8 @@ import flixel.graphics.frames.FlxAtlasFrames;
 using StringTools;
 
 class Paths {
-    public static var currentMod:String = "Friday Night Funkin'";
+    public static var fallbackMod:String = "Friday Night Funkin'";
+    public static var currentMod:String = fallbackMod;
     
     public static var scriptExtensions:Array<String> = [
         "hx",
@@ -19,26 +20,44 @@ class Paths {
         return Assets.exists(path);
     }
 
-    public static function getFolderContents(path:String, ?returnPaths:Bool = false, ?removeDirectories:Bool = false):Array<String> {
-        var fs = Polymod.getFileSystem();
-        if(!fs.exists(Paths.getAsset(path))) return [];
-        
+    public static function getFolderContents(path:String, ?returnPaths:Bool = false, ?removeDirectories:Bool = false):Array<String> {        
         var itemList:Array<String> = [];
 
-        for(item in fs.readDirectory(Paths.getAsset(path))) {
-            var fullPath:String = Paths.getAsset('$path/$item');
+        #if sys
+        if(FileSystem.exists('${Paths.getAsset(path)}') && FileSystem.isDirectory('${Paths.getAsset(path)}')) {
+            for(item in FileSystem.readDirectory('${Paths.getAsset(path)}')) {
+                var fullPath:String = '${Paths.getAsset('$path/$item')}';
 
-            if(!(removeDirectories && fs.isDirectory(fullPath)))
-                itemList.push(returnPaths ? fullPath : item);
+                var toPush:String = returnPaths ? fullPath : item;
+                if(!(removeDirectories && FileSystem.isDirectory(fullPath)) && !itemList.contains(toPush))
+                    itemList.push(toPush);
+            }
         }
+
+        @:privateAccess
+        for (modDirectory in Polymod.prevParams.dirs) {
+            var modPath:String = 'mods/$modDirectory/$path';
+            if(!(FileSystem.exists(modPath) && FileSystem.isDirectory(modPath))) continue;
+
+            for(item in FileSystem.readDirectory(modPath)) {
+                var fullPath:String = '$modPath/$item';
+
+                var toPush:String = returnPaths ? fullPath : item;
+                if(!(removeDirectories && FileSystem.isDirectory(fullPath)) && !itemList.contains(toPush))
+                    itemList.push(toPush);
+            }
+        }
+        #end
 
         return itemList;
     }
 
     public static function isDirectory(path:String):Bool {
-        var fs = Polymod.getFileSystem();
-        if(!fs.exists(path)) return false;
-        return fs.isDirectory(path);
+        #if sys
+        return FileSystem.isDirectory(path);
+        #else
+        return false;
+        #end
     }
 
     public static function getAsset(path:String, ?library:Null<String>) {
@@ -111,7 +130,11 @@ class Paths {
     }
 
     public static function font(path:String, ?library:Null<String>) {
+        #if sys
         return getAsset('fonts/$path', library);
+        #else
+        return Assets.getFont(getAsset('fonts/$path', library)).fontName;
+        #end
     }
 
     public static function script(path:String, ?library:Null<String>) {

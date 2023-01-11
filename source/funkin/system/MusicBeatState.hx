@@ -104,7 +104,7 @@ class MusicBeatState extends FlxUIState implements IBeatReceiver {
 	}
 
     override function update(elapsed:Float) {
-        var resetState:Bool = FlxG.keys.anyJustPressed([#if web CTRL, THREE #else F3 #end]);
+        var resetState:Bool = FlxG.keys.anyJustPressed([#if web CONTROL, THREE #else F3 #end]);
         if (resetState)
             FlxG.resetState();
 

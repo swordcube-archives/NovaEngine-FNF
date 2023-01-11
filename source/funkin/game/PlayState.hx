@@ -668,6 +668,12 @@ class PlayState extends MusicBeatState {
 		if(!inCutscene && !endingSong) Conductor.position += (elapsed * 1000) * FlxG.sound.music.pitch;
 		if(Conductor.position >= 0 && startingSong && !inCutscene) startSong();
 
+		if(controls.BACK) {
+			endingSong = true;
+			CoolUtil.playMusic(Paths.music("freakyMenu"));
+			FlxG.switchState(isStoryMode ? new funkin.menus.StoryMenuState() : new funkin.menus.FreeplayState());
+		}
+
 		if(camZooming) {
 			FlxG.camera.zoom = MathUtil.fixedLerp(FlxG.camera.zoom, defaultCamZoom, 0.05);
 			camHUD.zoom = MathUtil.fixedLerp(camHUD.zoom, camHUD.initialZoom, 0.05);
@@ -684,8 +690,8 @@ class PlayState extends MusicBeatState {
 
 		// If the vocals are out of sync, resync them!
 		@:privateAccess
-		var shouldResync = (vocals._sound != null && SONG.needsVoices && vocals.time < vocals.length) ? !Conductor.isAudioSynced(vocals) : !Conductor.isAudioSynced(FlxG.sound.music);
-		if(shouldResync && !startingSong && !endingSong && !inCutscene) resyncVocals();
+		var shouldResync = ((vocals._sound != null && SONG.needsVoices && vocals.time < vocals.length) ? !Conductor.isAudioSynced(vocals) : !Conductor.isAudioSynced(FlxG.sound.music)) && !startingSong && !endingSong && !inCutscene;
+		if(shouldResync) resyncVocals();
 
 		scripts.call("onUpdatePost", [elapsed]);
 	}

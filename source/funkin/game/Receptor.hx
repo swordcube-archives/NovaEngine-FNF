@@ -24,8 +24,8 @@ class Receptor extends FNFSprite {
         var data:NoteSkin = Note.noteSkins[skin];
         if(data == null) data = Note.noteSkins["Default"];
 
-        var funnyPath:String = 'game/notes/${data.noteTextures.name}';
-        frames = data.noteTextures.type == PACKER ? Paths.getPackerAtlas(funnyPath) : Paths.getSparrowAtlas(funnyPath);
+        var funnyPath:String = 'game/notes/${data.texture.name}';
+        frames = data.texture.type == PACKER ? Paths.getPackerAtlas(funnyPath) : Paths.getSparrowAtlas(funnyPath);
         for(anim in data.animations) {
             var directionShit:Array<String> = [
                 "$DIRECTION",

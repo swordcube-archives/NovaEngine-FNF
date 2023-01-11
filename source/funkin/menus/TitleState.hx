@@ -252,6 +252,12 @@ class TitleState extends MusicBeatState {
 				});
 			}
 
+			if (FlxG.keys.justPressed.TAB) {
+				persistentUpdate = false;
+				persistentDraw = true;
+				openSubState(new ModSwitcher());
+			}
+
 			if (pressedEnter && startedIntro && !skippedIntro)
 				skipIntro();
 		}

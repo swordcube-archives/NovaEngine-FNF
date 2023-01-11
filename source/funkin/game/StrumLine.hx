@@ -123,10 +123,12 @@ class StrumLine extends FlxSpriteGroup {
 
 						if(!note.isSustainTail && !event.cancelled) {
 							game.health -= event.healthLoss;
-							game.combo = 0;
 							game.vocals.volume = 0;
 							game.characterSing(BF, note.strumLine.keyAmount, note.noteData, "miss");
-							if(!note.isSustainNote) game.misses++;
+							if(!note.isSustainNote) {
+								game.combo = 0;
+								game.misses++;
+							}
 						}
 					}
 					deleteNote(note);

@@ -54,9 +54,11 @@ class DiscordRPC {
 	}
 
 	public static function initialize() {
+		#if discord_rpc
 		var DiscordDaemon = sys.thread.Thread.create(() -> {
 			new DiscordRPC();
 		});
+		#end
 	}
 
 	public static function changePresence(details:String, state:Null<String>, ?smallImageKey:String, ?hasStartTimestamp:Bool, ?endTimestamp:Float) {
