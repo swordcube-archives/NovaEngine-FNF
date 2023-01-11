@@ -402,8 +402,20 @@ class PlayState extends MusicBeatState {
 		rating.velocity.y = -FlxG.random.int(140, 175);
 		rating.velocity.x = -FlxG.random.int(0, 10);
 
+		var comboSpr:FNFSprite = comboGroup.recycle(FNFSprite).load(IMAGE, Paths.image(event.comboSprites+'/combo'));
+		comboGroup.remove(comboSpr, true);
+		comboSpr.setPosition(0, 0);
+		comboSpr.acceleration.y = 600;
+		comboSpr.velocity.y = -150;
+		comboSpr.velocity.x = FlxG.random.int(1, 10);
+		comboSpr.antialiasing = event.ratingAntialiasing;
+		comboSpr.scale.set(event.ratingScale, event.ratingScale);
+		comboSpr.updateHitbox();
+		comboSpr.alpha = 1;
+
 		var separatedScore:String = Std.string(combo).addZeros(3);
 		if (combo == 0 || combo >= 10) {
+			comboGroup.add(comboSpr);
 			for (i in 0...separatedScore.length) {
 				var numScore:FNFSprite = comboGroup.recycle(FNFSprite).load(IMAGE, Paths.image(event.comboSprites+'/num${separatedScore.charAt(i)}'));
 				comboGroup.remove(numScore, true);
@@ -432,6 +444,13 @@ class PlayState extends MusicBeatState {
 		FlxTween.tween(rating, {alpha: 0}, 0.2, {
 			onComplete: function(tween:FlxTween) {
 				rating.kill();
+			},
+			startDelay: Conductor.crochet * 0.001
+		});
+
+		FlxTween.tween(comboSpr, {alpha: 0}, 0.2, {
+			onComplete: function(tween:FlxTween) {
+				comboSpr.kill();
 			},
 			startDelay: Conductor.crochet * 0.001
 		});

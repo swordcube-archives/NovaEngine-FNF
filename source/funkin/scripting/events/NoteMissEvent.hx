@@ -13,8 +13,9 @@ class NoteMissEvent extends CancellableEvent {
      */
     public var healthLoss:Float = 0.0475;
 
-    public function new(note:Note) {
+    public function new(note:Note, healthLoss:Float) {
         super();
         this.note = note;
+        this.healthLoss = 0.0475;
     }
 }

@@ -25,11 +25,11 @@ class Option {
 class OptionsAPI {
     public static var defaultOptions:Map<String, Option> = [
         // GAMEPLAY
-        "Downscroll"      => new Option(BOOL, true),
+        "Downscroll"      => new Option(BOOL, false),
         "Middlescroll"    => new Option(BOOL, false),
         "Ghost Tapping"   => new Option(BOOL, false),
         "Miss Sounds"     => new Option(BOOL, true),
-        "Note Offset"     => new Option(NUMBER, 70.0),
+        "Note Offset"     => new Option(NUMBER, 0.0),
 
         // ACCESSIBILITY
         "Flashing Lights" => new Option(BOOL, true),

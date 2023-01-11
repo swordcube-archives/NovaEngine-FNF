@@ -70,7 +70,7 @@ class InputSystem implements IFlxDestroyable {
                         game.characterSing(BF, note.strumLine.keyAmount, note.noteData);
                         receptor.playAnim("confirm");
 
-                        game.health += event.healthGain > 0 ? event.healthGain * 0.5 : 0;
+                        game.health += event.healthGain;
                         game.vocals.volume = 1;
 
                         parent.goodNoteHit(event, note);
