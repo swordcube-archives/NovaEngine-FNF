@@ -2,7 +2,7 @@ package openfl.display;
 
 import openfl.text.TextField;
 import openfl.text.TextFormat;
-import core.memory.Memory;
+import external.memory.Memory;
 
 /**
 	The FPS class provides an easy-to-use monitor to display

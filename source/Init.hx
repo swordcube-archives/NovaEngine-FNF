@@ -1,17 +1,27 @@
 package;
 
-import core.api.WindowsAPI;
-import core.utils.AudioSwitchFix;
+import funkin.windows.WindowsAPI;
+import funkin.system.AudioSwitchFix;
+import funkin.system.Preferences;
+import funkin.game.ChartLoader;
+import funkin.game.PlayState;
+import funkin.system.Controls;
+import funkin.system.ModHandler;
+import funkin.scripting.ScriptHandler;
+import funkin.system.Conductor;
 import flixel.math.FlxRect;
 import flixel.math.FlxPoint;
 import flixel.addons.transition.TransitionData;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
 import flixel.graphics.FlxGraphic;
+import funkin.game.Note;
 import flixel.FlxSprite;
 import flixel.FlxState;
 
 class Init extends FlxState {
+    public static var controls:Controls;
+
     override function create() {
         super.create();
 
@@ -24,15 +34,25 @@ class Init extends FlxState {
         FlxG.fixedTimestep = false;
         FlxG.signals.preStateCreate.add(function(state:FlxState) {
             Conductor.reset();
+            
+            @:privateAccess {
+                Preferences.__save.bind("preferencesSave", "NovaEngine");
+                FlxSprite.defaultAntialiasing = Preferences.__save.data.antialiasing;
+            }
 
             Assets.cache.clear();
             LimeAssets.cache.clear();
             Polymod.clearCache();
-
             #if MOD_SUPPORT
+            Console.info("UNLOADING ALL MODS!");
             Polymod.unloadAllMods();
+            Console.info("LOADING ALL ACTIVE MODS!");
             Polymod.loadMods([#if MOD_SUPPORT Paths.currentMod #end]);
+            Console.info("LOADED ALL ACTIVE MODS SUCCESSFULLY!");
             #end
+
+            Note.reloadSkins();
+            Note.reloadSplashSkins();
 
             #if cpp
             cpp.vm.Gc.run(true);
@@ -55,11 +75,13 @@ class Init extends FlxState {
         if(FlxG.save.data.volume != null)
             FlxG.sound.volume = FlxG.save.data.volume;
 
-        FlxSprite.defaultAntialiasing = true;
+        Preferences.init();
+        FlxSprite.defaultAntialiasing = Preferences.save.antialiasing;
 
-        PlayerSettings.init();
         Conductor.init();
-        Highscore.load();
+        ScriptHandler.init();
+
+        ModHandler.init();
 
         Polymod.init({
             modRoot: "mods",
@@ -80,6 +102,8 @@ class Init extends FlxState {
             }
         });
 
-        FlxG.switchState(new TitleState());
+        controls = new Controls();
+
+        FlxG.switchState(new funkin.menus.TitleState());
     }
 }

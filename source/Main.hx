@@ -1,25 +1,30 @@
 package;
 
 import flixel.FlxGame;
-import flixel.FlxState;
 import openfl.display.FPS;
 import openfl.display.Sprite;
+import lime.app.Application;
 
 class Main extends Sprite {
-	var gameWidth:Int = 1280; // Width of the game in pixels (might be less / more in actual pixels depending on your zoom).
-	var gameHeight:Int = 720; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
-	var framerate:Int = 240; // How many frames per second the game should run at.
-	var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
-	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
+	public static var fpsCounter:FPS;
 
-	// You can pretty much ignore everything from here on - your code should go in your states.
+	public static var engineName:String = "Nova Engine";
+	
+	/**
+	 * The version number of the engine.
+	 */
+	public static var engineVersion(get, never):String;
+
+	static function get_engineVersion():String {
+		return Application.current.meta.get("version");
+	}
 
 	@:dox(hide) public static var audioDisconnected:Bool = false;
 	@:dox(hide) public static var changeID:Int = 0;
 
 	public function new() {
 		super();
-		addChild(new FlxGame(gameWidth, gameHeight, Init, framerate, framerate, skipSplash, startFullscreen));
-		addChild(new FPS(10, 3, 0xFFFFFF));
+		addChild(new FlxGame(1280, 720, Init, 240, 240, true, false));
+		addChild(fpsCounter = new FPS(10, 3, 0xFFFFFFFF));
 	}
 }

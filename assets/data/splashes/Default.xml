@@ -1,0 +1,8 @@
+<!DOCTYPE funkin-forever-splash-skin/>
+<splashskin scale="1" alpha="0.6">
+    <texture name="NOTE_splashes" type="SPARROW"/>
+    <anims>
+        <anim name="splash1" anim="splash ${DIRECTION} 1" x="30" y="50" fps="24"/>
+        <anim name="splash2" anim="splash ${DIRECTION} 2" x="30" y="50" fps="24"/>
+    </anims>
+</splashskin>

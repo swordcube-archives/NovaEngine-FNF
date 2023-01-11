@@ -528,6 +528,8 @@ class System
 
 	@:noCompletion private static function __registerEntryPoint(projectName:String, entryPoint:Function):Void
 	{
+        // executes first!!
+		
 		if (__applicationEntryPoint == null)
 		{
 			__applicationEntryPoint = new Map();

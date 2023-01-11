@@ -1,12 +1,20 @@
 #if !macro
 import flixel.FlxG;
-import core.engine.NovaSprite;
-import core.utils.Console;
+import polymod.Polymod;
+import funkin.system.DiscordRPC;
+import funkin.system.Paths;
+import funkin.system.Console;
+import funkin.system.CoolUtil;
+import funkin.system.MathUtil;
+import flixel.util.FlxColor;
 import openfl.utils.Assets;
 import lime.utils.Assets as LimeAssets;
-import flixel.util.FlxColor;
-import polymod.Polymod;
-import Paths;
-
-using CoolUtil;
+#if sys
+import sys.io.File;
+import sys.FileSystem;
 #end
+import funkin.system.Preferences;
+using funkin.system.CoolUtil; 
+#end
+
+import tjson.TJSON as Json;

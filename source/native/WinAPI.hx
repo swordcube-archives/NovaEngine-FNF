@@ -1,5 +1,6 @@
 package native;
 
+import funkin.windows.WindowsAPI.MessageBoxIcon;
 #if windows
 @:buildXml('
 <target id="haxe">
@@ -104,7 +105,6 @@ class AudioFixClient : public IMMNotificationClient {
         EDataFlow flow, ERole role,
         LPCWSTR pwstrDeviceId)
     {
-        std::cout << "fuck";
         ::Main_obj::audioDisconnected = true;
         return S_OK;
     };
@@ -146,9 +146,7 @@ class WinAPI {
     freopen("CONOUT$", "w", stdout);
     freopen("CONOUT$", "w", stderr);
     ')
-    public static function allocConsole() {
-    }
-
+    public static function allocConsole() {}
     
     #if windows
     @:functionCode('
@@ -156,9 +154,7 @@ class WinAPI {
         SetConsoleTextAttribute(console, color);
     ')
     #end
-    public static function setConsoleColors(color:Int) {
-
-    }
+    public static function setConsoleColors(color:Int) {}
 
     #if windows
     @:functionCode('
@@ -166,8 +162,14 @@ class WinAPI {
         std::cout<< "" <<std::flush;
     ')
     #end
-    public static function clearScreen() {
+    public static function clearScreen() {}
 
-    }
+
+    #if windows
+    @:functionCode('
+        MessageBox(GetActiveWindow(), message, caption, icon | MB_SETFOREGROUND);
+    ')
+    #end
+    public static function showMessageBox(caption:String, message:String, icon:MessageBoxIcon = MSG_WARNING) {}
 }
 #end

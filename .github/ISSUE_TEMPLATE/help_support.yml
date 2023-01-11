@@ -1,10 +1,10 @@
-name: Funkin Forever Help & Support
+name: Nova Engine Help & Support
 description: Ask for help or support with any features of the project
 labels: [help wanted]
 body:
   - type: markdown
     attributes:
-      value: "Please ensure what you are asking for help with is a feature of Funkin Forever and not a mod or fork of it."
+      value: "Please ensure what you are asking for help with is a feature of Nova Engine and not a mod or fork of it."
 
   - type: textarea
     id: problem-related

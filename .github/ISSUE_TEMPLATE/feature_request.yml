@@ -1,10 +1,10 @@
-name: Funkin Forever Feature Request
+name: Nova Engine Feature Request
 description: Suggest an idea for the engine
 labels: [enhancement]
 body:
   - type: markdown
     attributes:
-      value: "Please ensure what you are asking for help with is a feature of Funkin Forever and not a mod or fork of it."
+      value: "Please ensure what you are asking for help with is a feature of Nova Engine and not a mod or fork of it."
 
   - type: textarea
     id: problem-related
@@ -16,7 +16,7 @@ body:
   - type: textarea
     id: describe-feature
     attributes:
-      label: "Describe the feature you'd want to see in Funkin Forever."
+      label: "Describe the feature you'd want to see in Nova Engine."
     validations:
       required: true
 

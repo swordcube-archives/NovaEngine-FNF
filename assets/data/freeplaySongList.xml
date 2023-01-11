@@ -1,0 +1,8 @@
+<!DOCTYPE funkin-forever-freeplay-songs>
+<songs>
+    <!-- chart type isn't needed but i put it here so u know it exists -->
+    <!-- same for display name, setting it to nothing makes it default to whatever name is -->
+    <song name="Tutorial" displayName="" character="gf"        bgColor="#9271FD" difficulties="easy,normal,hard" chartType="AUTO_DETECT"/>
+    <song name="Massacre" displayName="" character="spirit"    bgColor="#9271FD" difficulties="hard" chartType="AUTO_DETECT"/>
+    <song name="Reactor"  displayName="" character="impostor3" bgColor="#9271FD" difficulties="hard" chartType="AUTO_DETECT"/>
+</songs>
