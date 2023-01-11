@@ -1,8 +1,8 @@
 package;
 
-import funkin.windows.WindowsAPI;
+import core.api.WindowsAPI;
+import core.api.OptionsAPI;
 import funkin.system.AudioSwitchFix;
-import funkin.system.Preferences;
 import funkin.game.ChartLoader;
 import funkin.game.PlayState;
 import funkin.system.Controls;
@@ -36,8 +36,8 @@ class Init extends FlxState {
             Conductor.reset();
             
             @:privateAccess {
-                Preferences.__save.bind("preferencesSave", "NovaEngine");
-                FlxSprite.defaultAntialiasing = Preferences.__save.data.antialiasing;
+                OptionsAPI.init();
+                FlxSprite.defaultAntialiasing = OptionsAPI.get("Antialiasing");
             }
 
             Assets.cache.clear();
@@ -75,8 +75,9 @@ class Init extends FlxState {
         if(FlxG.save.data.volume != null)
             FlxG.sound.volume = FlxG.save.data.volume;
 
-        Preferences.init();
-        FlxSprite.defaultAntialiasing = Preferences.save.antialiasing;
+        OptionsAPI.init();
+        FlxSprite.defaultAntialiasing = OptionsAPI.get("Antialiasing");
+        FlxG.stage.frameRate = OptionsAPI.get("FPS Cap");
 
         Conductor.init();
         ScriptHandler.init();

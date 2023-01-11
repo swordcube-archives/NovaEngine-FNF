@@ -60,7 +60,7 @@ class ScriptHandler {
             "FlxTypedGroup" => flixel.group.FlxGroup.FlxTypedGroup,
 
             // Classes (Funkin)
-            "Preferences" => funkin.system.Preferences.save,
+            "OptionsAPI" => core.api.OptionsAPI,
             "CoolUtil" => funkin.system.CoolUtil,
             "MathUtil" => funkin.system.MathUtil,
             "Conductor" => funkin.system.Conductor,

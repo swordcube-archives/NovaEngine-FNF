@@ -3,7 +3,7 @@ package funkin.system;
 import lime.media.AudioManager;
 import flixel.system.FlxSound;
 import flixel.FlxState;
-import funkin.windows.WindowsAPI;
+import core.api.WindowsAPI;
 import flixel.FlxG;
 
 /**

@@ -1,4 +1,4 @@
-package funkin.windows;
+package core.api;
 
 /**
  * Class for Windows-only functions, such as transparent windows, message boxes, and more.

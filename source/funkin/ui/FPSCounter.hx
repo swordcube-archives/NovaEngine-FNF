@@ -1,26 +1,17 @@
-package openfl.display;
+package funkin.ui;
 
 import openfl.text.TextField;
 import openfl.text.TextFormat;
-import external.memory.Memory;
+import core.utilities.memory.Memory;
 
-/**
-	The FPS class provides an easy-to-use monitor to display
-	the current frame rate of an OpenFL project
-**/
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
-class FPS extends TextField {
+class FPSCounter extends TextField {
 	/**
-		The current frame rate, expressed using frames-per-second
-	**/
+	 * The current frame rate, expressed using frames-per-second
+	 */
 	public var currentFPS(default, null):Int;
 
-	var __fps:Int = 0;
-
-	@:noCompletion private var currentTime:Float = 1.0;
+	@:noCompletion var __fps:Int = 0;
+	@:noCompletion var currentTime:Float = 1.0;
 
 	public function new(x:Float = 10, y:Float = 10, color:Int = 0x000000) {
 		super();
@@ -39,9 +30,8 @@ class FPS extends TextField {
 		currentTime = 0;
 	}
 
-	// fuck u we're not using flash
 	@:noCompletion override function __enterFrame(deltaTime:Float):Void {
-		currentTime += FlxG.elapsed;
+		currentTime += deltaTime / 1000;
 		__fps++;
 
 		if(currentTime >= 1.0) {

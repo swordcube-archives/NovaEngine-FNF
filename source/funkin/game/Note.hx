@@ -200,7 +200,7 @@ class Note extends FNFSprite {
      */
     public var strumTime(get, default):Float = 0;
     function get_strumTime():Float {
-        return strumTime + (Preferences.save.noteOffset * FlxG.sound.music.pitch);
+        return strumTime + (OptionsAPI.get("Note Offset") * FlxG.sound.music.pitch);
     }
 
     /**

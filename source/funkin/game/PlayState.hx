@@ -284,7 +284,7 @@ class PlayState extends MusicBeatState {
 		camOther.bgColor = 0x0;
 		FlxG.cameras.add(camOther, false);
 
-		downscroll = Preferences.save.downscroll;
+		downscroll = OptionsAPI.get("Downscroll");
 
 		if(SONG == null)
 			SONG = ChartLoader.load(FNF, Paths.chart("tutorial"));
@@ -581,10 +581,10 @@ class PlayState extends MusicBeatState {
         persistentUpdate = false;
         persistentDraw = true;
 
-		if((Preferences.save.noteOffset * FlxG.sound.music.pitch) <= 0 || ignoreNoteOffset) {
+		if((OptionsAPI.get("Note Offset") * FlxG.sound.music.pitch) <= 0 || ignoreNoteOffset) {
 			endSong();
 		} else {
-			new FlxTimer().start((Preferences.save.noteOffset * FlxG.sound.music.pitch) / 1000, function(tmr:FlxTimer) {
+			new FlxTimer().start((OptionsAPI.get("Note Offset") * FlxG.sound.music.pitch) / 1000, function(tmr:FlxTimer) {
 				endSong();
 			});
 		}

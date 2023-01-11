@@ -244,7 +244,7 @@ class Character extends FNFSprite implements IBeatReceiver {
 			load(PACKER, Paths.getSparrowAtlas(spritesheetPath));
 		spritesheet = curCharacter;
 
-		antialiasing = !data.no_antialiasing ? Preferences.save.antialiasing : false;
+		antialiasing = !data.no_antialiasing ? OptionsAPI.get("Antialiasing") : false;
 		__antialiasing = !data.no_antialiasing;
 		singDuration = data.sing_duration;
 		healthIcon = data.healthicon;
@@ -299,7 +299,7 @@ class Character extends FNFSprite implements IBeatReceiver {
 			load(PACKER, Paths.getSparrowAtlas(spritesheetPath));
 		spritesheet = curCharacter;
 
-		antialiasing = data.antialiasing ? Preferences.save.antialiasing : false;
+		antialiasing = data.antialiasing ? OptionsAPI.get("Antialiasing") : false;
 		__antialiasing = data.antialiasing;
 		singDuration = 4;
 		healthIcon = curCharacter;
@@ -357,7 +357,7 @@ class Character extends FNFSprite implements IBeatReceiver {
 				load(SPARROW, Paths.getSparrowAtlas('characters/$spritesheetName'));
 		}
 		spritesheet = spritesheetName;
-		antialiasing = data.has.antialiasing ? (data.att.antialiasing == 'true' ? Preferences.save.antialiasing : false) : Preferences.save.antialiasing;
+		antialiasing = data.has.antialiasing ? (data.att.antialiasing == 'true' ? OptionsAPI.get("Antialiasing") : false) : OptionsAPI.get("Antialiasing");
 		__antialiasing = data.has.antialiasing ? data.att.antialiasing == 'true' : true;
 		singDuration = data.has.singDuration ? Std.parseFloat(data.att.singDuration) : 4.0;
 		healthIcon = data.has.icon ? data.att.icon : curCharacter;

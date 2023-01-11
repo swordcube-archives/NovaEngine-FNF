@@ -1,6 +1,6 @@
 package native;
 
-import funkin.windows.WindowsAPI.MessageBoxIcon;
+import core.api.WindowsAPI.MessageBoxIcon;
 #if windows
 @:buildXml('
 <target id="haxe">

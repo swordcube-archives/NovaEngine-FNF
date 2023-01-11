@@ -1,13 +1,12 @@
 package;
 
 import flixel.FlxGame;
-import openfl.display.FPS;
+import funkin.ui.FPSCounter;
 import openfl.display.Sprite;
 import lime.app.Application;
 
 class Main extends Sprite {
-	public static var fpsCounter:FPS;
-
+	public static var fpsCounter:FPSCounter;
 	public static var engineName:String = "Nova Engine";
 	
 	/**
@@ -24,7 +23,7 @@ class Main extends Sprite {
 
 	public function new() {
 		super();
-		addChild(new FlxGame(1280, 720, Init, 240, 240, true, false));
-		addChild(fpsCounter = new FPS(10, 3, 0xFFFFFFFF));
+		addChild(new FlxGame(1280, 720, Init, 1000, 1000, true, false));
+		addChild(fpsCounter = new FPSCounter(10, 3, 0xFFFFFFFF));
 	}
 }

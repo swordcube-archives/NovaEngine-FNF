@@ -13,7 +13,7 @@ import lime.utils.Assets as LimeAssets;
 import sys.io.File;
 import sys.FileSystem;
 #end
-import funkin.system.Preferences;
+import core.api.OptionsAPI;
 using funkin.system.CoolUtil; 
 #end
 

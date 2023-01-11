@@ -117,14 +117,16 @@ class StrumLine extends FlxSpriteGroup {
 					}
 				}
 				if (note.strumTime <= Conductor.position - noteKillRange) {
-					if(!note.wasGoodHit) {
+					if(!note.wasGoodHit && !note.tooLate) {
 						var event = game.scripts.event("onPlayerMiss", new SimpleNoteEvent(note));
 						game.eventOnNoteType(note.noteType, "onPlayerMiss", event);
 
 						if(!note.isSustainTail && !event.cancelled) {
 							game.health -= 0.0475;
+							game.combo = 0;
 							game.vocals.volume = 0;
 							game.characterSing(BF, note.strumLine.keyAmount, note.noteData, "miss");
+							if(!note.isSustainNote) game.misses++;
 						}
 					}
 					deleteNote(note);
