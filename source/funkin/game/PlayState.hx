@@ -305,11 +305,23 @@ class PlayState extends MusicBeatState {
 		add(dad = new Character(stage.dadPos.x, stage.dadPos.y, "dad"));
 		add(boyfriend = new Character(stage.bfPos.x, stage.bfPos.y, "bf", true));
 
-		add(comboGroup = new FlxTypedSpriteGroup<FNFSprite>(FlxG.width * 0.55, (FlxG.height * 0.5) - 60));
-
 		gfs = [gf];
 		dads = [dad];
 		boyfriends = [bf];
+
+		add(comboGroup = new FlxTypedSpriteGroup<FNFSprite>(FlxG.width * 0.55, (FlxG.height * 0.5) - 60));
+
+		// Preloads rating & combo assets
+		for(item in ["sick", "good", "bad", "shit"]) {
+			FlxG.bitmap.add(Paths.image('game/judgements/default/$item'));
+		}
+
+		var numList:Array<String> = [for(i in 0...10) 'num$i'];
+		numList.insert(0, "combo");
+
+		for(i in numList) {
+			FlxG.bitmap.add(Paths.image('game/combo/default/$i'));
+		}
 
 		// Load global song scripts
 		for(item in Paths.getFolderContents("songs", true, true)) {

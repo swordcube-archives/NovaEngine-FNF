@@ -76,6 +76,12 @@ class NoteHitEvent extends CancellableEvent {
      */
     public var healthGain:Float = 0.023;
 
+    /**
+     * Whether or not the player should play a singing animation
+     * when hitting this note.
+     */
+    public var cancelSingAnim:Bool = false;
+
     public function new(note:Note, rating:String, splashSkin:String, doSplash:Bool, showRating:Bool, showCombo:Bool, score:Int, accuracyGain:Float) {
         super();
         this.note = note;

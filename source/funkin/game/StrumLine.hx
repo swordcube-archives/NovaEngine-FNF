@@ -89,18 +89,21 @@ class StrumLine extends FlxSpriteGroup {
 					if(!note.isSustainTail && !event.cancelled) {
 						game.vocals.volume = 1;
 						receptor.playAnim("confirm", true);
-						game.characterSing(DAD, note.strumLine.keyAmount, note.noteData);
+						if(!event.cancelSingAnim) game.characterSing(DAD, note.strumLine.keyAmount, note.noteData);
 
 						if(!note.isSustainNote) deleteNote(note);
 					}
 				}
-				if (note.isSustainNote && note.wasGoodHit && note.strumTime <= Conductor.position - noteKillRange) {
-					var event = game.scripts.event("onOpponentMiss", new SimpleNoteEvent(note));
+				if (note.strumTime <= Conductor.position - noteKillRange) {
+					var event = game.scripts.event("onOpponentMiss", new NoteMissEvent(note, 0.0475));
 					game.eventOnNoteType(note.noteType, "onOpponentMiss", event);
+
+					if(!note.wasGoodHit && !event.cancelSingAnim)
+						game.characterSing(DAD, note.strumLine.keyAmount, note.noteData);
 
 					deleteNote(note);
 				}
-			} 
+			}
 			else if(note.mustPress && handleInput) {
 				// Player note logic
                 if (input.pressed[note.noteData] && note.strumTime <= Conductor.position && !note.wasGoodHit && note.isSustainNote) {
@@ -113,7 +116,7 @@ class StrumLine extends FlxSpriteGroup {
 						receptor.playAnim("confirm", true);
 						game.health += event.healthGain * 0.5;
 						game.vocals.volume = 1;
-						game.characterSing(BF, note.strumLine.keyAmount, note.noteData, note.altAnim ? "-alt" : "");
+						if(!event.cancelSingAnim) game.characterSing(BF, note.strumLine.keyAmount, note.noteData, note.altAnim ? "-alt" : "");
 					}
 				}
 				if (note.strumTime <= Conductor.position - noteKillRange) {
@@ -124,7 +127,7 @@ class StrumLine extends FlxSpriteGroup {
 						if(!note.isSustainTail && !event.cancelled) {
 							game.health -= event.healthLoss;
 							game.vocals.volume = 0;
-							game.characterSing(BF, note.strumLine.keyAmount, note.noteData, "miss");
+							if(!event.cancelSingAnim) game.characterSing(BF, note.strumLine.keyAmount, note.noteData, "miss");
 							if(!note.isSustainNote) {
 								game.combo = 0;
 								game.misses++;

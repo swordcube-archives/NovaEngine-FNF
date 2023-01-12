@@ -67,7 +67,9 @@ class InputSystem implements IFlxDestroyable {
 					game.eventOnNoteType(note.noteType, "onPlayerHit", event);
 
                     if(!event.cancelled) {
-                        game.characterSing(BF, note.strumLine.keyAmount, note.noteData);
+                        if(!event.cancelSingAnim)
+                            game.characterSing(BF, note.strumLine.keyAmount, note.noteData);
+                        
                         receptor.playAnim("confirm");
 
                         game.health += event.healthGain;
