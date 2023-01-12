@@ -8,8 +8,11 @@ import discord_rpc.DiscordRpc;
 using StringTools;
 
 class DiscordRPC {
+	public static var ready:Bool = false;
+
 	public function new() {
 		#if discord_rpc
+		ready = false;
 		trace("Discord Client starting...");
 		DiscordRpc.start({
 			clientID: "814588678700924999",
@@ -17,9 +20,11 @@ class DiscordRPC {
 			onError: onError,
 			onDisconnected: onDisconnected
 		});
-		trace("Discord Client started.");
 
 		while (true) {
+			while(!ready) {
+				Sys.sleep(1/60);
+			}
 			DiscordRpc.process();
 			sleep(2);
 			// trace("Discord Client Update");
@@ -42,6 +47,8 @@ class DiscordRPC {
 			largeImageKey: "icon",
 			largeImageText: "Nova Engine"
 		});
+		ready = true;
+		trace("Discord Client started.");
 		#end
 	}
 
