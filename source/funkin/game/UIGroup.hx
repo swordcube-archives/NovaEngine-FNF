@@ -83,7 +83,10 @@ class UIGroup extends FlxGroup {
 		add(iconP1 = new HealthIcon(0, healthBar.y, game.bf != null ? game.bf.healthIcon : "face"));
 		add(iconP2 = new HealthIcon(0, healthBar.y, game.dad != null ? game.dad.healthIcon : "face"));
 
-		scoreTxt = new FlxText(0, healthBar.y + (healthBar.height + 20), 0, "nuts");
+		var fart:Float = healthBar.height + 40;
+		if(PlayState.current.downscroll) fart *= -1;
+
+		scoreTxt = new FlxText(0, healthBar.y + fart, 0, "nuts");
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), 18, FlxColor.WHITE, CENTER, OUTLINE, FlxColor.BLACK);
 		scoreTxt.borderSize = 1.25;
 		scoreTxt.text = getScoreText(PlayState.current, Ranking.unknownRank);
@@ -110,7 +113,7 @@ class UIGroup extends FlxGroup {
 		return (
 			"Score:"+game.songScore+" • "+
 			"Misses:"+game.songMisses+" • "+
-			"Accuracy:"+(game.songAccuracy > 0 ? FlxMath.roundDecimal(game.songAccuracy * 100, 2) : 0)+"% • <r>"+rank.name+"<r>"
+			"Accuracy:"+(game.songAccuracy > 0 ? FlxMath.roundDecimal(game.songAccuracy * 100, 2) : 0)+"% [<r>"+rank.name+"<r>]"
 		);
 	}
 
