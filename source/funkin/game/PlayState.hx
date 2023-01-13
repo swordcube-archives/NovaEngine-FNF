@@ -411,7 +411,7 @@ class PlayState extends MusicBeatState {
 		var oldNotes:Array<Note> = [];
 		for(section in SONG.sections) {
 			if(section == null) continue;
-			for(i => note in section.notes) {
+			for(note in section.notes) {
 				var mustHit:Bool = section.playerSection;
 				if (note.direction > (SONG.keyAmount - 1)) mustHit = !section.playerSection;
 
@@ -773,8 +773,7 @@ class PlayState extends MusicBeatState {
 	}
 
 	@:dox(hide) override function beatHit(curBeat:Int) {
-		if(camBumpingInterval < 1) camBumpingInterval = 1;
-		if(camBumping && FlxG.camera.zoom < 1.35 && curBeat % camBumpingInterval == 0) {
+		if(camBumpingInterval > 0 && camBumping && FlxG.camera.zoom < 1.35 && curBeat % camBumpingInterval == 0) {
 			FlxG.camera.zoom += 0.015;
 			camHUD.zoom += 0.03;
 		}

@@ -6,11 +6,14 @@ import flixel.tweens.FlxTween;
 import funkin.system.MusicBeatSubstate;
 
 class PauseSubState extends MusicBeatSubstate {
+    var oldFollowLerp:Float = FlxG.camera.followLerp;
+
     public var game:PlayState;
 
     override function create() {
         super.create();
         game = PlayState.current;
+        FlxG.camera.followLerp = 0;
         
         var bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFF000000);
         bg.alpha = 0;
@@ -29,6 +32,7 @@ class PauseSubState extends MusicBeatSubstate {
         game.vocals.pause();
 
         if(controls.ACCEPT) {
+            FlxG.camera.followLerp = oldFollowLerp;
             PlayState.paused = false;
             FlxG.sound.music.play();
             game.vocals.play();
