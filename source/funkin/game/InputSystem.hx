@@ -25,7 +25,7 @@ class InputSystem implements IFlxDestroyable {
 
         var game = PlayState.current;
 
-        if(pressed[direction] || direction == -1 || !parent.handleInput) return;
+        if(pressed[direction] || direction == -1 || !parent.handleInput || PlayState.paused) return;
         pressed[direction] = true;
 
         var receptor:Receptor = parent.receptors.members[direction];
@@ -99,7 +99,7 @@ class InputSystem implements IFlxDestroyable {
     public function onKeyRelease(event:KeyboardEvent) {
         var direction:Int = directionFromEvent(event);
 
-        if(direction == -1 || !parent.handleInput) return;
+        if(direction == -1 || !parent.handleInput || PlayState.paused) return;
         pressed[direction] = false;
 
         var receptor:Receptor = parent.receptors.members[direction];

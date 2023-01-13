@@ -222,9 +222,8 @@ class Character extends FNFSprite implements IBeatReceiver {
 		return this;
 	}
 
-	// i have this so people can port characters from psych
-	// to plasma easier
-	// don't murder me
+	// i have this so people can port characters from psych easier
+	// don't murder me shadowmario
 	// thanks
 	public function loadPsych(?mod:Null<String>) {
 		// Error handling

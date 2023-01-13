@@ -59,7 +59,7 @@ class MusicBeatSubstate extends FlxUISubState implements IBeatReceiver {
             var className = this.getClassName();
             var scriptName = this.scriptName != null ? this.scriptName : className.split(".").last();
     
-            script = ScriptHandler.loadModule(Paths.script('data/states/$scriptName'));
+            script = ScriptHandler.loadModule(Paths.script('data/substates/$scriptName'));
             script.setParent(this);
             script.load();
         } else
@@ -104,7 +104,7 @@ class MusicBeatSubstate extends FlxUISubState implements IBeatReceiver {
         if (FlxG.keys.justPressed.F5) {
             loadScript();
             if (script != null && !(script is DummyScript))
-                Console.info('State script successfully reloaded');
+                Console.info('Substate script successfully reloaded');
         }
         call("onUpdate", [elapsed]);
         

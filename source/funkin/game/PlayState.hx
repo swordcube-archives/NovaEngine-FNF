@@ -38,6 +38,11 @@ class PlayState extends MusicBeatState {
 	public static var SONG:Song;
 	public static var current:PlayState;
 
+	/**
+	 * Whether or not the game is paused.
+	 */
+	public static var paused:Bool = false;
+
 	// Stage
 	/**
 	 * The stage.
@@ -312,6 +317,7 @@ class PlayState extends MusicBeatState {
 		super.create();
 		
 		current = this;
+		paused = false;
 
 		(scripts = new ScriptPack()).setParent(this);
 
@@ -722,10 +728,25 @@ class PlayState extends MusicBeatState {
 		if(!inCutscene && !endingSong) Conductor.position += (elapsed * 1000) * FlxG.sound.music.pitch;
 		if(Conductor.position >= 0 && startingSong && !inCutscene) startSong();
 
-		if(controls.BACK) {
+		if(controls.BACK && !endingSong) {
 			endingSong = true;
+			FlxG.sound.music.stop();
+			vocals.stop();
 			CoolUtil.playMusic(Paths.music("freakyMenu"));
 			FlxG.switchState(isStoryMode ? new funkin.menus.StoryMenuState() : new funkin.menus.FreeplayState());
+		}
+
+		if(controls.PAUSE && !endingSong) {
+			var ret:Dynamic = scripts.call("onPause", [], true);
+			if(ret != false) {
+				persistentUpdate = false;
+				persistentDraw = true;
+				paused = true;
+				FlxG.sound.music.pause();
+				vocals.pause();
+				openSubState(new funkin.menus.PauseSubState());
+				scripts.call("onPausePost");
+			}
 		}
 
 		if(camZooming) {

@@ -1,5 +1,6 @@
 #if !macro
 import flixel.FlxG;
+import flixel.FlxSprite;
 import polymod.Polymod;
 import core.utilities.DiscordRPC;
 import funkin.utilities.Paths;

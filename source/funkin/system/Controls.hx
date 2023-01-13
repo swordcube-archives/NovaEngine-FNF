@@ -81,11 +81,12 @@ class Controls {
 
     // internal functions
     function checkKeys(keys:Array<Null<FlxKey>>, status:FlxInputState) {
+        var ret:Bool = false;
         for(key in keys) {
             if(checkKey(key, status))
-                return true;
+                ret = true;
         }
-        return false;
+        return ret;
     }
 
     function checkKey(key:Null<FlxKey>, status:FlxInputState) {

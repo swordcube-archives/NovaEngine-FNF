@@ -61,17 +61,30 @@ class ScriptHandler {
 
             // Classes (Funkin)
             "OptionsAPI" => core.api.OptionsAPI,
+            "GameplayUtil" => funkin.game.GameplayUtil,
             "CoolUtil" => funkin.utilities.CoolUtil,
             "MathUtil" => core.utilities.MathUtil,
             "Conductor" => funkin.system.Conductor,
             "PlayState" => funkin.game.PlayState,
             "Paths" => funkin.utilities.Paths,
-            "FNFSprite" => funkin.system.FNFSprite
+            "FNFSprite" => funkin.system.FNFSprite,
+            "HealthIcon" => funkin.ui.HealthIcon,
+            "Alphabet" => funkin.ui.Alphabet,
+            "StrumLine" => funkin.game.StrumLine,
+            "Receptor" => funkin.game.Receptor,
+            "Note" => funkin.game.Note,
+            "NoteSplash" => funkin.game.NoteSplash,
+            "Stage" => funkin.game.Stage,
+            
+            // Variables
+            "CANCEL_FUNCTION" => false,
+            "CONTINUE_FUNCTION" => true,
         ];
 
         preprocessorFlags = [
             "debug" => #if debug true #else false #end,
             "release" => #if !debug true #else false #end,
+            "final" => #if final true #else false #end,
 
             // OS flags
             "desktop" => #if desktop true #else false #end,

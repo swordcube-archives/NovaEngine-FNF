@@ -49,7 +49,7 @@ class UIGroup extends FlxGroup {
 	/**
 	 * Format for your current rank.
 	 */
-	public var rankFormat = new FlxTextFormatMarkerPair(new FlxTextFormat(0xFF888888, false), "<r>");
+	public var rankFormat = new FlxTextFormatMarkerPair(new FlxTextFormat(0xFF888888, false), "<rank>");
 
 	// -------------------------------------------------------------------------------------------- //
 
@@ -113,7 +113,7 @@ class UIGroup extends FlxGroup {
 		return (
 			"Score:"+game.songScore+" • "+
 			"Misses:"+game.songMisses+" • "+
-			"Accuracy:"+(game.songAccuracy > 0 ? FlxMath.roundDecimal(game.songAccuracy * 100, 2) : 0)+"% [<r>"+rank.name+"<r>]"
+			"Accuracy:"+(game.songAccuracy > 0 ? FlxMath.roundDecimal(game.songAccuracy * 100, 2) : 0)+"% [<rank>"+rank.name+"<rank>]"
 		);
 	}
 
