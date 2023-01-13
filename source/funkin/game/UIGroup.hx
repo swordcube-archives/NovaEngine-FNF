@@ -7,6 +7,8 @@ import funkin.ui.HealthIcon;
 import flixel.ui.FlxBar;
 import funkin.system.FNFSprite;
 import flixel.group.FlxGroup;
+import flixel.text.FlxText.FlxTextFormatMarkerPair;
+import flixel.text.FlxText.FlxTextFormat;
 
 class UIGroup extends FlxGroup {
 	/**
@@ -47,7 +49,7 @@ class UIGroup extends FlxGroup {
 	/**
 	 * Format for your current rank.
 	 */
-	public var rankFormat:FlxTextFormat = new FlxTextFormat(0xFF888888, false, false, 0);
+	public var rankFormat = new FlxTextFormatMarkerPair(new FlxTextFormat(0xFF888888, false), "<r>");
 
 	// -------------------------------------------------------------------------------------------- //
 
@@ -85,7 +87,7 @@ class UIGroup extends FlxGroup {
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), 18, FlxColor.WHITE, CENTER, OUTLINE, FlxColor.BLACK);
 		scoreTxt.borderSize = 1.25;
 		scoreTxt.text = getScoreText(PlayState.current, Ranking.unknownRank);
-		scoreTxt.addFormat(rankFormat, scoreTxt.text.length, scoreTxt.text.length - Ranking.unknownRank.name.length);
+		scoreTxt.applyMarkup(scoreTxt.text, [rankFormat]);
 		add(scoreTxt);
 
 		for(icon in [iconP2, iconP1]) icon.y -= icon.height * 0.5;
@@ -108,7 +110,7 @@ class UIGroup extends FlxGroup {
 		return (
 			"Score:"+game.songScore+" • "+
 			"Misses:"+game.songMisses+" • "+
-			"Accuracy:"+(game.songAccuracy > 0 ? FlxMath.roundDecimal(game.songAccuracy * 100, 2) : 0)+"% • "+rank.name
+			"Accuracy:"+(game.songAccuracy > 0 ? FlxMath.roundDecimal(game.songAccuracy * 100, 2) : 0)+"% • <r>"+rank.name+"<r>"
 		);
 	}
 
@@ -116,16 +118,10 @@ class UIGroup extends FlxGroup {
 		var game = PlayState.current;
 		var rank = game.songAccuracy > -1 ? Ranking.getRankData(game.songAccuracy) : Ranking.unknownRank;
 
-		@:privateAccess rankFormat.format.color = rank.color;
 		scoreTxt.text = getScoreText(game, rank);
+		@:privateAccess rankFormat.format.format.color = rank.color;
+		scoreTxt.applyMarkup(scoreTxt.text, [rankFormat]);
 		scoreTxt.screenCenter(X);
-
-		@:privateAccess {
-			var format = scoreTxt._formatRanges[0];
-			format.range.start = scoreTxt.text.length - rank.name.length;
-			format.range.end = scoreTxt.text.length;
-			scoreTxt._formatRanges[0] = format;
-		}
 
 		super.update(elapsed);
 
