@@ -1,10 +1,10 @@
-package funkin.system;
+package funkin.utilities;
 
+import funkin.system.Conductor;
 import haxe.io.Path;
 import flixel.input.keyboard.FlxKey;
 import flixel.animation.FlxAnimation;
-import funkin.system.IniParser.IniSection;
-import funkin.system.IniParser.Ini;
+import core.utilities.IniParser;
 
 using StringTools;
 

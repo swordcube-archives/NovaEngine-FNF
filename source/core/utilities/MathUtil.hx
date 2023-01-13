@@ -1,4 +1,4 @@
-package funkin.system;
+package core.utilities;
 
 import flixel.math.FlxMath;
 

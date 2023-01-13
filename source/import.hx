@@ -1,11 +1,11 @@
 #if !macro
 import flixel.FlxG;
 import polymod.Polymod;
-import funkin.system.DiscordRPC;
-import funkin.system.Paths;
+import core.utilities.DiscordRPC;
+import funkin.utilities.Paths;
 import funkin.system.Console;
-import funkin.system.CoolUtil;
-import funkin.system.MathUtil;
+import funkin.utilities.CoolUtil;
+import core.utilities.MathUtil;
 import flixel.util.FlxColor;
 import openfl.utils.Assets;
 import lime.utils.Assets as LimeAssets;
@@ -14,7 +14,7 @@ import sys.io.File;
 import sys.FileSystem;
 #end
 import core.api.OptionsAPI;
-using funkin.system.CoolUtil; 
+using funkin.utilities.CoolUtil; 
 #end
 
 import tjson.TJSON as Json;

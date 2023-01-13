@@ -70,7 +70,7 @@
 	<haxelib name="polymod"/> <!-- https://github.com/swordcube/scriptless-polymod -->
 	<haxelib name="hscript-improved" /> <!-- https://github.com/YoshiCrafter29/hscript-improved -->
 	<haxelib name="discord_rpc" if="DISCORD_RPC"/> <!-- https://github.com/Aidan63/linc_discord-rpc -->
-	<haxelib name="hxCodec" if="VIDEO_CUTSCENES"/>
+	<haxelib name="hxCodec" if="VIDEO_CUTSCENES"/> <!-- https://github.com/polybiusproxy/hxCodec -->
 	
 	<haxelib name="tjson" />
 	<haxelib name="hxcpp-debug-server" />

@@ -1,4 +1,4 @@
-package funkin.system;
+package funkin.utilities;
 
 class ModHandler {
     public static function init() {

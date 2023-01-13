@@ -1,4 +1,4 @@
-package funkin.system;
+package funkin.utilities;
 
 import flixel.graphics.frames.FlxAtlasFrames;
 

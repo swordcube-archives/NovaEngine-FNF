@@ -31,6 +31,8 @@ class VideoCutscene extends Cutscene {
         videoSprite.finishCallback = close;
         videoSprite.cameras = [cutsceneCamera];
         videoSprite.antialiasing = true;
+        videoSprite.setGraphicSize(1280, 720);
+        videoSprite.updateHitbox();
         add(videoSprite);
         
         videoSprite.playVideo(localPath, false);

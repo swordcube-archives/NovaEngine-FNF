@@ -205,7 +205,7 @@ class PlayState extends MusicBeatState {
 	 * The amount of health the player has.
 	 * Limited to the values of `minHealth` and `maxHealth`.
 	 */
-	public var health(default, set):Float = 1;
+	public var health(default, set):Float = 0;
 	function set_health(value:Float) {
 		return health = FlxMath.bound(value, minHealth, maxHealth);
 	}
@@ -213,12 +213,22 @@ class PlayState extends MusicBeatState {
 	/**
 	 * The minimum amount of health the player can have.
 	 */
-	public var minHealth:Float = 0;
+	public var minHealth(default, set):Float = 0;
+	function set_minHealth(value:Float) {
+		health = FlxMath.bound(health, value, maxHealth);
+		if(UI.healthBar != null) UI.healthBar.setRange(minHealth, UI.healthBar.max);
+		return maxHealth = value;
+	}
 
 	/**
 	 * The maximum amount of health the player can have.
 	 */
-	public var maxHealth:Float = 2;
+	public var maxHealth(default, set):Float = 2;
+	function set_maxHealth(value:Float) {
+		health = FlxMath.bound(health, minHealth, value);
+		if(UI.healthBar != null) UI.healthBar.setRange(UI.healthBar.min, maxHealth);
+		return maxHealth = value;
+	}
 
 	/**
 	 * Cutscene script path.
@@ -242,8 +252,34 @@ class PlayState extends MusicBeatState {
 	public var comboGroup:FlxTypedSpriteGroup<FNFSprite>;
 
 	// Accuracy related variables
+	/**
+	 * The score of every note you've hit.
+	 */
 	public var songScore:Int = 0;
+
+	/**
+	 * The amount of notes you've missed.
+	 */
 	public var songMisses:Int = 0;
+
+	/**
+	 * The player's accuracy (shortcut to `totalAccuracyAmount / accuracyPressedNotes`).
+	 */
+	public var songAccuracy(get, never):Float;
+	function get_songAccuracy():Float {
+		if(accuracyPressedNotes <= 0) return -1;
+		return totalAccuracyAmount / accuracyPressedNotes;
+	}
+
+	/**
+	 * The number of pressed notes.
+	 */
+	public var accuracyPressedNotes:Int = 0;
+
+	/**
+	 * The total accuracy amount.
+	 */
+	public var totalAccuracyAmount:Float = 0;
 
 	public var score(get, set):Int;
 	function get_score():Int {
@@ -259,6 +295,11 @@ class PlayState extends MusicBeatState {
 	}
 	function set_misses(value:Int):Int {
 		return songMisses = value;
+	}
+
+	public var accuracy(get, never):Float;
+	function get_accuracy():Float {
+		return get_songAccuracy();
 	}
 
 	public var sicks:Int = 0;
@@ -301,9 +342,9 @@ class PlayState extends MusicBeatState {
 		add(stage.gfLayer);
 		add(stage.bfLayer);
 
-		add(gf = new Character(stage.gfPos.x, stage.gfPos.y, "gf"));
-		add(dad = new Character(stage.dadPos.x, stage.dadPos.y, "dad"));
-		add(boyfriend = new Character(stage.bfPos.x, stage.bfPos.y, "bf", true));
+		add(gf = new Character(stage.gfPos.x, stage.gfPos.y, SONG.gf));
+		add(dad = new Character(stage.dadPos.x, stage.dadPos.y, SONG.dad));
+		add(boyfriend = new Character(stage.bfPos.x, stage.bfPos.y, SONG.bf, true));
 
 		gfs = [gf];
 		dads = [dad];
@@ -312,16 +353,14 @@ class PlayState extends MusicBeatState {
 		add(comboGroup = new FlxTypedSpriteGroup<FNFSprite>(FlxG.width * 0.55, (FlxG.height * 0.5) - 60));
 
 		// Preloads rating & combo assets
-		for(item in ["sick", "good", "bad", "shit"]) {
+		for(item in ["sick", "good", "bad", "shit"])
 			FlxG.bitmap.add(Paths.image('game/judgements/default/$item'));
-		}
 
 		var numList:Array<String> = [for(i in 0...10) 'num$i'];
 		numList.insert(0, "combo");
 
-		for(i in numList) {
+		for(i in numList)
 			FlxG.bitmap.add(Paths.image('game/combo/default/$i'));
-		}
 
 		// Load global song scripts
 		for(item in Paths.getFolderContents("songs", true, true)) {
@@ -357,6 +396,8 @@ class PlayState extends MusicBeatState {
 		scripts.load();
 		scripts.call("onCreate");
 		FlxG.camera.zoom = defaultCamZoom;
+
+		health = maxHealth * 0.5;
 
 		add(UI = new UIGroup());
 		UI.cameras = [camHUD];
@@ -490,7 +531,7 @@ class PlayState extends MusicBeatState {
 		scripts.call("onCreatePost");
 	}
 
-	public function callOnNoteType(noteType:String, method:String, ?parameters:Array<String>) {
+	public function callOnNoteType(noteType:String, method:String, ?parameters:Array<Dynamic>) {
 		if(!noteTypes.exists(noteType)) return;
 		noteTypes[noteType].call(method, parameters);
 	}
@@ -674,6 +715,7 @@ class PlayState extends MusicBeatState {
 
 	override function update(elapsed:Float) {
 		super.update(elapsed);
+		for(type in noteTypes.keys()) callOnNoteType(type, "onUpdate", [elapsed]);
 		scripts.call("onUpdate", [elapsed]);
 
 		vocals.pitch = FlxG.sound.music.pitch;
@@ -705,6 +747,7 @@ class PlayState extends MusicBeatState {
 		var shouldResync = ((vocals._sound != null && SONG.needsVoices && vocals.time < vocals.length) ? !Conductor.isAudioSynced(vocals) : !Conductor.isAudioSynced(FlxG.sound.music)) && !startingSong && !endingSong && !inCutscene;
 		if(shouldResync) resyncVocals();
 
+		for(type in noteTypes.keys()) callOnNoteType(type, "onUpdatePost", [elapsed]);
 		scripts.call("onUpdatePost", [elapsed]);
 	}
 

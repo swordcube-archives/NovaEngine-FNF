@@ -1,4 +1,4 @@
-package funkin.system;
+package core.utilities;
 
 using StringTools;
 

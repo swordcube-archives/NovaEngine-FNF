@@ -24,7 +24,7 @@ class NoteHitEvent extends CancellableEvent {
     /**
      * Whether or not a note splash should occur when hitting this note.
      */
-    public var doSplash:Bool = true;
+    public var showSplash:Bool = true;
 
     /**
      * Whether or not the rating you got hitting this note
@@ -82,12 +82,12 @@ class NoteHitEvent extends CancellableEvent {
      */
     public var cancelSingAnim:Bool = false;
 
-    public function new(note:Note, rating:String, splashSkin:String, doSplash:Bool, showRating:Bool, showCombo:Bool, score:Int, accuracyGain:Float) {
+    public function new(note:Note, rating:String, splashSkin:String, showSplash:Bool, showRating:Bool, showCombo:Bool, score:Int, accuracyGain:Float) {
         super();
         this.note = note;
         this.rating = rating;
         this.splashSkin = splashSkin;
-        this.doSplash = doSplash;
+        this.showSplash = showSplash;
         this.countAsCombo = !note.isSustainNote && note.mustPress;
         this.showRating = showRating && this.countAsCombo;
         this.showCombo = showCombo && this.countAsCombo;

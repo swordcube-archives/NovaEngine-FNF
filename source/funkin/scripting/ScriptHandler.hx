@@ -61,11 +61,11 @@ class ScriptHandler {
 
             // Classes (Funkin)
             "OptionsAPI" => core.api.OptionsAPI,
-            "CoolUtil" => funkin.system.CoolUtil,
-            "MathUtil" => funkin.system.MathUtil,
+            "CoolUtil" => funkin.utilities.CoolUtil,
+            "MathUtil" => core.utilities.MathUtil,
             "Conductor" => funkin.system.Conductor,
             "PlayState" => funkin.game.PlayState,
-            "Paths" => funkin.system.Paths,
+            "Paths" => funkin.utilities.Paths,
             "FNFSprite" => funkin.system.FNFSprite
         ];
 

@@ -61,17 +61,27 @@ class InputSystem implements IFlxDestroyable {
                     var rating:String = data.name;
                     var score:Int = data.score;
                     var accuracyGain:Float = data.accuracyGain;
-                    var doSplash:Bool = data.doSplash;
+                    var showSplash:Bool = data.showSplash;
 
-                    var event = game.scripts.event("onPlayerHit", new NoteHitEvent(note, rating, "Default", doSplash, true, true, score, accuracyGain));
+                    var event = game.scripts.event("onPlayerHit", new NoteHitEvent(note, rating, "Default", showSplash, true, true, score, accuracyGain));
 					game.eventOnNoteType(note.noteType, "onPlayerHit", event);
 
                     if(!event.cancelled) {
                         if(!event.cancelSingAnim)
                             game.characterSing(BF, note.strumLine.keyAmount, note.noteData);
+
+                        switch(rating) {
+                            case "sick": game.sicks++;
+                            case "good": game.goods++;
+                            case "bad":  game.bads++;
+                            case "shit": game.shits++;
+                        }
                         
                         receptor.playAnim("confirm");
 
+                        game.accuracyPressedNotes++;
+                        game.totalAccuracyAmount += accuracyGain;
+                        
                         game.health += event.healthGain;
                         game.vocals.volume = 1;
 

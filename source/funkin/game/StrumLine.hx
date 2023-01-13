@@ -125,7 +125,9 @@ class StrumLine extends FlxSpriteGroup {
 						game.eventOnNoteType(note.noteType, "onPlayerMiss", event);
 
 						if(!note.isSustainTail && !event.cancelled) {
+							game.score -= 10;
 							game.health -= event.healthLoss;
+							game.accuracyPressedNotes++;
 							game.vocals.volume = 0;
 							if(!event.cancelSingAnim) game.characterSing(BF, note.strumLine.keyAmount, note.noteData, "miss");
 							if(!note.isSustainNote) {
@@ -147,7 +149,7 @@ class StrumLine extends FlxSpriteGroup {
 		if(!note.isSustainNote && !event.cancelled) {
 			game.popUpScore(event, Ranking.judgeTime(note.strumTime).name, game.combo++);
 
-			if(event.doSplash) {
+			if(event.showSplash) {
 				var splash = splashes.recycle(NoteSplash);
 				splashes.remove(splash, true);
 				var skin:String = event.splashSkin != "Default" ? event.splashSkin : note.splashSkin;

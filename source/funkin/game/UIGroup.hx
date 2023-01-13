@@ -1,5 +1,6 @@
 package funkin.game;
 
+import flixel.text.FlxText;
 import funkin.system.Conductor;
 import flixel.math.FlxMath;
 import funkin.ui.HealthIcon;
@@ -33,10 +34,20 @@ class UIGroup extends FlxGroup {
 	 */
 	public var iconP2:HealthIcon;
 
-	 /**
-	  * The player's icon.
-	  */
+	/**
+	 * The player's icon.
+	 */
 	public var iconP1:HealthIcon;
+
+	/**
+	 * The text used to display stuff like score, misses, accuracy, and more if you want!
+	 */
+	public var scoreTxt:FlxText;
+
+	/**
+	 * Format for your current rank.
+	 */
+	public var rankFormat:FlxTextFormat = new FlxTextFormat(0xFF888888, false, false, 0);
 
 	// -------------------------------------------------------------------------------------------- //
 
@@ -70,6 +81,13 @@ class UIGroup extends FlxGroup {
 		add(iconP1 = new HealthIcon(0, healthBar.y, game.bf != null ? game.bf.healthIcon : "face"));
 		add(iconP2 = new HealthIcon(0, healthBar.y, game.dad != null ? game.dad.healthIcon : "face"));
 
+		scoreTxt = new FlxText(0, healthBar.y + (healthBar.height + 20), 0, "nuts");
+		scoreTxt.setFormat(Paths.font("vcr.ttf"), 18, FlxColor.WHITE, CENTER, OUTLINE, FlxColor.BLACK);
+		scoreTxt.borderSize = 1.25;
+		scoreTxt.text = getScoreText(PlayState.current, Ranking.unknownRank);
+		scoreTxt.addFormat(rankFormat, scoreTxt.text.length, scoreTxt.text.length - Ranking.unknownRank.name.length);
+		add(scoreTxt);
+
 		for(icon in [iconP2, iconP1]) icon.y -= icon.height * 0.5;
 		iconP1.flipX = true;
 
@@ -86,7 +104,29 @@ class UIGroup extends FlxGroup {
 		positionIcons();
 	}
 
+	function getScoreText(game:PlayState, rank:Ranking.Rank) {
+		return (
+			"Score:"+game.songScore+" • "+
+			"Misses:"+game.songMisses+" • "+
+			"Accuracy:"+(game.songAccuracy > 0 ? FlxMath.roundDecimal(game.songAccuracy * 100, 2) : 0)+"% • "+rank.name
+		);
+	}
+
 	override function update(elapsed:Float) {
+		var game = PlayState.current;
+		var rank = game.songAccuracy > -1 ? Ranking.getRankData(game.songAccuracy) : Ranking.unknownRank;
+
+		@:privateAccess rankFormat.format.color = rank.color;
+		scoreTxt.text = getScoreText(game, rank);
+		scoreTxt.screenCenter(X);
+
+		@:privateAccess {
+			var format = scoreTxt._formatRanges[0];
+			format.range.start = scoreTxt.text.length - rank.name.length;
+			format.range.end = scoreTxt.text.length;
+			scoreTxt._formatRanges[0] = format;
+		}
+
 		super.update(elapsed);
 
 		var iconLerp:Float = 0.25;

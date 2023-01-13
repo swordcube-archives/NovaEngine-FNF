@@ -1,6 +1,6 @@
 package funkin.menus;
 
-import funkin.system.ModHandler;
+import funkin.utilities.ModHandler;
 import funkin.system.MusicBeatSubstate;
 import flixel.math.FlxMath;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -13,6 +13,7 @@ import flixel.FlxG;
 using StringTools;
 
 class ModSwitcher extends MusicBeatSubstate {
+    var bg:FlxSprite;
     var mods:Array<String> = [Paths.fallbackMod];
     var alphabets:FlxTypedGroup<Alphabet>;
     var curSelected:Int = 0;
@@ -20,7 +21,7 @@ class ModSwitcher extends MusicBeatSubstate {
     override function create() {
         super.create();
         
-        var bg = new FlxSprite(0, 0).makeGraphic(1, 1, 0xFF000000);
+        bg = new FlxSprite(0, 0).makeGraphic(1, 1, 0xFF000000);
         bg.scale.set(FlxG.width, FlxG.height);
         bg.updateHitbox();
         bg.scrollFactor.set();
@@ -55,9 +56,10 @@ class ModSwitcher extends MusicBeatSubstate {
 
         if(controls.BACK) close();
 
-        if (controls.ACCEPT) {
-            FlxG.sound.music.stop();
-            CoolUtil.playMenuSFX(1);
+        if(controls.ACCEPT) {
+            FlxG.sound.music.fadeOut(0.25, 0, function(_) {
+                FlxG.sound.music.stop();
+            });
             Polymod.clearCache();
             ModHandler.switchMod(mods[curSelected]);
             FlxG.resetState();
