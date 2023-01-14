@@ -13,12 +13,12 @@ var speedTweens = [
 
 function onSongEvent(strumline:String, mult:String, duration:Float) {
     // If you set the scroll speed type to be constant, don't run the event
-    if(Settings.get("Scroll Type").toLowerCase() == "constant") return;
+    if(OptionsAPI.get("Scroll Type").toLowerCase() == "constant") return;
 
     var tweenID:Int = 0;
     var strums:StrumLine;
     switch(strumline.toLowerCase()) {
-        case "opponent": strums = UI.opponentStrums; tweenID = 0;
+        case "opponent": strums = UI.cpuStrums; tweenID = 0;
         default: strums = UI.playerStrums; tweenID = 1;
     }
 
@@ -30,7 +30,7 @@ function onSongEvent(strumline:String, mult:String, duration:Float) {
     if(val1 == null) val1 = 1;
     if(val2 == null) val2 = 0;
 
-    var newValue:Float = SONG.scrollSpeed * Settings.get("Scroll Speed") * val1;
+    var newValue:Float = SONG.scrollSpeed * OptionsAPI.get("Scroll Speed") * val1;
 
     if(speedTweens[tweenID] != null) speedTweens[tweenID].cancel();
     speedTweens[tweenID] = FlxTween.tween(strums, {noteSpeed: newValue}, val2, {ease: FlxEase.linear, onComplete:

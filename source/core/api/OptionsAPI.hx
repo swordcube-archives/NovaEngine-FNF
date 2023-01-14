@@ -30,6 +30,8 @@ class OptionsAPI {
         "Ghost Tapping"   => new Option(BOOL, false),
         "Miss Sounds"     => new Option(BOOL, true),
         "Note Offset"     => new Option(NUMBER, 0.0),
+        "Scroll Speed"    => new Option(NUMBER, 0.0),
+        "Scroll Type"     => new Option(LIST, "Multiplier"),
 
         // ACCESSIBILITY
         "Flashing Lights" => new Option(BOOL, true),
