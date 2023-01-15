@@ -83,7 +83,7 @@ class UIGroup extends FlxGroup {
 		add(iconP1 = new HealthIcon(0, healthBar.y, game.bf != null ? game.bf.healthIcon : "face"));
 		add(iconP2 = new HealthIcon(0, healthBar.y, game.dad != null ? game.dad.healthIcon : "face"));
 
-		var fart:Float = healthBar.height + 40;
+		var fart:Float = healthBar.height + 30;
 		if(PlayState.current.downscroll) fart *= -1;
 
 		scoreTxt = new FlxText(0, healthBar.y + fart, 0, "nuts");

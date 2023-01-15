@@ -10,7 +10,8 @@ class VideoCutscene extends Cutscene {
     var localPath:String;
 
     #if VIDEO_CUTSCENES
-    var videoSprite:VideoSprite;
+    var video:MP4Handler;
+    var videoSprite:FlxSprite;
     #end
     var cutsceneCamera:FlxCamera;
     
@@ -19,7 +20,7 @@ class VideoCutscene extends Cutscene {
         localPath = Assets.getPath(this.path = path);
     }
 
-    override function create() {
+    public override function create() {
         super.create();
         
         cutsceneCamera = new FlxCamera();
@@ -27,27 +28,29 @@ class VideoCutscene extends Cutscene {
         FlxG.cameras.add(cutsceneCamera, false);
         
         #if VIDEO_CUTSCENES
-        videoSprite = new VideoSprite();
-        videoSprite.finishCallback = close;
+        video = new MP4Handler();
+        video.finishCallback = close;
+        video.canvasWidth = cutsceneCamera.width;
+        video.canvasHeight = cutsceneCamera.height;
+
+        videoSprite = new FlxSprite();
         videoSprite.cameras = [cutsceneCamera];
         videoSprite.antialiasing = true;
-        videoSprite.setGraphicSize(1280, 720);
-        videoSprite.updateHitbox();
         add(videoSprite);
         
-        videoSprite.playVideo(localPath, false);
+        video.playMP4(localPath, false, videoSprite);
         #end
 
         cameras = [cutsceneCamera];
     }
 
-    override function update(elapsed:Float) {
+    public override function update(elapsed:Float) {
         super.update(elapsed);
         #if !VIDEO_CUTSCENES
         close();
         #end
     }
-    override function destroy() {
+    public override function destroy() {
         FlxG.cameras.remove(cutsceneCamera, true);
         super.destroy();
     }
