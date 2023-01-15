@@ -60,7 +60,11 @@ class ModSwitcher extends MusicBeatSubstate {
             FlxG.sound.music.fadeOut(0.25, 0, function(_) {
                 FlxG.sound.music.stop();
             });
+            Assets.cache.clear();
+            LimeAssets.cache.clear();
+            #if polymod
             Polymod.clearCache();
+            #end
             ModHandler.switchMod(mods[curSelected]);
             FlxG.resetState();
             close();

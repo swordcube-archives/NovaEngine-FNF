@@ -5,7 +5,8 @@ import flixel.util.FlxSort;
 import flixel.FlxCamera;
 import funkin.system.Conductor;
 
-class NoteGroup extends FlxTypedSpriteGroup<Note> {
+@:dox(hide) class NoteGroup extends FlxTypedSpriteGroup<Note> {
+    #if !docs
     var __loopSprite:Note;
     var i:Int = 0;
     var __currentlyLooping:Bool = false;
@@ -111,4 +112,5 @@ class NoteGroup extends FlxTypedSpriteGroup<Note> {
 
         return Object;
     }
+    #end
 }

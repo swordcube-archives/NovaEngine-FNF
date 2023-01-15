@@ -72,8 +72,10 @@ class MusicBeatState extends FlxUIState implements IBeatReceiver {
     override function create() {
         super.create();
 
+        #if !docs
         transIn = FlxTransitionableState.defaultTransIn;
         transOut = FlxTransitionableState.defaultTransOut;
+        #end
 
         persistentUpdate = false;
         persistentDraw = true;

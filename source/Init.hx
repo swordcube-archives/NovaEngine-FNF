@@ -2,6 +2,7 @@ package;
 
 import core.api.WindowsAPI;
 import core.api.OptionsAPI;
+import core.utilities.DiscordRPC;
 import funkin.system.AudioSwitchFix;
 import funkin.system.Controls;
 import funkin.utilities.ModHandler;
@@ -23,6 +24,8 @@ class Init extends FlxState {
     override function create() {
         super.create();
 
+        DiscordRPC.initialize();
+
         FlxG.save.bind("mainSave", "NovaEngine");
 
         Console.init();
@@ -42,7 +45,9 @@ class Init extends FlxState {
 
             Assets.cache.clear();
             LimeAssets.cache.clear();
+            #if !docs
             Polymod.clearCache();
+            #end
 
             #if MOD_SUPPORT
             Polymod.unloadAllMods();
@@ -82,6 +87,7 @@ class Init extends FlxState {
 
         ModHandler.init();
 
+        #if !docs
         Polymod.init({
             modRoot: "mods",
             dirs: [#if MOD_SUPPORT Paths.currentMod #end],
@@ -100,6 +106,7 @@ class Init extends FlxState {
                 ]
             }
         });
+        #end
 
         controls = new Controls();
 

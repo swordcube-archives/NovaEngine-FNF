@@ -107,6 +107,7 @@ class MainMenuState extends MusicBeatState {
 	override function update(elapsed:Float) {
 		super.update(elapsed);
 
+		#if !docs
 		if (!runDefaultCode) return;
         if (_exiting) menuItems.enabled = false;
 
@@ -118,6 +119,7 @@ class MainMenuState extends MusicBeatState {
 			persistentDraw = true;
 			openSubState(new ModSwitcher());
 		}
+		#end
 	}
 }
 

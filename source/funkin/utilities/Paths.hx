@@ -23,7 +23,7 @@ class Paths {
     public static function getFolderContents(path:String, ?returnPaths:Bool = false, ?removeDirectories:Bool = false):Array<String> {        
         var itemList:Array<String> = [];
 
-        #if sys
+        #if (sys && !docs)
         if(FileSystem.exists('${Paths.getAsset(path)}') && FileSystem.isDirectory('${Paths.getAsset(path)}')) {
             for(item in FileSystem.readDirectory('${Paths.getAsset(path)}')) {
                 var fullPath:String = '${Paths.getAsset('$path/$item')}';

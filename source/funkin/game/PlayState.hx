@@ -319,6 +319,7 @@ class PlayState extends MusicBeatState {
 		current = this;
 		paused = false;
 
+		#if !docs
 		(scripts = new ScriptPack()).setParent(this);
 
 		// CACHING && LOADING!!!
@@ -423,7 +424,7 @@ class PlayState extends MusicBeatState {
 				realNote.prevNote = prevNote;
 				oldNotes.push(realNote);
 				strumLine.notes.add(realNote);
-				eventOnNoteType(realNote.noteType, "onNoteCreation", new SimpleNoteEvent(realNote));
+				eventOnNoteType(realNote.noteType, "onNoteCreation", new NoteCreationEvent(realNote));
 
 				var susLength:Float = note.sustainLength / Conductor.stepCrochet;
 				if(susLength > 0.75) susLength++;
@@ -441,7 +442,7 @@ class PlayState extends MusicBeatState {
 						susNote.prevNote = prevNote;
 						oldNotes.push(susNote);
 						strumLine.notes.add(susNote);
-						eventOnNoteType(susNote.noteType, "onNoteCreation", new SimpleNoteEvent(susNote));
+						eventOnNoteType(susNote.noteType, "onNoteCreation", new NoteCreationEvent(susNote));
 					}
 				}
 			}
@@ -449,6 +450,7 @@ class PlayState extends MusicBeatState {
 
 		UI.cpuStrums.notes.sortNotes();
 		UI.playerStrums.notes.sortNotes();
+		#end
 	}
 
 	public function popUpScore(event:NoteHitEvent, rating:String, combo:Int) {

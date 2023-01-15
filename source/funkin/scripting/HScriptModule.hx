@@ -7,7 +7,8 @@ import funkin.scripting.ScriptHandler.ScriptModule;
 
 using StringTools;
 
-class HScriptModule extends ScriptModule {
+@:dox(hide) class HScriptModule extends ScriptModule {
+    #if !docs
     public var interp:Interp;
     public var code:String = "";
 
@@ -46,6 +47,21 @@ class HScriptModule extends ScriptModule {
 
         for(name => value in exp)
             interp.variables.set(name, value);
+
+        // don't ask >:(
+        interp.importBlocklist = [
+            #if VIDEOS_ALLOWED
+            "vlc.MP4Handler", // already imported as VideoHandler!
+            "vlc.VideoHandler", // already imported!
+            "vlc.MP4Sprite", // already imported as VideoSprite!
+            "vlc.VideoSprite", // already imported!
+
+            "MP4Handler", // already imported as VideoHandler!
+            "VideoHandler", // already imported!
+            "MP4Sprite", // already imported as VideoSprite!
+            "VideoSprite", // already imported!
+            #end
+        ];
     }
 
     function _errorHandler(error:Error) {
@@ -95,4 +111,5 @@ class HScriptModule extends ScriptModule {
         expr = null;
         super.destroy();
     }
+    #end
 }

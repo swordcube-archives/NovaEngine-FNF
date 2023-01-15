@@ -8,7 +8,7 @@ import hscript.Parser;
 /**
  * Handles the scripting features of the engine.
  */
-class ScriptHandler {
+@:dox(hide) class ScriptHandler {
 	/**
 	 * Shorthand for exposure, specifically public exposure. 
 	 * All scripts will be able to access these variables globally.
@@ -49,7 +49,9 @@ class ScriptHandler {
             "Dynamic" => Dynamic,
 
             // Classes (Flixel)
+            #if !docs
             "Polymod" => polymod.Polymod,
+            #end
             "FlxG" => flixel.FlxG,
             "FlxSprite" => flixel.FlxSprite,
             "FlxMath" => flixel.math.FlxMath,
@@ -75,6 +77,10 @@ class ScriptHandler {
             "Note" => funkin.game.Note,
             "NoteSplash" => funkin.game.NoteSplash,
             "Stage" => funkin.game.Stage,
+            #if VIDEOS_ALLOWED
+            "VideoHandler" => funkin.cutscenes.VideoHandler,
+            "VideoSprite" => funkin.cutscenes.VideoSprite,
+            #end
             
             // Variables
             "CANCEL_FUNCTION" => false,
