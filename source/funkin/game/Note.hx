@@ -298,6 +298,15 @@ class Note extends FNFSprite {
      * The direction of the note.
      */
     public var noteData:Int = 0;
+
+    /**
+     * The name version of `noteData`.
+     */
+    public var directionName(get, never):String;
+    function get_directionName():String {
+        return Note.extraKeyInfo[keyAmount+"K"].directions[noteData];
+    }
+
     public var keyAmount:Int = 4;
 
     /**

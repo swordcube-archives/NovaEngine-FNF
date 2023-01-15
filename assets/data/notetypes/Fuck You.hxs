@@ -1,4 +1,4 @@
-function onPlayerHit(event) {
+function onPlayerHit(event:NoteHitEvent) {
     if(event.note.isSustainNote) return;
     event.cancel();
     event.note.wasGoodHit = false;

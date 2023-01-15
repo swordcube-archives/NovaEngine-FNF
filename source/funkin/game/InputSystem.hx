@@ -1,5 +1,6 @@
 package funkin.game;
 
+import flixel.util.FlxSort;
 import funkin.scripting.events.*;
 import flixel.input.keyboard.FlxKey;
 import openfl.events.KeyboardEvent;
@@ -19,6 +20,13 @@ class InputSystem implements IFlxDestroyable {
         FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
         FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
     }
+
+    public function sortNotes(a:Note, b:Note):Int {
+		if (!a.shouldHit && b.shouldHit) return 1;
+		else if (a.shouldHit && !b.shouldHit) return -1;
+
+		return FlxSort.byValues(FlxSort.ASCENDING, a.strumTime, b.strumTime);
+	}
 
     public function onKeyPress(event:KeyboardEvent) {
         var direction:Int = directionFromEvent(event);
@@ -43,7 +51,7 @@ class InputSystem implements IFlxDestroyable {
         });
 
         // Sort the possible notes so you can't hit like 3 notes with one input
-        possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
+        possibleNotes.sort(sortNotes);
 
         // Check if there are any notes to hit
         if(possibleNotes.length > 0) {

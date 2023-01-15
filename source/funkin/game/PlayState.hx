@@ -392,6 +392,7 @@ class PlayState extends MusicBeatState {
 					var script = ScriptHandler.loadModule(item);
 					script.load();
 					script.call("onCreate");
+					script.setParent(this);
 					noteTypes[typeName] = script;
 				}
 			}
@@ -422,6 +423,7 @@ class PlayState extends MusicBeatState {
 				realNote.prevNote = prevNote;
 				oldNotes.push(realNote);
 				strumLine.notes.add(realNote);
+				eventOnNoteType(realNote.noteType, "onNoteCreation", new SimpleNoteEvent(realNote));
 
 				var susLength:Float = note.sustainLength / Conductor.stepCrochet;
 				if(susLength > 0.75) susLength++;
@@ -439,6 +441,7 @@ class PlayState extends MusicBeatState {
 						susNote.prevNote = prevNote;
 						oldNotes.push(susNote);
 						strumLine.notes.add(susNote);
+						eventOnNoteType(susNote.noteType, "onNoteCreation", new SimpleNoteEvent(susNote));
 					}
 				}
 			}
