@@ -586,12 +586,12 @@ class PlayState extends MusicBeatState {
 			}));
 		} 
 		else if (Paths.exists(videoCutscene)) {
-			FlxTransitionableState.skipNextTransIn = true;
-			inCutscene = true;
-			openSubState(new VideoCutscene(videoCutscene, function() {
-				startCountdown();
-			}));
-			persistentDraw = false;
+			new FlxTimer().start(2, function(tmr) {
+				var help = new VideoSprite();
+				help.playVideo(Assets.getPath(videoCutscene));
+				help.cameras = [camOther];
+				add(help);
+			});
 		} 
 		else
 			startCountdown();
