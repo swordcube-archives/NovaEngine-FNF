@@ -20,6 +20,7 @@
 
 --macro include('core')
 --macro include('funkin')
+--macro include('scripting')
 --macro keep('Main')
 
 --no-output

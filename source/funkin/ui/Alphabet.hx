@@ -5,7 +5,7 @@ import funkin.system.FNFSprite;
 import flixel.math.FlxMath;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
-@:enum abstract AlphabetFont(String) from String to String {
+@:dox(hide) @:enum abstract AlphabetFont(String) from String to String {
     var Bold = "Bold";
     var Default = "Default";
 }

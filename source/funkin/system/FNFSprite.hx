@@ -3,13 +3,13 @@ package funkin.system;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.math.FlxPoint;
 
-enum abstract SpriteType(String) to String from String {
+@:dox(hide) enum abstract SpriteType(String) to String from String {
     var IMAGE = "IMAGE";
     var SPARROW = "SPARROW";
     var PACKER = "PACKER";
 }
 
-enum abstract AnimationContext(String) to String from String {
+@:dox(hide) enum abstract AnimationContext(String) to String from String {
     var NORMAL = "NORMAL";
     var SING = "SING";
 }

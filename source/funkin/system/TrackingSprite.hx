@@ -53,7 +53,7 @@ import funkin.system.FNFSprite.SpriteType;
 /**
  * Enum to store the mode (or direction) that a tracking sprite tracks.
  */
-enum abstract TrackingMode(String) from String to String {
+@:dox(hide) enum abstract TrackingMode(String) from String to String {
     var RIGHT = "RIGHT";
     var LEFT = "LEFT";
     var UP = "UP";
