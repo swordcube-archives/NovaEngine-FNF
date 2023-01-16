@@ -69,7 +69,7 @@
 	<haxelib name="flixel-leather" /> <!-- https://github.com/Leather128/flixel -->
 	<haxelib name="polymod"/> <!-- https://github.com/swordcube/scriptless-polymod -->
 	<haxelib name="hscript-improved" /> <!-- https://github.com/YoshiCrafter29/hscript-improved -->
-	<haxelib name="discord_rpc" if="DISCORD_RPC"/> <!-- https://github.com/Aidan63/linc_discord-rpc -->
+	<haxelib name="linc_discord-rpc" if="DISCORD_RPC"/> <!-- https://github.com/Aidan63/linc_discord-rpc -->
 	<haxelib name="hxCodec" if="VIDEO_CUTSCENES"/> <!-- https://github.com/swordcube/hxCodec-2.5.1-LINUX -->
 	
 	<haxelib name="tjson" />

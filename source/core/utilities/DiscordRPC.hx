@@ -1,6 +1,6 @@
 package core.utilities;
 
-#if discord_rpc
+#if DISCORD_RPC
 import Sys.sleep;
 import discord_rpc.DiscordRpc;
 #end
@@ -11,7 +11,7 @@ class DiscordRPC {
 	public static var ready:Bool = false;
 
 	public function new() {
-		#if discord_rpc
+		#if DISCORD_RPC
 		ready = false;
 		trace("Discord Client starting...");
 		DiscordRpc.start({
@@ -35,13 +35,13 @@ class DiscordRPC {
 	}
 
 	public static function shutdown() {
-		#if discord_rpc
+		#if DISCORD_RPC
 		DiscordRpc.shutdown();
 		#end
 	}
 
 	static function onReady() {
-		#if discord_rpc
+		#if DISCORD_RPC
 		DiscordRpc.presence({
 			state: null,
 			largeImageKey: "icon",
@@ -61,7 +61,7 @@ class DiscordRPC {
 	}
 
 	public static function initialize() {
-		#if discord_rpc
+		#if DISCORD_RPC
 		var DiscordDaemon = sys.thread.Thread.create(() -> {
 			new DiscordRPC();
 		});
@@ -69,7 +69,7 @@ class DiscordRPC {
 	}
 
 	public static function changePresence(details:String, state:Null<String>, ?smallImageKey:String, ?hasStartTimestamp:Bool, ?endTimestamp:Float) {
-		#if discord_rpc
+		#if DISCORD_RPC
 		var startTimestamp:Float = if (hasStartTimestamp) Date.now().getTime() else 0;
 
 		if (endTimestamp > 0) endTimestamp = startTimestamp + endTimestamp;
