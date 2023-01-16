@@ -23,14 +23,13 @@ class VideoHandler {
 
 	public function new() {}
 
-	public function play(path:String, ?repeat:Bool = false, ?outputTo:FlxSprite = null, ?isWindow:Bool = false, ?isFullscreen:Bool = false,
-			?midSong:Bool = false):Void {
-		if (!midSong) {
-			if (FlxG.sound.music != null) {
-				FlxG.sound.music.stop();
-			}
-		}
-
+	/**
+	 * Plays a video from a specified path.
+	 * @param path The path to the video.
+	 * @param repeat Whether or not this video should repeat/loop.
+	 * @param outputTo An `FlxSprite` to output the graphics of this video to.
+	 */
+	public function play(path:String, ?repeat:Bool = false, ?outputTo:FlxSprite = null):Void {
 		bitmap = new VlcBitmap();
 
 		if (FlxG.stage.stageHeight / 9 < FlxG.stage.stageWidth / 16) {

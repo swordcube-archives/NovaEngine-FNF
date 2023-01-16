@@ -8,7 +8,7 @@ typedef IniSection = Map<String, String>;
 /**
  * A class used for parsing INI files.
  */
-class IniParser {
+@:dox(hide) class IniParser {
     /**
      * Parses raw INI data and returns an `Ini` from it.
      * 

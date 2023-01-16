@@ -2,7 +2,7 @@ package funkin.game;
 
 import funkin.system.Conductor;
 
-class Judgement {
+@:dox(hide) class Judgement {
     public var name:String = "sick";
     public var msTiming:Float = 0;
     public var score:Int = 0;
@@ -18,7 +18,7 @@ class Judgement {
     }
 }
 
-class Rank {
+@:dox(hide) class Rank {
     public var name:String = "S+";
     public var accuracyRequired:Float = 1;
     public var color:FlxColor = FlxColor.WHITE;

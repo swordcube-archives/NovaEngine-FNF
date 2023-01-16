@@ -20,7 +20,7 @@ import haxe.io.Path;
 
 using StringTools;
 
-enum abstract CharacterType(String) to String from String {
+@:dox(hide) enum abstract CharacterType(String) to String from String {
 	var DAD = "DAD";
 	var OPPONENT = "OPPONENT";
 	var GF = "GF";

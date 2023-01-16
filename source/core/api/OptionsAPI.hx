@@ -29,6 +29,9 @@ class OptionsAPI {
         "Middlescroll"    => new Option(BOOL, false),
         "Ghost Tapping"   => new Option(BOOL, false),
         "Miss Sounds"     => new Option(BOOL, true),
+        #if windows
+        "Dark Titlebar"   => new Option(BOOL, true),
+        #end
         "Note Offset"     => new Option(NUMBER, 0.0),
         "Scroll Speed"    => new Option(NUMBER, 0.0),
         "Scroll Type"     => new Option(LIST, "Multiplier"),

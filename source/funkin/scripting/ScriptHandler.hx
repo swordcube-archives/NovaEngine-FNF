@@ -49,7 +49,7 @@ import hscript.Parser;
             "Dynamic" => Dynamic,
 
             // Classes (Flixel)
-            #if !docs
+            #if polymod
             "Polymod" => polymod.Polymod,
             #end
             "FlxG" => flixel.FlxG,

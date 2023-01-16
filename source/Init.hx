@@ -30,7 +30,6 @@ class Init extends FlxState {
 
         Console.init();
         AudioSwitchFix.init();
-		WindowsAPI.setDarkMode(true);
 
         FlxG.keys.preventDefaultKeys = [TAB];
 
@@ -45,7 +44,7 @@ class Init extends FlxState {
 
             Assets.cache.clear();
             LimeAssets.cache.clear();
-            #if !docs
+            #if polymod
             Polymod.clearCache();
             #end
 
@@ -82,12 +81,16 @@ class Init extends FlxState {
         FlxSprite.defaultAntialiasing = OptionsAPI.get("Antialiasing");
         FlxG.stage.frameRate = OptionsAPI.get("FPS Cap");
 
+        #if windows
+		WindowsAPI.setDarkMode(OptionsAPI.get("Dark Titlebar"));
+        #end
+
         Conductor.init();
         ScriptHandler.init();
 
         ModHandler.init();
 
-        #if !docs
+        #if polymod
         Polymod.init({
             modRoot: "mods",
             dirs: [#if MOD_SUPPORT Paths.currentMod #end],

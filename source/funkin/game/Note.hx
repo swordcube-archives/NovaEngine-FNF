@@ -7,26 +7,26 @@ import funkin.system.FNFSprite;
 
 using StringTools;
 
-typedef NoteSkin = {
+@:dox(hide) typedef NoteSkin = {
     var scale:Float;
     var isPixel:Bool;
     var texture:SpritesheetData;
     var animations:Array<NoteAnim>;
 }
 
-typedef SplashSkin = {
+@:dox(hide) typedef SplashSkin = {
     var scale:Float;
     var alpha:Float;
     var texture:SpritesheetData;
     var animations:Array<SplashAnim>;
 }
 
-typedef SpritesheetData = {
+@:dox(hide) typedef SpritesheetData = {
     var name:String;
     var type:SpriteType;
 }
 
-typedef NoteAnim = {
+@:dox(hide) typedef NoteAnim = {
     var name:String;
     var spritesheetName:String;
     var indices:Array<Int>;
@@ -35,7 +35,7 @@ typedef NoteAnim = {
     var loop:Bool;
 }
 
-typedef SplashAnim = {
+@:dox(hide) typedef SplashAnim = {
     var name:String;
     var spritesheetName:String;
     var indices:Array<Int>;
@@ -43,7 +43,7 @@ typedef SplashAnim = {
     var fps:Int;
 }
 
-typedef EKInfo = {
+@:dox(hide) typedef EKInfo = {
     var directions:Array<String>;
     var ?scaleMult:Float;
     var ?spacingMult:Float;

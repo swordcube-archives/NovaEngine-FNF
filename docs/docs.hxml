@@ -1,0 +1,30 @@
+-D openfl=git
+-D flixel-leather=git
+
+--define docs
+
+-L lime
+-L openfl
+-L flixel-leather
+-L hscript-improved
+-L tjson
+-L polymod
+-L hxCodec
+
+--macro lime._internal.macros.DefineMacro.run()
+--macro openfl.utils._internal.ExtraParamsMacro.include()
+--remap flash:openfl
+--macro flixel.system.macros.FlxDefines.run()
+
+-cp source
+
+--macro include('core')
+--macro include('funkin')
+--macro keep('Main')
+
+--no-output
+
+-D doc-gen
+
+-xml docs/doc.xml
+-neko dummy.n

@@ -53,6 +53,11 @@ class VideoSprite extends FlxSprite {
         bitmap.canvasHeight = height;
     }
 
+    /**
+     * Plays a video from a specified path.
+     * @param path The path to the video.
+     * @param loop Whether or not the video should loop.
+     */
     public function play(path:String, ?loop:Bool = false) {
         bitmap.play(path, loop, this);
     }

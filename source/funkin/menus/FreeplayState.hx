@@ -9,7 +9,7 @@ import funkin.game.ChartLoader;
 import funkin.system.FNFSprite;
 import funkin.system.MusicBeatState;
 
-typedef SongMetadata = {
+@:dox(hide) typedef SongMetadata = {
     var name:String;
     var ?displayName:Null<String>;
     var character:String;

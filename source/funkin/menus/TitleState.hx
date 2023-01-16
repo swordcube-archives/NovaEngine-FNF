@@ -15,14 +15,14 @@ import flixel.util.FlxTimer;
 
 using StringTools;
 
-typedef TitleXMLSpriteVisibility = {
+@:dox(hide) typedef TitleXMLSpriteVisibility = {
 	var spriteName:String;
 	var visible:Bool;
 }
 
-typedef TitleXMLLines = Array<OneOfTwo<String, TitleXMLSpriteVisibility>>;
+@:dox(hide) typedef TitleXMLLines = Array<OneOfTwo<String, TitleXMLSpriteVisibility>>;
 
-class IntroText {
+@:dox(hide) class IntroText {
 	public var lines:TitleXMLLines;
 
 	public function new(?lines:Null<TitleXMLLines>) {

@@ -4,7 +4,7 @@ import funkin.game.Song;
 
 using StringTools;
 
-enum abstract EngineFormat(String) to String from String {
+@:dox(hide) enum abstract EngineFormat(String) to String from String {
     var AUTO_DETECT = "AUTO_DETECT"; // Automatically detect the chart format
     var FNF = "FNF"; // Specifically vanilla Funkin' charts
     var PSYCH = "PSYCH"; // Specifically Psych 0.6.3+ iirc
