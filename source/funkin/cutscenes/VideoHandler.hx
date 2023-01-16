@@ -9,6 +9,8 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import haxe.io.Path;
 
+using StringTools;
+
 class VideoHandler {
 	public var finishCallback:Void->Void;
 	public var stateCallback:FlxState;
