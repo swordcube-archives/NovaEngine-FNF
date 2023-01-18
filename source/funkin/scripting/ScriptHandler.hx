@@ -108,6 +108,7 @@ import hscript.Parser;
 
             // Library/feature flags
             "MOD_SUPPORT" => #if MOD_SUPPORT true #else false #end,
+            "LUA_SUPPORT" => #if LUA_SUPPORT true #else false #end,
             "DISCORD_RPC" => #if DISCORD_RPC true #else false #end,
         ];
 
