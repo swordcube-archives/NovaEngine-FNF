@@ -392,8 +392,8 @@ class PlayState extends MusicBeatState {
 					var typeName:String = Path.withoutDirectory(item.removeExtension());
 					var script = ScriptHandler.loadModule(item);
 					script.load();
-					script.call("onCreate");
 					script.setParent(this);
+					script.call("onCreate");
 					noteTypes[typeName] = script;
 				}
 			}

@@ -48,7 +48,7 @@ import hscript.Parser;
             "Bool" => Bool,
             "Dynamic" => Dynamic,
 
-            // Classes (Flixel)
+            // Classes (Flixel / OpenFL / Lime)
             #if polymod
             "Polymod" => polymod.Polymod,
             #end
@@ -83,6 +83,7 @@ import hscript.Parser;
             #end
             
             // Variables
+            "window" => lime.app.Application.current.window,
             "CANCEL_FUNCTION" => false,
             "CONTINUE_FUNCTION" => true,
         ];
@@ -121,9 +122,10 @@ import hscript.Parser;
             case "hx", "hxs", "hsc", "hscript":
                 new HScriptModule(path);
 
+            #if LUA_SUPPORT
             case "lua":
-                Console.error("LUA isn't supported! Use HScript instead.");
-                new DummyScript(path);
+                new LuaModule(path);
+            #end
                 
             default: new DummyScript(path);
         }
@@ -141,12 +143,16 @@ class ScriptModule extends FlxBasic implements IScriptModule {
         fileName = Path.withoutDirectory(path);
 
         onCreate(path);
+
+        var exp = ScriptHandler.exp;
+        for(name => value in exp)
+            set(name, value);
     }
 
     /**
      * Currently executing script.
      */
-     public static var curScript:ScriptModule = null;
+    public static var curScript:ScriptModule = null;
 
     /**
 	 * Loads the script.

@@ -35,7 +35,6 @@ using StringTools;
         code = Assets.getText(path);
 
         var parser = ScriptHandler.parser;
-        var exp = ScriptHandler.exp;
 
         try {
             expr = parser.parseString(code, fileName);
@@ -44,9 +43,6 @@ using StringTools;
         } catch(e) {
             _errorHandler(new Error(ECustom(e.toString()), 0, 0, fileName, 0));
         }
-
-        for(name => value in exp)
-            interp.variables.set(name, value);
 
         // don't ask >:(
         interp.importBlocklist = [
@@ -65,7 +61,7 @@ using StringTools;
     }
 
     function _errorHandler(error:Error) {
-        var fn = '$fileName:${error.line}: ';
+        var fn = 'Error occured on $fileName at line ${error.line}: ';
         var err = error.toString();
         if (err.startsWith(fn)) err = err.substr(fn.length);
 
@@ -73,7 +69,10 @@ using StringTools;
     }
 
     override function onLoad() {
-        if(expr != null) interp.execute(expr);
+        if(expr != null) {
+            interp.execute(expr);
+            call("new");
+        }
     }
 
 	override function get(variable:String):Dynamic {

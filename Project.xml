@@ -55,6 +55,9 @@
 	<!-- Allows the "mods" folder to be used. -->
 	<define name="MOD_SUPPORT" unless="web"/>
 
+	<!-- Allows lua scripting support. -->
+	<define name="LUA_SUPPORT" if="windows || mac || linux"/>
+
 	<!-- Allows video cutscenes to work. -->
 	<define name="VIDEO_CUTSCENES" unless="web || hl"/>
 
@@ -63,19 +66,21 @@
 
 	<!-- _______________________________ Libraries ______________________________ -->
 
-	<!-- Any libraries shown with links should be installed via "haxelib git libraryName libraryLink" -->
-	<!-- If they show no links, install them via "haxelib install libraryName" -->
+	<!-- Install these libraries by running "update.bat" (Windows) or "update.sh" (Mac / Linux) -->
 
-	<haxelib name="flixel-leather" /> <!-- https://github.com/Leather128/flixel -->
-	<haxelib name="polymod"/> <!-- https://github.com/swordcube/scriptless-polymod -->
-	<haxelib name="hscript-improved" /> <!-- https://github.com/YoshiCrafter29/hscript-improved -->
-	<haxelib name="linc_discord-rpc" if="DISCORD_RPC"/> <!-- https://github.com/Aidan63/linc_discord-rpc -->
-	<haxelib name="hxCodec" if="VIDEO_CUTSCENES"/> <!-- https://github.com/swordcube/hxCodec-2.5.1-LINUX -->
+	<haxelib name="flixel-leather" />
+	<haxelib name="polymod"/>
+	<haxelib name="hscript-improved" />
+	<haxelib name="linc_luajit" if="LUA_SUPPORT"/>
+	<haxelib name="linc_discord-rpc" if="DISCORD_RPC"/>
+	<haxelib name="hxCodec" if="VIDEO_CUTSCENES"/>
 	
 	<haxelib name="tjson" />
 	<haxelib name="hxcpp-debug-server" />
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
+
+	<haxedef name="LUAJIT_ENABLE_LUA52COMPAT" if="ENABLE_LUA" />
 
 	<!--Optimise inputs, be careful you will get null errors if you don't use conditionals in your game-->
 	<haxedef name="FLX_NO_MOUSE" if="mobile" />

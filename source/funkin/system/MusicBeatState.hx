@@ -147,18 +147,18 @@ class MusicBeatState extends FlxUIState implements IBeatReceiver {
     }
 
     @:dox(hide) public function beatHit(curBeat:Int):Void {
-        for(e in members) if (e is IBeatReceiver) cast(e, IBeatReceiver).beatHit(curBeat);
+        for(e in members) if (e != null && e is IBeatReceiver) cast(e, IBeatReceiver).beatHit(curBeat);
         call("onBeatHit", [curBeat]);
     }
 
     @:dox(hide) public function stepHit(curStep:Int):Void {
-        for(e in members) if (e is IBeatReceiver) cast(e, IBeatReceiver).stepHit(curStep);
+        for(e in members) if (e != null && e is IBeatReceiver) cast(e, IBeatReceiver).stepHit(curStep);
         call("onStepHit", [curStep]);
     }
 
     @:dox(hide) public function sectionHit(curSection:Int) {
 
-        for(e in members) if (e is IBeatReceiver) cast(e, IBeatReceiver).sectionHit(curSection);
+        for(e in members) if (e != null && e is IBeatReceiver) cast(e, IBeatReceiver).sectionHit(curSection);
         call("onSectionHit", [curSection]);
     }
 
