@@ -93,7 +93,7 @@ using StringTools;
         interp.scriptObject = classInstance;
     }
 
-	override function call(method:String, ?parameters:Array<Dynamic>):Dynamic {
+	override function onCall(method:String, ?parameters:Array<Dynamic>):Dynamic {
         var func:Dynamic = interp.variables.get(method);
         try {
             if(func != null && Reflect.isFunction(func))

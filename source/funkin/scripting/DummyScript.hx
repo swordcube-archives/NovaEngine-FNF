@@ -10,7 +10,7 @@ class DummyScript extends ScriptModule {
     
     public override function get(v:String) {return variables.get(v);}
     public override function set(v:String, v2:Dynamic) {variables.set(v, v2); return v2;}
-    public override function call(method:String, ?parameters:Array<Dynamic>):Dynamic {
+    public override function onCall(method:String, ?parameters:Array<Dynamic>):Dynamic {
         var func = variables.get(method);
         if (Reflect.isFunction(func))
             return (parameters != null && parameters.length > 0) ? Reflect.callMethod(null, func, parameters) : func();

@@ -770,8 +770,8 @@ class PlayState extends MusicBeatState {
 
 		// If the vocals are out of sync, resync them!
 		@:privateAccess
-		var shouldResync = ((vocals._sound != null && SONG.needsVoices && vocals.time < vocals.length) ? !Conductor.isAudioSynced(vocals) : !Conductor.isAudioSynced(FlxG.sound.music)) && !startingSong && !endingSong && !inCutscene;
-		if(shouldResync) resyncVocals();
+		var shouldResync = ((vocals._sound != null && SONG.needsVoices && vocals.time < vocals.length) ? !Conductor.isAudioSynced(vocals) : !Conductor.isAudioSynced(FlxG.sound.music));
+		if(shouldResync && !startingSong && !endingSong && !inCutscene) resyncVocals();
 
 		for(type in noteTypes.keys()) callOnNoteType(type, "onUpdatePost", [elapsed]);
 		scripts.call("onUpdatePost", [elapsed]);

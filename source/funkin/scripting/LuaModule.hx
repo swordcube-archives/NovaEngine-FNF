@@ -23,8 +23,6 @@ class LuaModule extends ScriptModule {
     public var luaCallbacks:Map<String, Dynamic> = [];
 
     override function onCreate(path:String) {
-        super.onCreate(path);
-
         code = Assets.getText(path);
 
         state = LuaL.newstate();
@@ -54,7 +52,7 @@ class LuaModule extends ScriptModule {
 
     public static var callbackReturnVariables = [];
 
-    override function call(funcName:String, ?args:Array<Dynamic>):Dynamic {
+    override function onCall(funcName:String, ?args:Array<Dynamic>):Dynamic {
         if(args == null) args = [];
         state.settop(0);
         state.getglobal(funcName);
@@ -93,8 +91,7 @@ class LuaModule extends ScriptModule {
 
     // UTILS
     static inline function print_function(s:String) : Int {
-		if (ScriptModule.curScript != null)
-            trace('${ScriptModule.curScript.fileName}: $s');
+        Console.log('$s');
 		return 0;
 	}
 
