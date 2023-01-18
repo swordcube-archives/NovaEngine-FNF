@@ -84,6 +84,7 @@ class InputSystem implements IFlxDestroyable {
                             case "bad":  game.bads++;
                             case "shit": game.shits++;
                         }
+                        game.score += score;
                         
                         receptor.playAnim("confirm");
 
