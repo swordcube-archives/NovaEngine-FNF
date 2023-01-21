@@ -1,5 +1,6 @@
 package funkin.game;
 
+import flixel.FlxObject;
 import flixel.group.FlxSpriteGroup;
 import flixel.addons.transition.FlxTransitionableState;
 import funkin.system.FNFSprite;
@@ -211,6 +212,9 @@ class PlayState extends MusicBeatState {
 		return boyfriends = newChars;
 	}
 
+	public var camFollow:FlxObject;
+	public static var prevCamFollow:FlxObject;
+
 	/**
 	 * The amount of health the player has.
 	 * Limited to the values of `minHealth` and `maxHealth`.
@@ -361,6 +365,10 @@ class PlayState extends MusicBeatState {
 		gfs = [gf];
 		dads = [dad];
 		boyfriends = [bf];
+
+		add(camFollow = new FlxObject(0, 0, 1, 1));
+		camFollow.setPosition(gf.x + (gf.width * 0.5), gf.y + (gf.height * 0.5));
+		FlxG.camera.follow(camFollow, null, 0.04);
 
 		add(comboGroup = new FlxTypedSpriteGroup<FNFSprite>(FlxG.width * 0.55, (FlxG.height * 0.5) - 60));
 
@@ -580,10 +588,10 @@ class PlayState extends MusicBeatState {
 	public function startCutscene() {
 		// If we're not allowed to play a cutscene
 		// Then just start the countdown instead
-		// if(!playCutscenes) {
-		// 	startCountdown();
-		// 	return;
-		// }
+		if(!playCutscenes) {
+			startCountdown();
+			return;
+		}
 
 		var videoCutscene = Paths.video('${PlayState.SONG.name.toLowerCase()}-cutscene');
 		persistentUpdate = false;
@@ -611,6 +619,8 @@ class PlayState extends MusicBeatState {
 		var swagCounter:Int = 0;
 
 		new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer) {
+			var pos = ((SONG.sections[0] != null && SONG.sections[0].playerSection) ? boyfriend : dad).getCameraPosition();
+			if(swagCounter == 0) camFollow.setPosition(pos.x, pos.y);
 			for(character in dads) character.dance();
 			for(character in gfs) character.dance();
 			for(character in bfs) character.dance();
@@ -805,6 +815,9 @@ class PlayState extends MusicBeatState {
 	@:dox(hide) override function sectionHit(curSection:Int) {
 		if(SONG.sections[curSection] != null && SONG.sections[curSection].changeBPM)
 			Conductor.bpm = SONG.sections[curSection].bpm;
+
+		var pos = ((SONG.sections[curSection] != null && SONG.sections[curSection].playerSection) ? boyfriend : dad).getCameraPosition();
+		camFollow.setPosition(pos.x, pos.y);
 
 		scripts.call("onSectionHit", [curSection]);
 		super.sectionHit(curSection);
