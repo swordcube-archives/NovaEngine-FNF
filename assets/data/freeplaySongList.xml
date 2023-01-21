@@ -1,5 +1,8 @@
 <songs>
     <!-- chart type isn't needed but i put it here so u know it exists -->
     <!-- same for display name, setting it to nothing makes it default to whatever name is -->
-    <song name="Tutorial" displayName="" character="gf"        bgColor="#9271FD" difficulties="easy,normal,hard" chartType="AUTO_DETECT"/>
+    <song name="Tutorial" displayName="" character="gf" bgColor="#9271FD" difficulties="easy,normal,hard" chartType="AUTO_DETECT"/>
+    <song name="Bopeebo" character="dad" bgColor="#9271FD" difficulties="easy,normal,hard"/>
+    <song name="Fresh" character="dad" bgColor="#9271FD" difficulties="easy,normal,hard"/>
+    <song name="Dad Battle" character="dad" bgColor="#9271FD" difficulties="easy,normal,hard"/>
 </songs>

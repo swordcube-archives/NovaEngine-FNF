@@ -6,71 +6,54 @@ import flixel.input.keyboard.FlxKey;
 class Controls {
     public function new() {}
 
+    // Pressed
     public var UI_UP(get, never):Bool;
-
-    function get_UI_UP():Bool {
-        return checkKeys(OptionsAPI.save.data.CONTROLS_UI_UP, PRESSED);
-    }
-
-    public var UI_UP_P(get, never):Bool;
-
-    function get_UI_UP_P():Bool {
-        return checkKeys(OptionsAPI.save.data.CONTROLS_UI_UP, JUST_PRESSED);
-    }
+    function get_UI_UP() return pressed("UI_UP");
 
     public var UI_DOWN(get, never):Bool;
-
-    function get_UI_DOWN():Bool {
-        return checkKeys(OptionsAPI.save.data.CONTROLS_UI_DOWN, PRESSED);
-    }
-
-    public var UI_DOWN_P(get, never):Bool;
-
-    function get_UI_DOWN_P():Bool {
-        return checkKeys(OptionsAPI.save.data.CONTROLS_UI_DOWN, JUST_PRESSED);
-    }
+    function get_UI_DOWN() return pressed("UI_DOWN");
 
     public var UI_LEFT(get, never):Bool;
-
-    function get_UI_LEFT():Bool {
-        return checkKeys(OptionsAPI.save.data.CONTROLS_UI_LEFT, PRESSED);
-    }
-
-    public var UI_LEFT_P(get, never):Bool;
-
-    function get_UI_LEFT_P():Bool {
-        return checkKeys(OptionsAPI.save.data.CONTROLS_UI_LEFT, JUST_PRESSED);
-    }
+    function get_UI_LEFT() return pressed("UI_LEFT");
 
     public var UI_RIGHT(get, never):Bool;
+    function get_UI_RIGHT() return pressed("UI_RIGHT");
 
-    function get_UI_RIGHT():Bool {
-        return checkKeys(OptionsAPI.save.data.CONTROLS_UI_RIGHT, PRESSED);
-    }
-
-    public var UI_RIGHT_P(get, never):Bool;
-
-    function get_UI_RIGHT_P():Bool {
-        return checkKeys(OptionsAPI.save.data.CONTROLS_UI_RIGHT, JUST_PRESSED);
-    }
-
+    // Pressed (others)
     public var ACCEPT(get, never):Bool;
-
-    function get_ACCEPT():Bool {
-        return checkKeys(OptionsAPI.save.data.CONTROLS_UI_ACCEPT, JUST_PRESSED);
-    }
+    function get_ACCEPT() return justPressed("UI_ACCEPT");
 
     public var BACK(get, never):Bool;
-
-    function get_BACK():Bool {
-        return checkKeys(OptionsAPI.save.data.CONTROLS_UI_BACK, JUST_PRESSED);
-    }
+    function get_BACK() return justPressed("UI_BACK");
 
     public var PAUSE(get, never):Bool;
+    function get_PAUSE() return justPressed("UI_PAUSE");
 
-    function get_PAUSE():Bool {
-        return checkKeys(OptionsAPI.save.data.CONTROLS_UI_PAUSE, JUST_PRESSED);
-    }
+    // Just pressed
+    public var UI_UP_P(get, never):Bool;
+    function get_UI_UP_P() return justPressed("UI_UP");
+
+    public var UI_DOWN_P(get, never):Bool;
+    function get_UI_DOWN_P() return justPressed("UI_DOWN");
+
+    public var UI_LEFT_P(get, never):Bool;
+    function get_UI_LEFT_P() return justPressed("UI_LEFT");
+
+    public var UI_RIGHT_P(get, never):Bool;
+    function get_UI_RIGHT_P() return justPressed("UI_RIGHT");
+
+    // Released
+    public var UI_UP_R(get, never):Bool;
+    function get_UI_UP_R() return justReleased("UI_UP");
+
+    public var UI_DOWN_R(get, never):Bool;
+    function get_UI_DOWN_R() return justReleased("UI_DOWN");
+
+    public var UI_LEFT_R(get, never):Bool;
+    function get_UI_LEFT_R() return justReleased("UI_LEFT");
+
+    public var UI_RIGHT_R(get, never):Bool;
+    function get_UI_RIGHT_R() return justReleased("UI_RIGHT");
 
     /**
      * Saves your controls to the filesystem.
@@ -81,16 +64,27 @@ class Controls {
 
     // internal functions
     function checkKeys(keys:Array<Null<FlxKey>>, status:FlxInputState) {
-        var ret:Bool = false;
         for(key in keys) {
             if(checkKey(key, status))
-                ret = true;
+                return true;
         }
-        return ret;
+        return false;
     }
 
     function checkKey(key:Null<FlxKey>, status:FlxInputState) {
         if(key == null || key == NONE) return false;
         return FlxG.keys.checkStatus(key, status);
+    }
+
+    public function justPressed(control:String) {
+        return checkKeys(Reflect.field(OptionsAPI.save.data, "CONTROLS_"+control), JUST_PRESSED);
+    }
+
+    public function pressed(control:String) {
+        return checkKeys(Reflect.field(OptionsAPI.save.data, "CONTROLS_"+control), PRESSED);
+    }
+
+    public function justReleased(control:String) {
+        return checkKeys(Reflect.field(OptionsAPI.save.data, "CONTROLS_"+control), JUST_RELEASED);
     }
 }

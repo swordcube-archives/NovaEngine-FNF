@@ -55,9 +55,6 @@
 	<!-- Allows the "mods" folder to be used. -->
 	<define name="MOD_SUPPORT" unless="web"/>
 
-	<!-- Allows lua scripting support. -->
-	<define name="LUA_SUPPORT" if="windows || mac || linux"/>
-
 	<!-- Allows video cutscenes to work. -->
 	<define name="VIDEO_CUTSCENES" unless="web || hl"/>
 
@@ -71,7 +68,6 @@
 	<haxelib name="flixel-leather" />
 	<haxelib name="polymod"/>
 	<haxelib name="hscript-improved" />
-	<haxelib name="linc_luajit" if="LUA_SUPPORT"/>
 	<haxelib name="linc_discord-rpc" if="DISCORD_RPC"/>
 	<haxelib name="hxCodec" if="VIDEO_CUTSCENES"/>
 	
@@ -79,8 +75,6 @@
 	<haxelib name="hxcpp-debug-server" />
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
-
-	<haxedef name="LUAJIT_ENABLE_LUA52COMPAT" if="ENABLE_LUA" />
 
 	<!--Optimise inputs, be careful you will get null errors if you don't use conditionals in your game-->
 	<haxedef name="FLX_NO_MOUSE" if="mobile" />

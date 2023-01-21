@@ -25,7 +25,7 @@ class FPSCounter extends TextField {
 		defaultTextFormat = new TextFormat(Paths.font("vcr.ttf"), 14, color);
 		autoSize = LEFT;
 		multiline = true;
-		text = "FPS: ";
+		text = "";
 
 		currentTime = 0;
 	}

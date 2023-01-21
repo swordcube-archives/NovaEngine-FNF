@@ -108,7 +108,6 @@ import hscript.Parser;
 
             // Library/feature flags
             "MOD_SUPPORT" => #if MOD_SUPPORT true #else false #end,
-            "LUA_SUPPORT" => #if LUA_SUPPORT true #else false #end,
             "DISCORD_RPC" => #if DISCORD_RPC true #else false #end,
         ];
 
@@ -123,10 +122,9 @@ import hscript.Parser;
             case "hx", "hxs", "hsc", "hscript":
                 new HScriptModule(path);
 
-            #if LUA_SUPPORT
             case "lua":
-                new LuaModule(path);
-            #end
+                Console.error("Lua isn't supported! Use HScript instead!");
+                new DummyScript(path);
                 
             default: new DummyScript(path);
         }

@@ -56,6 +56,11 @@ class PlayState extends MusicBeatState {
 
 	// Game
 	/**
+	 * The current difficulty of the week you're playing in story mode.
+	 */
+	public static var storyDifficulty:String = "normal";
+
+	/**
 	 * Whether or not we're playing a week in story mode.
 	 */
 	public static var isStoryMode:Bool = false;
@@ -686,7 +691,8 @@ class PlayState extends MusicBeatState {
 			if(vocals != null) vocals.stop();
 
 			CoolUtil.playMusic(Paths.music("freakyMenu"));
-			FlxG.sound.music.time = 0;
+			Conductor.position = FlxG.sound.music.time = 0;
+			Conductor.reset();
 			FlxG.switchState(new funkin.menus.FreeplayState());
 		}
 	}
@@ -705,6 +711,8 @@ class PlayState extends MusicBeatState {
 	}
 
 	public function resyncVocals() {
+		if(endingSong) return;
+		
 		@:privateAccess
 		if(vocals._sound != null && SONG.needsVoices) {
             FlxG.sound.music.pause();
@@ -730,7 +738,7 @@ class PlayState extends MusicBeatState {
 		scripts.call("onUpdate", [elapsed]);
 
 		vocals.pitch = FlxG.sound.music.pitch;
-		if(!inCutscene && !endingSong) Conductor.position += (elapsed * 1000) * FlxG.sound.music.pitch;
+		if(!inCutscene) Conductor.position += (elapsed * 1000) * FlxG.sound.music.pitch;
 		if(Conductor.position >= 0 && startingSong && !inCutscene) startSong();
 
 		if(controls.BACK && !endingSong) {
@@ -768,11 +776,6 @@ class PlayState extends MusicBeatState {
 				character.dance();
 		}
 
-		// If the vocals are out of sync, resync them!
-		@:privateAccess
-		var shouldResync = ((vocals._sound != null && SONG.needsVoices && vocals.time < vocals.length) ? !Conductor.isAudioSynced(vocals) : !Conductor.isAudioSynced(FlxG.sound.music));
-		if(shouldResync && !startingSong && !endingSong && !inCutscene) resyncVocals();
-
 		for(type in noteTypes.keys()) callOnNoteType(type, "onUpdatePost", [elapsed]);
 		scripts.call("onUpdatePost", [elapsed]);
 	}
@@ -787,6 +790,14 @@ class PlayState extends MusicBeatState {
 	}
 
 	@:dox(hide) override function stepHit(curStep:Int) {
+		// If the vocals are out of sync, resync them!
+		@:privateAccess
+		if (Math.abs(FlxG.sound.music.time - Conductor.position) > (20 * FlxG.sound.music.pitch)
+			|| (vocals._sound != null && SONG.needsVoices && Math.abs(vocals.time - Conductor.position) > (20 * vocals.pitch)))
+		{
+			resyncVocals();
+		}
+
 		scripts.call("onStepHit", [curStep]);
 		super.stepHit(curStep);
 	}

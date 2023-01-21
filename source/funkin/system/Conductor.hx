@@ -269,10 +269,4 @@ class Conductor {
 			totalPos += ((60 / curBPM) * 1000 / 4) * deltaSteps;
 		}
 	}
-
-	public static function isAudioSynced(sound:FlxSound) {
-		var resyncTime:Float = #if windows 30 #else 20 #end; // i hate windows
-		resyncTime *= FlxG.sound.music.pitch;
-		return !(sound.time > position + resyncTime || sound.time < position - resyncTime);
-	}
 }
