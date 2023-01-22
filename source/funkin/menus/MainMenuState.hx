@@ -59,17 +59,14 @@ class MainMenuState extends MusicBeatState {
 		});
 
         // VVV -- ADD MENU ITEMS HERE!! --
-		menuItems.createItem(null, null, "story mode", function() {
+		menuItems.createItem("story mode", () -> {
 			startExitState(new StoryMenuState());
 		});
-		menuItems.createItem(null, null, "freeplay", function() {
+		menuItems.createItem("freeplay", () -> {
 			startExitState(new FreeplayState());
 		});
-        menuItems.createItem(null, null, "credits", function() {
-			startExitState(new MusicBeatState());
-		});
-        menuItems.createItem(null, null, "options", function() {
-			startExitState(new MusicBeatState());
+        menuItems.createItem("options", () -> {
+			startExitState(new OptionsMenuState());
 		});
         // ^^^ ----------------------------
 
@@ -141,8 +138,8 @@ class MainMenuList extends MenuTypedList<MainMenuItem> {
 		super(Vertical);
 	}
 
-	public function createItem(?x:Float = 0, ?y:Float = 0, name:String, callback:Dynamic = null, fireInstantly:Bool = false) {
-		var item:MainMenuItem = new MainMenuItem(x, y, name, Paths.getSparrowAtlas('menus/mainmenu/$name'), callback);
+	public function createItem(name:String, callback:Dynamic = null, fireInstantly:Bool = false) {
+		var item:MainMenuItem = new MainMenuItem(0, 0, name, Paths.getSparrowAtlas('menus/mainmenu/$name'), callback);
 		item.fireInstantly = fireInstantly;
 		item.ID = length;
 		return addItem(name, item);

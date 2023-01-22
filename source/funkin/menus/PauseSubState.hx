@@ -90,9 +90,9 @@ class PauseSubState extends MusicBeatSubstate {
         add(grpAlphabet = new PauseMenuGroup());
 
         // VVV - ADD PAUSE OPTIONS HERE!
-        grpAlphabet.addItem("Resume", resumeGame);
-        grpAlphabet.addItem("Restart Song", () -> FlxG.resetState());
-        grpAlphabet.addItem("Exit To Menu", () -> FlxG.switchState(new FreeplayState()));
+        grpAlphabet.createItem("Resume", resumeGame);
+        grpAlphabet.createItem("Restart Song", () -> FlxG.resetState());
+        grpAlphabet.createItem("Exit To Menu", () -> FlxG.switchState(new FreeplayState()));
         // ^^^ -------------------------
 
         changeSelection();
@@ -152,7 +152,7 @@ class PauseSubState extends MusicBeatSubstate {
 }
 
 class PauseMenuGroup extends FlxTypedGroup<PauseMenuItem> {
-    public function addItem(text:String, onSelect:Void->Void) {
+    public function createItem(text:String, onSelect:Void->Void) {
         var item = new PauseMenuItem(0, (70 * length) + 30, Bold, text);
         item.isMenuItem = true;
         item.onSelect.add(onSelect);
