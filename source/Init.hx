@@ -3,11 +3,9 @@ package;
 import core.api.WindowsAPI;
 import core.api.OptionsAPI;
 import core.utilities.DiscordRPC;
-import funkin.system.AudioSwitchFix;
-import funkin.system.Controls;
+import funkin.system.*;
 import funkin.utilities.ModHandler;
 import funkin.scripting.ScriptHandler;
-import funkin.system.Conductor;
 import flixel.math.FlxRect;
 import flixel.math.FlxPoint;
 import flixel.addons.transition.TransitionData;
@@ -89,6 +87,8 @@ class Init extends FlxState {
         ScriptHandler.init();
 
         ModHandler.init();
+
+        Highscore.init();
 
         #if polymod
         Polymod.init({

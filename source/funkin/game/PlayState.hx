@@ -1,5 +1,6 @@
 package funkin.game;
 
+import funkin.system.Highscore;
 import flixel.FlxObject;
 import flixel.group.FlxSpriteGroup;
 import flixel.addons.transition.FlxTransitionableState;
@@ -697,6 +698,8 @@ class PlayState extends MusicBeatState {
 
 		var ret:Dynamic = scripts.call("onEndSong", [], true);
         if(ret != false) {
+			Highscore.setScore(SONG.name.toLowerCase(), storyDifficulty, songScore);
+
 			if(FlxG.sound.music != null) FlxG.sound.music.stop();
 			if(vocals != null) vocals.stop();
 

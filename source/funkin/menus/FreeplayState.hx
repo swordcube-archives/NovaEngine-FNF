@@ -1,15 +1,20 @@
 package funkin.menus;
 
+import funkin.system.Conductor;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import funkin.game.PlayState;
 import flixel.math.FlxMath;
 import funkin.ui.HealthIcon;
+import openfl.media.Sound;
+import sys.thread.Mutex;
+import sys.thread.Thread;
 import funkin.ui.Alphabet;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import funkin.game.ChartLoader;
 import funkin.system.FNFSprite;
 import funkin.system.MusicBeatState;
+import funkin.system.Highscore;
 
 @:dox(hide) typedef SongMetadata = {
     var name:String;
@@ -39,6 +44,13 @@ class FreeplayState extends MusicBeatState {
     public var curSelected:Int = 0;
     public var curDifficulty:Int = 1;
 
+    public var curSongPlaying:Int = -1;
+
+	public var songThread:Thread;
+	public var threadActive:Bool = true;
+	public var mutex:Mutex;
+	public var songToPlay:Sound;
+
     override function create() {
         super.create();
 
@@ -46,6 +58,8 @@ class FreeplayState extends MusicBeatState {
 			CoolUtil.playMusic(Paths.music("freakyMenu"));
 
         if(!runDefaultCode) return;
+
+        mutex = new Mutex();
 
         bg = new FNFSprite().load(IMAGE, Paths.image("menus/menuBGDesat"));
         bg.screenCenter();
@@ -133,6 +147,7 @@ class FreeplayState extends MusicBeatState {
         if(!runDefaultCode) return;
 
         if(controls.ACCEPT) {
+            threadActive = false;
             var selectedDiff:String = songs[curSelected].difficulties[curDifficulty];
             var chartType:EngineFormat = (songs[curSelected].chartType != null) ? songs[curSelected].chartType : AUTO_DETECT;
             PlayState.SONG = ChartLoader.load(chartType, Paths.chart(songs[curSelected].name, selectedDiff));
@@ -158,7 +173,23 @@ class FreeplayState extends MusicBeatState {
 			openSubState(new ModSwitcher());
 		}
 
-        if(controls.BACK) FlxG.switchState(new MainMenuState());
+        if(controls.BACK) {
+            threadActive = false;
+            CoolUtil.playMenuSFX(2);
+            FlxG.switchState(new MainMenuState());
+        }
+
+        mutex.acquire();
+        if (songToPlay != null) {
+            FlxG.sound.playMusic(songToPlay);
+            if (FlxG.sound.music.fadeTween != null) FlxG.sound.music.fadeTween.cancel();
+            FlxG.sound.music.volume = 0.0;
+            FlxG.sound.music.fadeIn(1.0, 0.0, 1.0);
+            FlxG.sound.music.pitch = 1;
+            Conductor.bpm = songs[curSelected].bpm;
+            songToPlay = null;
+        }
+        mutex.release();
     }
 
     function changeSelection(?change:Int = 0) {
@@ -174,14 +205,41 @@ class FreeplayState extends MusicBeatState {
         });
         CoolUtil.playMenuSFX();
         changeDifficulty();
+        changeSongPlaying();
     }
 
     function changeDifficulty(?change:Int = 0) {
         var diffs:Array<String> = songs[curSelected].difficulties;
+
         curDifficulty = FlxMath.wrap(curDifficulty + change, 0, diffs.length - 1);
-        intendedScore = 0; // will do when implementing scores loL!
+        intendedScore = Highscore.getScore(songs[curSelected].name.toLowerCase(), diffs[curDifficulty]);
+
         var arrows:Array<String> = diffs.length <= 1 ? ["", ""] : ["< ", " >"];
         diffText.text = '${arrows[0]}${diffs[curDifficulty].toUpperCase()}${arrows[1]}';
         positionHighscore();
     }
+
+    function changeSongPlaying() {
+		if(songThread == null) {
+			songThread = Thread.create(function() {
+				while (true) {
+					if (!threadActive) return;
+					var index:Null<Int> = Thread.readMessage(false);
+					if (index != null) {
+						if (index == curSelected && index != curSongPlaying) {
+							var inst:Sound = Sound.fromFile(Assets.getPath(Paths.inst(songs[curSelected].name)));
+							if (index == curSelected && threadActive && Paths.exists(Paths.inst(songs[curSelected].name))) {
+								if(curSongPlaying > -1) grpIcons.members[curSongPlaying].scale.set(1,1);
+								mutex.acquire();
+								songToPlay = inst;
+								mutex.release();
+								curSongPlaying = curSelected;
+							}
+						}
+					}
+				}
+			});
+		}
+		songThread.sendMessage(curSelected);
+	}
 }

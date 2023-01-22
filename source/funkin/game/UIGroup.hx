@@ -128,7 +128,7 @@ class UIGroup extends FlxGroup {
 
 		super.update(elapsed);
 
-		var iconLerp:Float = 0.25;
+		var iconLerp:Float = 0.33;
 
 		for(icon in [iconP2, iconP1]) {
 			icon.scale.set(MathUtil.fixedLerp(icon.scale.x, 1, iconLerp), MathUtil.fixedLerp(icon.scale.y, 1, iconLerp));
