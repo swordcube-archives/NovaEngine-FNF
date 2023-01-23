@@ -374,7 +374,7 @@ class PlayState extends MusicBeatState {
 		boyfriends = [bf];
 
 		add(camFollow = new FlxObject(0, 0, 1, 1));
-		camFollow.setPosition(gf.getMidpoint().x - 100, (boyfriend.offset.y - boyfriend.getMidpoint().y) - 100);
+		camFollow.setPosition(gf.getMidpoint().x - 100, (boyfriend.getCameraPosition().y) - 100);
 		FlxG.camera.follow(camFollow, null, 0.04);
 		FlxG.camera.snapToTarget();
 
