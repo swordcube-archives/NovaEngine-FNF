@@ -45,7 +45,7 @@ import funkin.system.FNFSprite.SpriteType;
     }
 
     override public function load(type:SpriteType, data:Dynamic):TrackingSprite {
-        super.load(type, path);
+        super.load(type, data);
         return this;
     }
 }

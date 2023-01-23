@@ -1,5 +1,6 @@
 package funkin.ui;
 
+import flixel.util.FlxTimer;
 import funkin.system.Controls;
 import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -92,7 +93,7 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T> {
 					nextIndex = navGrid(num, controls.UI_UP_P, controls.UI_DOWN_P, wrapVertical, controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapHorizontal);
 			}
 			if (nextIndex != selectedIndex) {
-				CoolUtil.playMenuSFX(0);
+				CoolUtil.playMenuSFX(SCROLL);
 				selectItem(nextIndex);
 			}
 			if (controls.ACCEPT) {
@@ -136,11 +137,18 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T> {
 			selected.callback();
 		} else {
 			busy = true;
-			CoolUtil.playMenuSFX(1);
-			FlxFlicker.flicker(selected, 1, 0.06, true, false, function(flicker) {
-				busy = false;
-				selected.callback();
-			});
+			CoolUtil.playMenuSFX(CONFIRM);
+			if(OptionsAPI.get("Flashing Lights")) {
+				FlxFlicker.flicker(selected, 1, 0.06, true, false, function(flicker) {
+					busy = false;
+					selected.callback();
+				});
+			} else {
+				new FlxTimer().start(1, (timer:FlxTimer) -> {
+					busy = false;
+					selected.callback();
+				});
+			}
 		}
 	}
 

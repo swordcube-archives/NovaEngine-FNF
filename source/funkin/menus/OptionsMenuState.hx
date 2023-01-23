@@ -1,18 +1,32 @@
 package funkin.menus;
 
+import flixel.FlxState;
 import funkin.ui.TextMenuItem;
 import flixel.math.FlxMath;
 import funkin.ui.TextMenuList;
 import funkin.system.MusicBeatState;
+import funkin.menus.options.*;
+
+typedef StateData = {
+    var state:Class<FlxState>;
+    var ?args:Array<Dynamic>;
+}
 
 class OptionsMenuState extends MusicBeatState {
     public var bg:FlxSprite;
     public var grpCategories:TextMenuList;
 
+    public static var stateData:StateData;
+
     public var curSelected:Int = 0;
 
     override function create() {
         super.create();
+
+        DiscordRPC.changePresence(
+			"In the Options Menu", 
+			null
+		);
 
         if (FlxG.sound.music == null || (FlxG.sound.music != null && !FlxG.sound.music.playing))
 			CoolUtil.playMusic(Paths.music("freakyMenu"));
@@ -28,10 +42,10 @@ class OptionsMenuState extends MusicBeatState {
         add(grpCategories = new TextMenuList(true, true));
 
         // VVV ADD CATEGORIES HERE!!!! ----------------------
-        grpCategories.createItem("Preferences", () -> trace("missingno? nah bro, foundyes."));
-        grpCategories.createItem("Appearance", () -> trace("u ugly"));
+        grpCategories.createItem("Preferences", () -> openSubState(new PreferencesSubState()));
+        grpCategories.createItem("Appearance", () -> openSubState(new AppearanceSubState()));
         grpCategories.createItem("Controls", () -> trace("L"));
-        grpCategories.createItem("Exit", () -> trace("did you accidentally go to the options?"));
+        grpCategories.createItem("Exit", () -> exit());
         // ^^^ ----------------------------------------------
 
         grpCategories.centerItems();
@@ -43,13 +57,22 @@ class OptionsMenuState extends MusicBeatState {
 
         if (!runDefaultCode || (grpCategories != null && grpCategories.isSelecting)) return;
 
-        if(controls.BACK) FlxG.switchState(new MainMenuState());
+        if(controls.BACK) exit();
         if(controls.UI_UP_P) changeSelection(-1);
         if(controls.UI_DOWN_P) changeSelection(1);
         if(controls.ACCEPT) {
             grpCategories.selectItem(curSelected);
-            CoolUtil.playMenuSFX(1);
+            CoolUtil.playMenuSFX(CONFIRM);
         }
+    }
+
+    public function exit() {
+        CoolUtil.playMenuSFX(CANCEL);
+        if(stateData != null) {
+            FlxG.switchState(Type.createInstance(stateData.state, stateData.args != null ? stateData.args : []));
+            stateData = null;
+        } else
+            FlxG.switchState(new MainMenuState());
     }
 
     public function changeSelection(?change:Int = 0) {
@@ -57,6 +80,6 @@ class OptionsMenuState extends MusicBeatState {
         grpCategories.forEach((text:TextMenuItem) -> {
             text.alpha = (curSelected == text.ID) ? 1 : 0.6;
         });
-        CoolUtil.playMenuSFX();
+        CoolUtil.playMenuSFX(SCROLL);
     }
 }

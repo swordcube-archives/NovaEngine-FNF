@@ -7,9 +7,8 @@ typedef ControlsList = Map<String, Array<FlxKey>>;
 
 enum abstract OptionType(Int) to Int from Int {
     var BOOL = 0;
-    var STRING = 1;
-    var LIST = 2;
-    var NUMBER = 3;
+    var LIST = 1;
+    var NUMBER = 2;
 }
 
 class Option {
@@ -24,23 +23,33 @@ class Option {
 
 class OptionsAPI {
     public static var defaultOptions:Map<String, Option> = [
-        // GAMEPLAY
-        "Downscroll"      => new Option(BOOL, false),
-        "Middlescroll"    => new Option(BOOL, false),
-        "Ghost Tapping"   => new Option(BOOL, false),
-        "Miss Sounds"     => new Option(BOOL, true),
+        // PREFERENCES
+        "Downscroll"         => new Option(BOOL, false),
+        "Centered Notefield" => new Option(BOOL, false),
+        "Ghost Tapping"      => new Option(BOOL, true),
+        "Miss Sounds"        => new Option(BOOL, true),
         #if windows
-        "Dark Titlebar"   => new Option(BOOL, true),
+        "Dark Titlebar"      => new Option(BOOL, true),
         #end
-        "Note Offset"     => new Option(NUMBER, 0.0),
-        "Scroll Speed"    => new Option(NUMBER, 0.0),
-        "Scroll Type"     => new Option(LIST, "Multiplier"),
+        "Note Offset"        => new Option(NUMBER, 0.0),
+        "Scroll Speed"       => new Option(NUMBER, 0.0),
+        "Scroll Type"        => new Option(LIST, "Multiplier"),
+        "Show Cutscenes"     => new Option(LIST, "Story Mode"),
+        "Display Accuracy"   => new Option(BOOL, true),
+        "Auto Pause"         => new Option(BOOL, true),
+        "FPS Counter"        => new Option(BOOL, true),
+        "Memory Counter"     => new Option(BOOL, true),
+
+        // APPEARANCE
+        "Judgement Camera"   => new Option(LIST, "World"),
+        "Judgement Counter"  => new Option(LIST, "Left"),
+        "Sustain Layer"      => new Option(LIST, "Front"),
+        "Note Splashes"      => new Option(BOOL, true),
 
         // ACCESSIBILITY
-        "Flashing Lights" => new Option(BOOL, true),
-        "Antialiasing"    => new Option(BOOL, true),
-        "Auto Pause"      => new Option(BOOL, true),
-        "FPS Cap"         => new Option(NUMBER, 240),
+        "Flashing Lights"    => new Option(BOOL, true),
+        "Antialiasing"       => new Option(BOOL, true),
+        "FPS Cap"            => new Option(NUMBER, 120),
     ];
 
     public static var defaultControls:Map<String, ControlsList> = [
@@ -82,6 +91,24 @@ class OptionsAPI {
                     doFlush = true;
                 }
             }
+        }
+        
+        try {
+            while(true) {
+                if(!Paths.exists(Paths.json("data/optionsSaveData"))) break;
+
+                var options:Array<Dynamic> = Json.parse(Assets.getText(Paths.json("data/optionsSaveData"))).options;
+                for(option in options) {
+                    var swagName:String = '${Paths.currentMod}:${option.name}';
+                    if(get(swagName) == null) {
+                        set(swagName, option.value);
+                        doFlush = true;
+                    }
+                }
+                break;
+            }
+        } catch(e) {
+            Console.error(e.details());
         }
 
         if(doFlush) flush();

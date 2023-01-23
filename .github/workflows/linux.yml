@@ -27,7 +27,11 @@ jobs:
 
       - name: Installing/Updating libraries
         run: |
+          sudo apt-get install idn libidn11-dev
+          sudo apt-get install libvlc-dev libvlccore-dev vlc
+
           haxe -cp ./update -D analyzer-optimize -main Update --interp
+          
       - name: Building the game
         run: |
           haxelib run lime build linux

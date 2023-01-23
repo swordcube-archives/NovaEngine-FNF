@@ -1,6 +1,10 @@
 package funkin.utilities;
 
 class ModHandler {
+    #if MOD_SUPPORT
+    public static var metadatas:Array<ModMetadata> = [];
+    #end
+
     public static function init() {
         #if MOD_SUPPORT
         if(FlxG.save.data.currentMod != null)

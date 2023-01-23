@@ -56,7 +56,7 @@
 	<define name="MOD_SUPPORT" unless="web"/>
 
 	<!-- Allows video cutscenes to work. -->
-	<define name="VIDEO_CUTSCENES" unless="web || hl"/>
+	<define name="VIDEO_CUTSCENES" unless="web || hl || mac"/>
 
 	<!-- Allows Discord RPC to be used. -->
 	<define name="DISCORD_RPC" unless="web || hl || neko"/>

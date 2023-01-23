@@ -1,4 +1,4 @@
-package docs;
+package scripting;
 
 import funkin.scripting.events.*;
 

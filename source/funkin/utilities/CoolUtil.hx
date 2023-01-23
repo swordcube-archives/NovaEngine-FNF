@@ -1,5 +1,6 @@
 package funkin.utilities;
 
+import flixel.system.FlxAssets.FlxSoundAsset;
 import funkin.system.Conductor;
 import haxe.io.Path;
 import flixel.input.keyboard.FlxKey;
@@ -7,6 +8,12 @@ import flixel.animation.FlxAnimation;
 import core.utilities.IniParser;
 
 using StringTools;
+
+enum abstract MenuSFX(Int) from Int {
+	var SCROLL = 0;
+	var CONFIRM = 1;
+	var CANCEL = 2;
+}
 
 class CoolUtil {
     /**
@@ -91,13 +98,32 @@ class CoolUtil {
      * @param id The ID of the menu sound to play.
      * @param volume The volume of the sound.
      */
-    public inline static function playMenuSFX(id:Int = 0, ?volume:Float = 1.0) {
-        FlxG.sound.play(switch(id) {
-            case 1: Paths.sound("menus/confirmMenu");
-            case 2: Paths.sound("menus/cancelMenu");
+    public inline static function playMenuSFX(id:MenuSFX = SCROLL, ?volume:Float = 1.0) {
+        CoolUtil.playSound(switch(id) {
+            case CONFIRM: Paths.sound("menus/confirmMenu");
+            case CANCEL: Paths.sound("menus/cancelMenu");
             default: Paths.sound("menus/scrollMenu");
         }, volume);
     }
+	/**
+	 * This function is just `FlxG.sound.play` but it doesn't try to play the sound if it doesn't exist.
+	 * @param path The path to the sound.
+	 * @param volume The volume of the sound. Defaults to `1` (the maximum).
+	 */
+	public inline static function playSound(path:FlxSoundAsset, ?volume:Float = 1.0) {
+		if(path is String && !Paths.exists(path)) return null;
+		return FlxG.sound.play(path, volume);
+	}
+
+	public static function setFieldDefault<T>(v:Dynamic, name:String, defaultValue:T):T {
+		if (Reflect.hasField(v, name)) {
+			var f:Null<Dynamic> = Reflect.field(v, name);
+			if (f != null)
+				return cast f;
+		}
+		Reflect.setField(v, name, defaultValue);
+		return defaultValue;
+	}
 
     /**
      * Plays music from a path. If an INI file with the same name as the music exists in the same location as the music;
@@ -110,21 +136,27 @@ class CoolUtil {
      * @param fadeInVolume (Optional) The volume the music should fade in to. If not specified, the volume will remain at it's initial value.
      * @param fadeInDuration (Optional) How long the music should fade in for. Defaults to 1 second if not specified.;
      */
-    public inline static function playMusic(path:String, ?volume:Float = 1.0, ?looped:Bool = true, ?fadeInVolume:Null<Float>, ?fadeInDuration:Float = 1.0) {
+    public inline static function playMusic(path:FlxSoundAsset, ?volume:Float = 1.0, ?looped:Bool = true, ?fadeInVolume:Null<Float>, ?fadeInDuration:Float = 1.0) {
+		if(path is String && !Paths.exists(path)) return;
+
         FlxG.sound.playMusic(path, volume, looped);
         if(fadeInVolume != null)
             FlxG.sound.music.fadeIn(fadeInDuration, volume, fadeInVolume);
 
-        var ini:Ini = IniParser.parse(Assets.getText(path.replace("."+Path.extension(path), ".ini")));
+		if(!(path is String)) return;
+		var iniPath:String = path.replace("."+Path.extension(path), ".ini");
+		if(!Paths.exists(iniPath)) return;
 
-        // If the "Sound" section doesn't exist, Stop the function right here
-        if(!ini.exists("Sound")) return;
+		var ini:Ini = IniParser.parse(Assets.getText(iniPath));
 
-        var section:IniSection = ini["Sound"];
+		// If the "Sound" section doesn't exist, Stop the function right here
+		if(!ini.exists("Sound")) return;
 
-        // Set the Conductor's BPM if the "BPM" property exists
-        if(section.exists("BPM"))
-            Conductor.bpm = Std.parseFloat(section["BPM"]);
+		var section:IniSection = ini["Sound"];
+
+		// Set the Conductor's BPM if the "BPM" property exists
+		if(section.exists("BPM"))
+			Conductor.bpm = Std.parseFloat(section["BPM"]);
     }
 
     public inline static function switchAnimFrames(anim1:FlxAnimation, anim2:FlxAnimation) {

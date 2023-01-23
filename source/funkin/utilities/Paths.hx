@@ -86,6 +86,10 @@ class Paths {
         return getAsset('sounds/$path.ogg', library);
     }
 
+    public static function soundRandom(path:String, min:Int, max:Int, ?library:Null<String>) {
+        return getAsset('sounds/${path + FlxG.random.int(min, max)}.ogg', library);
+    }
+
     public static function music(path:String, ?library:Null<String>) {
         return getAsset('music/$path.ogg', library);
     }
@@ -102,11 +106,27 @@ class Paths {
         return getAsset('shaders/$path.vert', library);
     }
 
-    public static function inst(song:String, ?library:Null<String> = "songs") {
+    public static function inst(song:String, ?diff:String = "normal", ?library:Null<String> = "songs") {
+        var pathsList:Array<String> = [
+            getAsset('songs/${song.toLowerCase()}/Inst$diff.ogg', library),
+            getAsset('songs/${song.toLowerCase()}/Inst-$diff.ogg', library),
+        ];
+        for(path in pathsList) {
+            if(Paths.exists(path))
+                return path;
+        }
         return getAsset('songs/${song.toLowerCase()}/Inst.ogg', library);
     }
 
-    public static function voices(song:String, ?library:Null<String> = "songs") {
+    public static function voices(song:String, ?diff:String = "normal", ?library:Null<String> = "songs") {
+        var pathsList:Array<String> = [
+            getAsset('songs/${song.toLowerCase()}/Voices$diff.ogg', library),
+            getAsset('songs/${song.toLowerCase()}/Voices-$diff.ogg', library),
+        ];
+        for(path in pathsList) {
+            if(Paths.exists(path))
+                return path;
+        }
         return getAsset('songs/${song.toLowerCase()}/Voices.ogg', library);
     }
 

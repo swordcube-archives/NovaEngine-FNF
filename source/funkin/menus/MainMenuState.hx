@@ -23,6 +23,11 @@ class MainMenuState extends MusicBeatState {
 	override function create() {
 		super.create();
 
+		DiscordRPC.changePresence(
+			"In the Main Menu", 
+			null
+		);
+
 		if (FlxG.sound.music == null || (FlxG.sound.music != null && !FlxG.sound.music.playing))
 			CoolUtil.playMusic(Paths.music("freakyMenu"));
 
@@ -54,9 +59,11 @@ class MainMenuState extends MusicBeatState {
         menuItems.onChange.add(function(item:MenuItem) {
             camFollow.setPosition(item.getGraphicMidpoint().x, item.getGraphicMidpoint().y);
         });
-		menuItems.onAcceptPress.add(function(item:MenuItem) {
-			FlxFlicker.flicker(magenta, 1.1, 0.15, false, true);
-		});
+
+		if(OptionsAPI.get("Flashing Lights"))
+			menuItems.onAcceptPress.add(function(item:MenuItem) {
+				FlxFlicker.flicker(magenta, 1.1, 0.15, false, true);
+			});
 
         // VVV -- ADD MENU ITEMS HERE!! --
 		menuItems.createItem("story mode", () -> {

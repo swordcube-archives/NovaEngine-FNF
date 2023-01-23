@@ -1,5 +1,7 @@
 package funkin.game;
 
+import flixel.FlxBasic;
+import flixel.FlxCamera;
 import funkin.scripting.events.*;
 import flixel.math.FlxMath;
 import flixel.math.FlxRect;
@@ -34,7 +36,7 @@ class StrumLine extends FlxSpriteGroup {
         super(x, y);
         add(receptors = new FlxTypedSpriteGroup<Receptor>());
 		add(splashes = new FlxTypedSpriteGroup<NoteSplash>());
-        add(notes = new NoteGroup());
+    	notes = new NoteGroup();
 
 		// precache splashes
 		var splash = new NoteSplash();
@@ -55,6 +57,7 @@ class StrumLine extends FlxSpriteGroup {
 
 	override function update(elapsed:Float) {
 		super.update(elapsed);
+		notes.update(elapsed);
 
 		var game = PlayState.current;
 
@@ -142,6 +145,50 @@ class StrumLine extends FlxSpriteGroup {
 		});
 	}
 
+	function __drawAllSustains() {
+		notes.forEachAlive((note:Note) -> {
+			if(!note.isSustainNote) return;
+			note.draw();
+		});
+	}
+
+	function __drawAllNotes() {
+		notes.forEachAlive((note:Note) -> {
+			if(note.isSustainNote) return;
+			note.draw();
+		});
+	}
+
+	override function draw() {
+		// this is the goofiest shit i've ever had to do
+		// for a singular setting in options
+		@:privateAccess {
+			var sustainsBehindReceptors:Bool = (OptionsAPI.get("Sustain Layer").toLowerCase() == "behind");
+
+			var oldDefaultCameras = FlxCamera._defaultCameras;
+			if (cameras != null)
+				FlxCamera._defaultCameras = cameras;
+
+			if(sustainsBehindReceptors) __drawAllSustains();
+
+			// literally copy pasted from super.draw lmao
+			var i:Int = 0;
+			var basic:FlxBasic = null;
+
+			while (i < length) {
+				basic = members[i++];
+
+				if (basic != null && basic.exists && basic.visible)
+					basic.draw();
+			}
+
+			__drawAllNotes();
+			if(!sustainsBehindReceptors) __drawAllSustains();
+
+			FlxCamera._defaultCameras = oldDefaultCameras;
+		}
+	}
+
 	public function goodNoteHit(event:NoteHitEvent, note:Note) {
 		var receptor:Receptor = receptors.members[note.noteData];
 
@@ -149,7 +196,7 @@ class StrumLine extends FlxSpriteGroup {
 		if(!note.isSustainNote && !event.cancelled) {
 			game.popUpScore(event, Ranking.judgeTime(note.strumTime).name, game.combo++);
 
-			if(event.showSplash) {
+			if(event.showSplash && OptionsAPI.get("Note Splashes")) {
 				var splash = splashes.recycle(NoteSplash);
 				splashes.remove(splash, true);
 				var skin:String = event.splashSkin != "Default" ? event.splashSkin : note.splashSkin;

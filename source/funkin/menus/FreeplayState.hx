@@ -54,6 +54,11 @@ class FreeplayState extends MusicBeatState {
     override function create() {
         super.create();
 
+        DiscordRPC.changePresence(
+			"In the Freeplay Menu", 
+			null
+		);
+
         if (FlxG.sound.music == null || (FlxG.sound.music != null && !FlxG.sound.music.playing))
 			CoolUtil.playMusic(Paths.music("freakyMenu"));
 
@@ -175,13 +180,13 @@ class FreeplayState extends MusicBeatState {
 
         if(controls.BACK) {
             threadActive = false;
-            CoolUtil.playMenuSFX(2);
+            CoolUtil.playMenuSFX(CANCEL);
             FlxG.switchState(new MainMenuState());
         }
 
         mutex.acquire();
         if (songToPlay != null) {
-            FlxG.sound.playMusic(songToPlay);
+            CoolUtil.playMusic(songToPlay);
             if (FlxG.sound.music.fadeTween != null) FlxG.sound.music.fadeTween.cancel();
             FlxG.sound.music.volume = 0.0;
             FlxG.sound.music.fadeIn(1.0, 0.0, 1.0);
@@ -203,7 +208,7 @@ class FreeplayState extends MusicBeatState {
             member.targetY = member.ID - curSelected;
             member.alpha = (curSelected == member.ID) ? 1 : 0.6;
         });
-        CoolUtil.playMenuSFX();
+        CoolUtil.playMenuSFX(SCROLL);
         changeDifficulty();
         changeSongPlaying();
     }

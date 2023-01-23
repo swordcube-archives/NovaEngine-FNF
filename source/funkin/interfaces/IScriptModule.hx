@@ -8,5 +8,5 @@ interface IScriptModule {
     public function set(variable:String, value:Dynamic):Dynamic;
     public function setFunc(variable:String, value:Dynamic):Dynamic;
     public function setParent(classInstance:Dynamic):Void;
-    public function call(method:String, ?parameters:Array<Dynamic>):Dynamic;
+    public function call(method:String, ?parameters:Array<Dynamic>, ?defaultReturn:Dynamic = null):Dynamic;
 }

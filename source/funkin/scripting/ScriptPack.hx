@@ -1,17 +1,19 @@
 package funkin.scripting;
 
-import flixel.FlxBasic;
 import funkin.scripting.ScriptHandler;
 import funkin.scripting.events.CancellableEvent;
 
 @:access(CancellableEvent)
-class ScriptPack extends FlxBasic {
+class ScriptPack extends ScriptModule {
     public var scripts:Array<ScriptModule> = [];
+    public var additionalDefaultVariables:Map<String, Dynamic> = [];
+    public var publicVariables:Map<String, Dynamic> = [];
     public var parent:Dynamic = null;
 
-    public function load() {
-        for(e in scripts)
+    public override function load() {
+        for(e in scripts) {
             e.load();
+        }
     }
 
     public function contains(path:String) {
@@ -21,16 +23,44 @@ class ScriptPack extends FlxBasic {
         return false;
     }
 
-    public function containsModule(module:ScriptModule) {
-        return scripts.contains(module);
+    public function containsModule(script:ScriptModule) {
+        return scripts.contains(script);
     }
 
-    public function call(method:String, ?parameters:Array<Dynamic>, ?defaultReturnVal:Dynamic):Dynamic {
-        var realReturnVal:Dynamic = defaultReturnVal;
-        if (parameters == null) parameters = [];
+    public function new(name:String) {
+        additionalDefaultVariables["importScript"] = importScript;
+        super(name);
+    }
+
+    public function getByPath(name:String) {
+        for(s in scripts)
+            if (s.path == name)
+                return s;
+        return null;
+    }
+
+    public function getByName(name:String) {
+        for(s in scripts)
+            if (s.fileName == name)
+                return s;
+        return null;
+    }
+    public function importScript(path:String) {
+        var script = ScriptHandler.loadModule(Paths.script(path));
+        if (script is DummyScript) {
+            Console.error('Script at ${path} does not exist.');
+            return null;
+        }
+        add(script);
+        script.load();
+        return script;
+    }
+
+    public override function call(method:String, ?parameters:Array<Dynamic>, ?defaultReturn:Dynamic = null):Dynamic {
+        var realReturnVal:Dynamic = defaultReturn;
         for (e in scripts) {
-            var returnVal = e.call(method, parameters);
-            if (returnVal != defaultReturnVal && defaultReturnVal != null) realReturnVal = returnVal;
+            var returnVal:Dynamic = e.call(method, parameters);
+            if (returnVal != null && returnVal != defaultReturn) realReturnVal = returnVal;
         }
         return realReturnVal;
     }
@@ -50,7 +80,7 @@ class ScriptPack extends FlxBasic {
         return event;
     }
 
-    public function get(val:String):Dynamic {
+    public override function get(val:String):Dynamic {
         for(e in scripts) {
             var v = e.get(val);
             if (v != null) return v;
@@ -58,28 +88,29 @@ class ScriptPack extends FlxBasic {
         return null;
     }
 
-    public function reload() {
+    public override function reload() {
         for(e in scripts) e.reload();
     }
 
-    public function set(val:String, value:Dynamic) {
+    public override function set(val:String, value:Dynamic) {
         for(e in scripts) e.set(val, value);
         return value;
     }
 
-    public function setParent(parent:Dynamic) {
+    public override function setParent(parent:Dynamic) {
         this.parent = parent;
         for(e in scripts) e.setParent(parent);
     }
 
-    override function destroy() {
+    public override function destroy() {
         for(e in scripts) e.destroy();
-        super.destroy();
     }
+    
+    public override function onCreate(path:String) {}
 
     public function add(script:ScriptModule) {
-        if (parent != null) script.setParent(parent);
         scripts.push(script);
+        __configureNewScript(script);
     }
 
     public function remove(script:ScriptModule) {
@@ -87,7 +118,12 @@ class ScriptPack extends FlxBasic {
     }
 
     public function insert(pos:Int, script:ScriptModule) {
-        if (parent != null) script.setParent(parent);
         scripts.insert(pos, script);
+        __configureNewScript(script);
+    }
+
+    private function __configureNewScript(script:ScriptModule) {
+        if (parent != null) script.setParent(parent);
+        for(k=>e in additionalDefaultVariables) script.set(k, e);
     }
 }

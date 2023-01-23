@@ -42,8 +42,12 @@ class FPSCounter extends TextField {
 			if(currentFPS > cap) currentFPS = cap;
 
 			text = "";
-			text += 'FPS: $currentFPS\n';
-			text += 'MEM: ${CoolUtil.getSizeLabel(Memory.getCurrentUsage())} / ${CoolUtil.getSizeLabel(Memory.getPeakUsage())}\n';
+
+			if(OptionsAPI.get("FPS Counter"))
+				text += 'FPS: $currentFPS\n';
+
+			if(OptionsAPI.get("Memory Counter"))
+				text += 'MEM: ${CoolUtil.getSizeLabel(Memory.getCurrentUsage())} / ${CoolUtil.getSizeLabel(Memory.getPeakUsage())}\n';
 
 			__fps = 0;
 			currentTime = 0.0;

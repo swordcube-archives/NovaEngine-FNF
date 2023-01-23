@@ -1,8 +1,9 @@
 package funkin.ui;
 
+import funkin.system.TrackingSprite;
 import flixel.FlxSprite;
 
-class Checkbox extends FlxSprite {
+class Checkbox extends TrackingSprite {
 	public var value(default, set):Bool;
 
 	public function new(x:Float, y:Float, state:Bool = false) {

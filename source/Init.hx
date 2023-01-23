@@ -2,7 +2,6 @@ package;
 
 import core.api.WindowsAPI;
 import core.api.OptionsAPI;
-import core.utilities.DiscordRPC;
 import funkin.system.*;
 import funkin.utilities.ModHandler;
 import funkin.scripting.ScriptHandler;
@@ -20,10 +19,6 @@ class Init extends FlxState {
     public static var controls:Controls;
 
     override function create() {
-        super.create();
-
-        DiscordRPC.initialize();
-
         FlxG.save.bind("mainSave", "NovaEngine");
 
         Console.init();
@@ -49,6 +44,7 @@ class Init extends FlxState {
             #if MOD_SUPPORT
             Polymod.unloadAllMods();
             Polymod.loadMods([Paths.currentMod]);
+            ModHandler.metadatas = Polymod.scan("mods");
             #end
 
             Note.reloadSkins();
@@ -75,9 +71,12 @@ class Init extends FlxState {
         if(FlxG.save.data.volume != null)
             FlxG.sound.volume = FlxG.save.data.volume;
 
+        ModHandler.init();
         OptionsAPI.init();
+
         FlxSprite.defaultAntialiasing = OptionsAPI.get("Antialiasing");
         FlxG.stage.frameRate = OptionsAPI.get("FPS Cap");
+        FlxG.autoPause = OptionsAPI.get("Auto Pause");
 
         #if windows
 		WindowsAPI.setDarkMode(OptionsAPI.get("Dark Titlebar"));
@@ -85,9 +84,6 @@ class Init extends FlxState {
 
         Conductor.init();
         ScriptHandler.init();
-
-        ModHandler.init();
-
         Highscore.init();
 
         #if polymod
@@ -110,6 +106,8 @@ class Init extends FlxState {
             }
         });
         #end
+
+        DiscordRPC.init();
 
         controls = new Controls();
 

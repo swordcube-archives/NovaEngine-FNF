@@ -210,7 +210,7 @@ class ScriptModule extends FlxBasic implements IScriptModule {
 	 * @param method The name of the function to call.
 	 * @param parameters The arguments for the function.
 	 */
-	public function call(method:String, ?parameters:Array<Dynamic>):Dynamic {
+	public function call(method:String, ?parameters:Array<Dynamic>, ?defaultReturn:Dynamic = null):Dynamic {
         var oldScript = curScript;
         curScript = this;
 

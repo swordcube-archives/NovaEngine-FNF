@@ -51,6 +51,11 @@ class UIGroup extends FlxGroup {
 	 */
 	public var rankFormat = new FlxTextFormatMarkerPair(new FlxTextFormat(0xFF888888, false), "<rank>");
 
+	/**
+	 * The text that shows all of your Sicks, Goods, Bads, Shits, and misses.
+	 */
+	public var judgementTxt:FlxText;
+
 	// -------------------------------------------------------------------------------------------- //
 
 	public function new() {
@@ -61,6 +66,11 @@ class UIGroup extends FlxGroup {
 
 		add(cpuStrums = new StrumLine(0, 50, SONG.keyAmount).generateReceptors().positionReceptors(true));
 		add(playerStrums = new StrumLine(0, 50, SONG.keyAmount, true).generateReceptors().positionReceptors(false));
+
+		if(OptionsAPI.get("Centered Notefield")) {
+			cpuStrums.visible = false;
+			playerStrums.screenCenter(X);
+		}
 
         for(receptor in cpuStrums.receptors.members) {
             receptor.animation.finishCallback = function(name:String) {
@@ -84,7 +94,7 @@ class UIGroup extends FlxGroup {
 		add(iconP2 = new HealthIcon(0, healthBar.y, game.dad != null ? game.dad.healthIcon : "face"));
 
 		var fart:Float = healthBar.height + 30;
-		if(PlayState.current.downscroll) fart *= -1;
+		if(PlayState.current.downscroll) fart *= -1.2;
 
 		scoreTxt = new FlxText(0, healthBar.y + fart, 0, "nuts");
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), 18, FlxColor.WHITE, CENTER, OUTLINE, FlxColor.BLACK);
@@ -98,7 +108,39 @@ class UIGroup extends FlxGroup {
 
 		Conductor.onBeat.add(beatHit);
 
+		judgementTxt = new FlxText(0, 0, 0, "", 18);
+		judgementTxt.setFormat(Paths.font("vcr.ttf"), 18, FlxColor.WHITE, LEFT, OUTLINE, FlxColor.BLACK);
+		judgementTxt.borderSize = 1.25;
+		judgementTxt.screenCenter(Y);
+		add(judgementTxt);
+
+		updateJudgementText();
+
 		positionIcons();
+	}
+
+	public function updateJudgementText() {
+		var game = PlayState.current;
+		
+		judgementTxt.text = ('Sicks: ${game.sicks}\n' +
+			'Goods: ${game.goods}\n' +
+			'Bads: ${game.bads}\n' +
+			'Shits: ${game.shits}\n' +
+			'Misses: ${game.misses}'
+		);
+		judgementTxt.screenCenter(Y);
+		judgementTxt.visible = true;
+
+		switch(OptionsAPI.get("Judgement Counter").toLowerCase()) {
+			case "left":
+				judgementTxt.alignment = LEFT;
+				judgementTxt.x = 5;
+			case "right":
+				judgementTxt.alignment = RIGHT;
+				judgementTxt.x = FlxG.width - (judgementTxt.width + 5);
+			case "none":
+				judgementTxt.visible = false;
+		}
 	}
 
 	function beatHit(beat:Int) {
@@ -118,6 +160,8 @@ class UIGroup extends FlxGroup {
 	}
 
 	override function update(elapsed:Float) {
+		super.update(elapsed);
+
 		var game = PlayState.current;
 		var rank = game.songAccuracy > -1 ? Ranking.getRankData(game.songAccuracy) : Ranking.unknownRank;
 
@@ -126,8 +170,6 @@ class UIGroup extends FlxGroup {
 		scoreTxt.applyMarkup(scoreTxt.text, [rankFormat]);
 		scoreTxt.screenCenter(X);
 
-		super.update(elapsed);
-
 		var iconLerp:Float = 0.33;
 
 		for(icon in [iconP2, iconP1]) {
@@ -135,6 +177,7 @@ class UIGroup extends FlxGroup {
 			icon.updateHitbox();
 		}
 		positionIcons();
+		updateJudgementText();
 	}
 
 	override function draw() {

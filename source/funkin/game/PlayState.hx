@@ -1,5 +1,6 @@
 package funkin.game;
 
+import flixel.util.FlxStringUtil;
 import funkin.system.Highscore;
 import flixel.FlxObject;
 import flixel.group.FlxSpriteGroup;
@@ -325,12 +326,17 @@ class PlayState extends MusicBeatState {
 
 	override function create() {
 		super.create();
+
+		DiscordRPC.changePresence(
+			'Playing ${SONG.name} on $storyDifficulty difficulty', 
+			'Starting...'
+		);
 		
 		current = this;
 		paused = false;
 
 		#if !docs
-		(scripts = new ScriptPack()).setParent(this);
+		(scripts = new ScriptPack("PlayState")).setParent(this);
 
 		// CACHING && LOADING!!!
 
@@ -351,8 +357,8 @@ class PlayState extends MusicBeatState {
 		Conductor.mapBPMChanges(SONG);
 		Conductor.position = -90000;
 
-		FlxG.sound.playMusic(Paths.inst(SONG.name), 0, false);
-		FlxG.sound.list.add(vocals = (Paths.exists(Paths.voices(SONG.name)) ? new FlxSound().loadEmbedded(Paths.voices(SONG.name), false) : new FlxSound()));
+		CoolUtil.playMusic(Paths.inst(SONG.name, storyDifficulty), 0, false);
+		FlxG.sound.list.add(vocals = (Paths.exists(Paths.voices(SONG.name, storyDifficulty)) ? new FlxSound().loadEmbedded(Paths.voices(SONG.name, storyDifficulty), false) : new FlxSound()));
 
 		add(stage = new Stage("default"));
 		add(stage.dadLayer);
@@ -368,8 +374,9 @@ class PlayState extends MusicBeatState {
 		boyfriends = [bf];
 
 		add(camFollow = new FlxObject(0, 0, 1, 1));
-		camFollow.setPosition(gf.x + (gf.width * 0.5), gf.y + (gf.height * 0.5));
+		camFollow.setPosition(gf.getMidpoint().x - 100, (boyfriend.offset.y - boyfriend.getMidpoint().y) - 100);
 		FlxG.camera.follow(camFollow, null, 0.04);
+		FlxG.camera.snapToTarget();
 
 		add(comboGroup = new FlxTypedSpriteGroup<FNFSprite>(FlxG.width * 0.55, (FlxG.height * 0.5) - 60));
 
@@ -382,6 +389,13 @@ class PlayState extends MusicBeatState {
 
 		for(i in numList)
 			FlxG.bitmap.add(Paths.image('game/combo/default/$i'));
+
+		// Preloads miss sounds
+		for(i in 1...4) {
+			var soundPath:String = Paths.sound('game/missnote$i');
+			if(Paths.exists(soundPath))
+				CoolUtil.playSound(soundPath, 0);
+		}
 
 		// Load global song scripts
 		for(item in Paths.getFolderContents("songs", true, true)) {
@@ -506,8 +520,11 @@ class PlayState extends MusicBeatState {
 				numScore.acceleration.y = FlxG.random.int(200, 300);
 				numScore.velocity.y = -FlxG.random.int(140, 160);
 				numScore.velocity.x = FlxG.random.float(-5, 5);
-	
+
 				comboGroup.add(numScore);
+
+				if(OptionsAPI.get("Judgement Camera").toLowerCase() == "hud")
+					numScore.cameras = [camOther];
 	
 				FlxTween.tween(numScore, {alpha: 0}, 0.2, {
 					onComplete: function(tween:FlxTween) {
@@ -518,6 +535,11 @@ class PlayState extends MusicBeatState {
 			}
 		}
 		comboGroup.add(rating);
+
+		if(OptionsAPI.get("Judgement Camera").toLowerCase() == "hud") {
+			rating.cameras = [camOther];
+			comboSpr.cameras = [camOther];
+		}
 
 		FlxTween.tween(rating, {alpha: 0}, 0.2, {
 			onComplete: function(tween:FlxTween) {
@@ -662,7 +684,7 @@ class PlayState extends MusicBeatState {
 			if (event.soundPath != null) {
 				var sfx = event.soundPath;
 				if (!Assets.exists(sfx)) sfx = Paths.sound(sfx);
-				sound = FlxG.sound.play(sfx, event.volume);
+				sound = CoolUtil.playSound(sfx, event.volume);
 			}
 		}
 		event.sprite = sprite;
@@ -679,6 +701,8 @@ class PlayState extends MusicBeatState {
 
         persistentUpdate = false;
         persistentDraw = true;
+
+		if(rpcTimer != null) rpcTimer.cancel();
 
 		if((OptionsAPI.get("Note Offset") * FlxG.sound.music.pitch) <= 0 || ignoreNoteOffset) {
 			endSong();
@@ -710,6 +734,8 @@ class PlayState extends MusicBeatState {
 		}
 	}
 
+	public var rpcTimer:FlxTimer;
+
 	public function startSong() {
 		startingSong = false;
 		
@@ -720,7 +746,19 @@ class PlayState extends MusicBeatState {
 		FlxG.sound.music.play();
 		vocals.play();
 
+		updateRPC();
+		rpcTimer = new FlxTimer().start(1, function(tmr:FlxTimer) {
+			updateRPC();
+		}, 0);
+
 		scripts.call("onStartSong");
+	}
+
+	function updateRPC() {
+		DiscordRPC.changePresence(
+			'Playing ${SONG.name} on ${storyDifficulty.toUpperCase()} difficulty', 
+			'Time left: ${FlxStringUtil.formatTime((FlxG.sound.music.length - FlxG.sound.music.time) / 1000)} / ${FlxStringUtil.formatTime(FlxG.sound.music.length / 1000)}'
+		);
 	}
 
 	public function resyncVocals() {
@@ -756,6 +794,7 @@ class PlayState extends MusicBeatState {
 
 		if(controls.BACK && !endingSong) {
 			endingSong = true;
+			if(rpcTimer != null) rpcTimer.cancel();
 			FlxG.sound.music.stop();
 			vocals.stop();
 			CoolUtil.playMusic(Paths.music("freakyMenu"));
