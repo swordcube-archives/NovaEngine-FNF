@@ -103,6 +103,22 @@ class InputSystem implements IFlxDestroyable {
                     parent.deleteNote(note);
             }
         }
+        // If there is no notes to hit, cause a miss if ghost tapping is off
+        else {
+            var event = game.scripts.event("onGhostTap", new GhostTapEvent(0.0475));
+
+            if(!OptionsAPI.get("Ghost Tapping")) {
+                game.score -= 10;
+                game.health -= event.healthLoss;
+                game.accuracyPressedNotes++;
+                game.vocals.volume = 0;
+                if(!event.cancelSingAnim) game.characterSing(BF, parent.keyAmount, direction, "miss");
+                game.combo = 0;
+                game.misses++;
+                if(OptionsAPI.get("Miss Sounds"))
+                    CoolUtil.playSound(Paths.soundRandom("game/missnote", 1, 3), FlxG.random.float(0.1, 0.3));
+            }
+        }
     }
 
     public function onKeyRelease(event:KeyboardEvent) {

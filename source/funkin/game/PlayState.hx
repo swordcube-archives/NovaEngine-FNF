@@ -393,8 +393,7 @@ class PlayState extends MusicBeatState {
 		// Preloads miss sounds
 		for(i in 1...4) {
 			var soundPath:String = Paths.sound('game/missnote$i');
-			if(Paths.exists(soundPath))
-				CoolUtil.playSound(soundPath, 0);
+			CoolUtil.playSound(soundPath, 0);
 		}
 
 		// Load global song scripts

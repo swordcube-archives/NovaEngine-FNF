@@ -2,12 +2,7 @@ package funkin.scripting.events;
 
 import funkin.game.Note;
 
-class NoteMissEvent extends CancellableEvent {
-    /**
-     * The note being created.
-     */
-    public var note:Note;
-
+class GhostTapEvent extends CancellableEvent {
     /**
      * The amount of health you lose when missing this note.
      */
@@ -19,9 +14,8 @@ class NoteMissEvent extends CancellableEvent {
      */
     public var cancelSingAnim:Bool = false;
 
-    public function new(note:Note, ?healthLoss:Float = 0.0475) {
+    public function new(?healthLoss:Float = 0) {
         super();
-        this.note = note;
         this.healthLoss = healthLoss;
     }
 }

@@ -19,11 +19,6 @@ import flixel.math.FlxPoint;
  */
  class FNFSprite extends flixel.FlxSprite {
     public var offsets:Map<String, FlxPoint> = [];
-
-    public function new(x:Float = 0, y:Float = 0) {
-        super(x, y);
-        antialiasing = true;
-    }
     
     /**
      * A function to load certain types of assets onto this sprite.

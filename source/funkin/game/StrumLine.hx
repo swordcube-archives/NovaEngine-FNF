@@ -137,6 +137,8 @@ class StrumLine extends FlxSpriteGroup {
 								game.combo = 0;
 								game.misses++;
 							}
+							if(OptionsAPI.get("Miss Sounds"))
+								CoolUtil.playSound(Paths.soundRandom("game/missnote", 1, 3), FlxG.random.float(0.1, 0.3));
 						}
 					}
 					deleteNote(note);

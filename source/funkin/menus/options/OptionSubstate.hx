@@ -57,7 +57,6 @@ class OptionSubstate extends MusicBeatSubstate {
 		bg.setGraphicSize(Std.int(bg.width * 1.1));
 		bg.updateHitbox();
 		bg.screenCenter();
-		bg.antialiasing = true;
         bg.scrollFactor.set();
 		add(bg);
 

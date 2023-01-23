@@ -42,10 +42,12 @@ class OptionsMenuState extends MusicBeatState {
         add(grpCategories = new TextMenuList(true, true));
 
         // VVV ADD CATEGORIES HERE!!!! ----------------------
+        script.call("onPreGenerateOptions");
         grpCategories.createItem("Preferences", () -> openSubState(new PreferencesSubState()));
         grpCategories.createItem("Appearance", () -> openSubState(new AppearanceSubState()));
         grpCategories.createItem("Controls", () -> trace("L"));
         grpCategories.createItem("Exit", () -> exit());
+        script.call("onGenerateOptions");
         // ^^^ ----------------------------------------------
 
         grpCategories.centerItems();
