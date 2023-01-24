@@ -173,7 +173,7 @@ class UIGroup extends FlxGroup {
 		var iconLerp:Float = 0.33;
 
 		for(icon in [iconP2, iconP1]) {
-			icon.scale.set(MathUtil.fixedLerp(icon.scale.x, 1, iconLerp), MathUtil.fixedLerp(icon.scale.y, 1, iconLerp));
+			icon.scale.set(MathUtil.fixedLerp(icon.scale.x, icon.initialScale, iconLerp), MathUtil.fixedLerp(icon.scale.y, icon.initialScale, iconLerp));
 			icon.updateHitbox();
 		}
 		positionIcons();
