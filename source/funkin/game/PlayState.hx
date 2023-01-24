@@ -328,7 +328,7 @@ class PlayState extends MusicBeatState {
 		super.create();
 
 		DiscordRPC.changePresence(
-			'Playing ${SONG.name} on $storyDifficulty difficulty', 
+			'Playing ${SONG.name} on ${storyDifficulty.toUpperCase()} difficulty', 
 			'Starting...'
 		);
 		
