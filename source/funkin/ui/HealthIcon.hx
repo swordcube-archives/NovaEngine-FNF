@@ -81,7 +81,6 @@ class HealthIcon extends TrackingSprite {
         scale.set(initialScale, initialScale);
         updateHitbox();
         
-        trace(jsonData);
         if(jsonData.animations.length <= 0)
 		    loadGraphic(Paths.image('icons/$char'), true, Std.int(width / jsonData.icons), Std.int(height));
         else {

@@ -95,6 +95,8 @@ class Character extends FNFSprite implements IBeatReceiver {
 	 */
 	public var healthBarColor:FlxColor = FlxColor.BLACK;
 
+	public var idleSuffix:String = "";
+
 	public var curDanceStep:Int = 0;
 
 	/**
@@ -261,7 +263,7 @@ class Character extends FNFSprite implements IBeatReceiver {
 			else
 				animation.addByPrefix(anim.anim, anim.name, anim.fps, anim.loop);
 
-			setOffset(anim.anim, -anim.offsets[0], -anim.offsets[1]);
+			setOffset(anim.anim, anim.offsets[0], anim.offsets[1]);
 		}
 
 		positionOffset.set(data.position[0], data.position[1]);
@@ -316,7 +318,7 @@ class Character extends FNFSprite implements IBeatReceiver {
 			else
 				animation.addByPrefix(anim.name, anim.anim, anim.framerate, anim.loop);
 
-			setOffset(anim.name, -anim.x, -anim.y);
+			setOffset(anim.name, anim.x, anim.y);
 		}
 
 		positionOffset.set(data.globalOffset.x, data.globalOffset.y);
@@ -381,7 +383,7 @@ class Character extends FNFSprite implements IBeatReceiver {
 			if (anim.has.specialAnim && anim.att.specialAnim == "true")
 				specialAnims.push(anim.att.name);
 
-			setOffset(anim.att.name, -Std.parseFloat(anim.att.x), -Std.parseFloat(anim.att.y));
+			setOffset(anim.att.name, Std.parseFloat(anim.att.x), Std.parseFloat(anim.att.y));
 		}
 
 		// Load miscellaneous attributes
@@ -441,6 +443,10 @@ class Character extends FNFSprite implements IBeatReceiver {
 			+ positionOffset.y
 			+ cameraOffset.y);
 	}
+
+	override function setOffset(name:String, x:Float = 0, y:Float = 0) {
+        this.offsets.set(name, new FlxPoint(x, y));
+    }
 
 	// VVV CODE FROM CODENAME ENGINE!!!
 	// I HAVE NO IDEA WHAT IT DOES OTHER THAN CORRECTING PLAYER OFFSETS!!!
@@ -566,11 +572,20 @@ class Character extends FNFSprite implements IBeatReceiver {
 			if (danceSteps.length > 1) {
 				if (curDanceStep > danceSteps.length - 1)
 					curDanceStep = 0;
-				playAnim(danceSteps[curDanceStep]);
+
+				if (danceSteps[curDanceStep] == "idle")
+					playAnim(animation.exists(danceSteps[curDanceStep]+idleSuffix) ? danceSteps[curDanceStep]+idleSuffix : danceSteps[curDanceStep]);
+				else
+					playAnim(danceSteps[curDanceStep]);
+
 				curDanceStep++;
 			} else {
-				if (danceSteps.length > 0)
-					playAnim(danceSteps[0]);
+				if (danceSteps.length > 0) {
+					if (danceSteps[0] == "idle")
+						playAnim(animation.exists(danceSteps[0]+idleSuffix) ? danceSteps[0]+idleSuffix : danceSteps[0]);
+					else
+						playAnim(danceSteps[0]);
+				}
 			}
 		}
 	}

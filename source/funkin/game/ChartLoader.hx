@@ -51,6 +51,7 @@ class ChartLoader {
             case FNF:
                 if(Paths.exists(path)) {
                     var vanillaChart:LegacySong = cast Json.parse(Assets.getText(path)).song;
+                    if(vanillaChart.stage == null || vanillaChart.stage == "stage") vanillaChart.stage = "default";
 
                     var sections:Array<Section> = [];
                     for(section in vanillaChart.notes) {

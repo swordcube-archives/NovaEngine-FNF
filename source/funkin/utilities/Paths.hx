@@ -40,7 +40,7 @@ class Paths {
             if(!(FileSystem.exists(modPath) && FileSystem.isDirectory(modPath))) continue;
 
             for(item in FileSystem.readDirectory(modPath)) {
-                var fullPath:String = '$modPath/$item';
+                var fullPath:String = Paths.getAsset('$path/$item');
 
                 var toPush:String = returnPaths ? fullPath : item;
                 if(!(removeDirectories && FileSystem.isDirectory(fullPath)) && !itemList.contains(toPush))

@@ -32,8 +32,15 @@ using StringTools;
         interp = new Interp();
         interp.errorHandler = _errorHandler;
 
-        code = Assets.getText(path);
+        var coolerVersionsOfFunctions:Map<String, String> = [
+            "FlxG.sound.play(" => "CoolUtil.playSound(",
+            "FlxG.sound.playMusic(" => "CoolUtil.playMusic("
+        ];
 
+        code = Assets.getText(path);
+        for(ogThing => newThing in coolerVersionsOfFunctions)
+            code = code.replace(ogThing, newThing);
+        
         var parser = ScriptHandler.parser;
 
         try {

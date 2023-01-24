@@ -360,24 +360,20 @@ class PlayState extends MusicBeatState {
 		CoolUtil.playMusic(Paths.inst(SONG.name, storyDifficulty), 0, false);
 		FlxG.sound.list.add(vocals = (Paths.exists(Paths.voices(SONG.name, storyDifficulty)) ? new FlxSound().loadEmbedded(Paths.voices(SONG.name, storyDifficulty), false) : new FlxSound()));
 
-		add(stage = new Stage("default"));
-		add(stage.dadLayer);
-		add(stage.gfLayer);
-		add(stage.bfLayer);
+		add(stage = new Stage(SONG.stage));
 
 		add(gf = new Character(stage.gfPos.x, stage.gfPos.y, SONG.gf));
+		add(stage.gfLayer);
 		add(dad = new Character(stage.dadPos.x, stage.dadPos.y, SONG.dad));
+		add(stage.dadLayer);
 		add(boyfriend = new Character(stage.bfPos.x, stage.bfPos.y, SONG.bf, true));
+		add(stage.bfLayer);
 
 		gfs = [gf];
 		dads = [dad];
 		boyfriends = [bf];
 
 		add(camFollow = new FlxObject(0, 0, 1, 1));
-		camFollow.setPosition(gf.getMidpoint().x - 100, (boyfriend.getCameraPosition().y) - 100);
-		FlxG.camera.follow(camFollow, null, 0.04);
-		FlxG.camera.snapToTarget();
-
 		add(comboGroup = new FlxTypedSpriteGroup<FNFSprite>(FlxG.width * 0.55, (FlxG.height * 0.5) - 60));
 
 		// Preloads rating & combo assets
@@ -431,6 +427,10 @@ class PlayState extends MusicBeatState {
 		scripts.load();
 		scripts.call("onCreate");
 		FlxG.camera.zoom = defaultCamZoom;
+
+		camFollow.setPosition(gf.getMidpoint().x - 100, (boyfriend.getCameraPosition().y) - 100);
+		FlxG.camera.follow(camFollow, null, 0.04);
+		FlxG.camera.snapToTarget();
 
 		health = maxHealth * 0.5;
 
