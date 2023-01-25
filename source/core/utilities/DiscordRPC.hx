@@ -1,100 +1,36 @@
 package core.utilities;
 
-import haxe.Json;
-import openfl.utils.Assets;
 #if DISCORD_RPC
+import Sys.sleep;
 import discord_rpc.DiscordRpc;
-import sys.thread.Thread;
-import Sys;
-import lime.app.Application;
-import flixel.system.FlxSound;
 #end
 
+using StringTools;
+
 class DiscordRPC {
-	public static var currentID:String = null;
-	public static var discordThread:#if DISCORD_RPC Thread #else Dynamic #end = null;
 	public static var ready:Bool = false;
-	public static var data:DiscordJson = null;
 
-	public static function init() {
+	public function new() {
 		#if DISCORD_RPC
-		reloadJsonData();
-		discordThread = Thread.create(function() {
-			while (true) {
-				while (!ready) {
-					Sys.sleep(1 / 60);
-				}
-				trace("Processing Discord RPC...");
-				DiscordRpc.process();
-				Sys.sleep(2);
-			}
-		});
-
-		Application.current.onExit.add(function(exitCode) {
-			shutdown();
-		});
-		#end
-	}
-
-	public static function reloadJsonData() {
-		#if DISCORD_RPC
-		data = {};
-		var jsonPath = Paths.json("data/discordRPC");
-		if (Paths.exists(jsonPath)) {
-			try {
-				data = Json.parse(Assets.getText(jsonPath));
-			} catch (e) {
-				Console.error('Couldn\'t load Discord RPC configuration: ${e.toString()}');
-			}
-		}
-		data.setFieldDefault("clientID", "814588678700924999");
-		data.setFieldDefault("logoKey", "icon");
-		data.setFieldDefault("logoText", "Nova Engine");
-
-		changeClientID(data.clientID);
-		#end
-	}
-
-	public static function changePresence(details:String, state:String, ?smallImageKey:String) {
-		#if DISCORD_RPC
-		changePresenceAdvanced({
-			state: state,
-			details: details,
-			smallImageKey: smallImageKey
-		});
-		#end
-	}
-
-	public static function changePresenceAdvanced(data:#if DISCORD_RPC DiscordPresenceOptions #else Dynamic #end) {
-		#if DISCORD_RPC
-		if (data == null) return;
-
-		if (data.largeImageKey == null)
-			data.largeImageKey = DiscordRPC.data.logoKey;
-		if (data.largeImageText == null)
-			data.largeImageText = DiscordRPC.data.logoText;
-
-		DiscordRpc.presence(data);
-		#end
-	}
-
-	public static function changeClientID(id:String) {
-		#if DISCORD_RPC
-		if (currentID != null)
-			DiscordRpc.shutdown();
-
 		ready = false;
-
+		trace("Discord Client starting...");
 		DiscordRpc.start({
-			clientID: id,
-			onReady: function() {
-				trace('Discord RPC started');
-				ready = true;
-			},
+			clientID: "814588678700924999",
+			onReady: onReady,
 			onError: onError,
 			onDisconnected: onDisconnected
 		});
-		currentID = id;
+
+		while (true) {
+			while(!ready) {
+				Sys.sleep(1/60);
+			}
+			DiscordRpc.process();
+			sleep(2);
+			// trace("Discord Client Update");
+		}
+
+		DiscordRpc.shutdown();
 		#end
 	}
 
@@ -104,20 +40,50 @@ class DiscordRPC {
 		#end
 	}
 
-	// HANDLERS
-	#if DISCORD_RPC
+	static function onReady() {
+		#if DISCORD_RPC
+		DiscordRpc.presence({
+			state: null,
+			largeImageKey: "icon",
+			largeImageText: "Nova Engine"
+		});
+		ready = true;
+		trace("Discord Client started.");
+		#end
+	}
+
 	static function onError(_code:Int, _message:String) {
-		trace('Discord RPC Error: ${_message} (Code: $_code)', ERROR);
+		Console.error('Error! $_code : $_message');
 	}
 
 	static function onDisconnected(_code:Int, _message:String) {
-		trace('Discord RPC Disconnected: ${_message} (Code: $_code)', WARNING);
+		Console.warn('Disconnected! $_code : $_message');
 	}
-	#end
-}
 
-typedef DiscordJson = {
-	var ?clientID:String;
-	var ?logoKey:String;
-	var ?logoText:String;
+	public static function initialize() {
+		#if DISCORD_RPC
+		var DiscordDaemon = sys.thread.Thread.create(() -> {
+			new DiscordRPC();
+		});
+		#end
+	}
+
+	public static function changePresence(details:String, state:Null<String>, ?smallImageKey:String, ?hasStartTimestamp:Bool, ?endTimestamp:Float) {
+		#if DISCORD_RPC
+		var startTimestamp:Float = if (hasStartTimestamp) Date.now().getTime() else 0;
+
+		if (endTimestamp > 0) endTimestamp = startTimestamp + endTimestamp;
+
+		DiscordRpc.presence({
+			details: details,
+			state: state,
+			largeImageKey: "icon",
+			largeImageText: "Nova Engine",
+			smallImageKey: smallImageKey,
+			// Obtained times are in milliseconds so they are divided so Discord can use it
+			startTimestamp: Std.int(startTimestamp / 1000),
+			endTimestamp: Std.int(endTimestamp / 1000)
+		});
+		#end
+	}
 }
