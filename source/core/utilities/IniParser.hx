@@ -49,7 +49,7 @@ typedef IniSection = Map<String, String>;
                 }
             }
         } catch(e) {
-            Console.error('Error occured trying to parse INI data: $e');
+            Logs.trace('Error occured trying to parse INI data: $e', ERROR);
             return new Ini();
         }
 

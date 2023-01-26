@@ -3,11 +3,20 @@ package;
 import flixel.FlxGame;
 import openfl.display.Sprite;
 
-class Main extends Sprite
-{
-	public function new()
-	{
+class Main extends Sprite {
+	public static var gameSettings = {
+		width: 1280,
+		height: 720,
+		framerate: 1000,
+		skipSplash: true,
+		fullscreen: false
+	};
+
+	public static var fpsOverlay:FPSOverlay;
+
+	public function new() {
 		super();
-		addChild(new FlxGame(0, 0, PlayState));
+		addChild(new FlxGame(gameSettings.width, gameSettings.height, Init, gameSettings.framerate, gameSettings.framerate, gameSettings.skipSplash, gameSettings.fullscreen));
+		addChild(fpsOverlay = new FPSOverlay(10, 3));
 	}
 }

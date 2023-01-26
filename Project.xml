@@ -4,7 +4,7 @@
 
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="FlxProject" file="FlxProject" main="Main" version="0.1.0" company="HaxeFlixel" />
+	<app title="FNF: Nova Engine" file="NovaEngine" main="Main" version="0.1.0" company="swordcube" />
 
 	<!--The flixel preloader is not accurate in Chrome. You can use it regularly if you embed the swf into a html file
 		or you can set the actual size of your file manually at "FlxPreloaderBase-onUpdate-bytesTotal"-->
@@ -16,7 +16,7 @@
 	<!-- ____________________________ Window Settings ___________________________ -->
 
 	<!--These window settings apply to all targets-->
-	<window width="1280" height="720" fps="120" background="#000000" hardware="true" vsync="false" />
+	<window width="1280" height="720" fps="1000" background="#000000" hardware="true" vsync="false" />
 
 	<!--HTML5-specific-->
 	<window if="html5" resizable="true" />
@@ -35,9 +35,22 @@
 	<source path="source" />
 	<assets path="assets" />
 
+	<!-- ____________________________ Custom Defines ____________________________ -->
+
+	<!-- Comment this out to prevent Discord Rich Presence from working. -->
+	<define name="DISCORD_RPC" unless="web || hl || neko" />
+	
+	<!-- Comment this out to prevent unused classes from being compiled.
+		 Reduces compilation time at the cost of limited HScript flexibility. !-->
+	<define name="COMPILE_ALL_CLASSES" />
+
 	<!-- _______________________________ Libraries ______________________________ -->
 
+	<haxelib name="hxcpp-debug-server" if="debug cpp" />
+
 	<haxelib name="flixel-leather" />
+	<haxelib name="hscript-improved" />
+	<haxelib name="discord_rpc" if="DISCORD_RPC" />
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
 
@@ -54,6 +67,20 @@
 
 	<!--Enable this for Nape release builds for a serious peformance improvement-->
 	<haxedef name="NAPE_RELEASE_BUILD" unless="debug" />
+
+	<!-- Used to make HScript work much better -->
+	<haxedef name="hscriptPos" />
+	<haxeflag name="-dce no" />
+
+	<haxedef name="HXCPP_CHECK_POINTER" if="release" />
+	<haxedef name="HXCPP_STACK_LINE" if="release" />
+
+	<haxedef name="no-deprecation-warnings" />
+
+	<section if="COMPILE_ALL_CLASSES">
+		<haxeflag name="-dce" value="no" />
+		<haxeflag name="--macro" value="macros.ScriptsMacro.addAdditionalClasses()" />
+	</section>
 
 	<!-- _________________________________ Custom _______________________________ -->
 

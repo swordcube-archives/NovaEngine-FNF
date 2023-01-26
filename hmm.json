@@ -42,21 +42,11 @@
             "version": null
         },
         {
-            "name": "linc_discord-rpc",
+            "name": "discord_rpc",
             "type": "git",
-            "dir": "linc_discord-rpc",
+            "dir": "discord_rpc",
             "ref": "master",
             "url": "https://github.com/Aidan63/linc_discord-rpc"
-        },
-        {
-            "name": "markdown",
-            "type": "haxelib",
-            "version": null
-        },
-        {
-            "name": "tjson",
-            "type": "haxelib",
-            "version": null
         },
         {
             "name": "openfl",
@@ -64,13 +54,6 @@
             "dir": "openfl",
             "ref": "master",
             "url": "https://github.com/openfl/openfl"
-        },
-        {
-            "name": "polymod",
-            "type": "git",
-            "dir": "polymod",
-            "ref": "master",
-            "url": "https://github.com/swordcube/scriptless-polymod"
         }
     ]
 }
