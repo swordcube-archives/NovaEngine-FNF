@@ -1,4 +1,4 @@
-package objects.ui;
+package objects.fonts;
 
 import flixel.math.FlxPoint;
 import flixel.math.FlxMath;

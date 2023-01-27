@@ -9,6 +9,7 @@ class Init extends FlxState {
         Controls.init();
         SettingsAPI.init();
         Conductor.init();
+        ScriptHandler.init();
 
         FlxG.fixedTimestep = false;
 

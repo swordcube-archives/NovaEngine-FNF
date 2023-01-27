@@ -2,7 +2,7 @@ package states.menus;
 
 import flixel.util.FlxTimer;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import objects.ui.Alphabet;
+import objects.fonts.Alphabet;
 import flixel.math.FlxRect;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;

@@ -1,0 +1,3 @@
+function onCreate() {
+    trace("yo state scripts can run!!!!!!");
+}

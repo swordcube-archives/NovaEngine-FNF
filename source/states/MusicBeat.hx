@@ -1,5 +1,6 @@
 package states;
 
+import core.dependency.ScriptHandler;
 import flixel.addons.ui.FlxUISubState;
 import flixel.addons.ui.FlxUIState;
 
@@ -22,6 +23,24 @@ class MusicBeatState extends FlxUIState implements MusicHandler {
     public var curSection(get, never):Int;
     private function get_curSection() return Conductor.curSection;
 
+    public var scriptName:String;
+    public var script:ScriptModule;
+
+    public function new(?scriptName:String = null) {
+        super();
+        if(scriptName == null)
+            scriptName = this.getClassName().split(".").last();
+
+        script = ScriptHandler.loadModule(Paths.script('data/states/$scriptName'));
+        script.setParent(this);
+        script.call("new", []);
+    }
+
+    public function call(name:String, ?args:Array<Dynamic>, ?defaultReturn:Dynamic = null):Dynamic {
+		if (script == null) return defaultReturn;
+		return script.call(name, args);
+	}
+
     override function create() {
         super.create();
 
@@ -31,6 +50,38 @@ class MusicBeatState extends FlxUIState implements MusicHandler {
         Conductor.onBeatHit.add(beatHit);
         Conductor.onStepHit.add(stepHit);
         Conductor.onSectionHit.add(sectionHit);
+
+        call("onCreate", []);
+    }
+
+    override function createPost() {
+        super.createPost();
+        call("onCreatePost", []);
+    }
+
+    override function tryUpdate(elapsed:Float):Void {
+        if (persistentUpdate || subState == null) {
+            call("onPreUpdate", [elapsed]);
+            update(elapsed);
+            call("onUpdatePost", [elapsed]);
+        }
+
+        if (_requestSubStateReset) {
+            _requestSubStateReset = false;
+            resetSubState();
+        }
+
+        if (subState != null)
+            subState.tryUpdate(elapsed);
+    }
+
+    override function update(elapsed:Float) {
+        if (FlxG.keys.justPressed.F5)
+            FlxG.resetState();
+
+        call("onUpdate", [elapsed]);
+
+        super.update(elapsed);
     }
 
 	public function beatHit(value:Int) {
@@ -38,6 +89,7 @@ class MusicBeatState extends FlxUIState implements MusicHandler {
             if(m != null && m is MusicHandler)
                 cast(m, MusicHandler).beatHit(value);
         }
+        call("onBeatHit", [value]);
     }
 
 	public function stepHit(value:Int) {
@@ -45,6 +97,7 @@ class MusicBeatState extends FlxUIState implements MusicHandler {
             if(m != null && m is MusicHandler)
                 cast(m, MusicHandler).stepHit(value);
         }
+        call("onStepHit", [value]);
     }
 
 	public function sectionHit(value:Int) {
@@ -52,6 +105,7 @@ class MusicBeatState extends FlxUIState implements MusicHandler {
             if(m != null && m is MusicHandler)
                 cast(m, MusicHandler).sectionHit(value);
         }
+        call("onSectionHit", [value]);
     }
 }
 
@@ -60,7 +114,7 @@ typedef MusicBeatSubState = MusicBeatSubstate;
 
 class MusicBeatSubstate extends FlxUISubState implements MusicHandler {
     public var controls(get, never):Controls;
-    private function get_controls() return SettingsAPI.controls;
+    function get_controls() return SettingsAPI.controls;
 
     public var curBeat(get, never):Int;
     private function get_curBeat() return Conductor.curBeat;
@@ -77,12 +131,62 @@ class MusicBeatSubstate extends FlxUISubState implements MusicHandler {
     public var curSection(get, never):Int;
     private function get_curSection() return Conductor.curSection;
 
+    public var scriptName:String;
+    public var script:ScriptModule;
+
+    public function new(?scriptName:String = null) {
+        super();
+        if(scriptName == null)
+            scriptName = this.getClassName().split(".").last();
+
+        script = ScriptHandler.loadModule(Paths.script('data/substates/$scriptName'));
+        script.setParent(this);
+        script.call("new", []);
+    }
+
+    public function call(name:String, ?args:Array<Dynamic>, ?defaultReturn:Dynamic = null):Dynamic {
+		if (script == null) return defaultReturn;
+		return script.call(name, args);
+	}
+
     override function create() {
         super.create();
 
         Conductor.onBeatHit.add(beatHit);
         Conductor.onStepHit.add(stepHit);
         Conductor.onSectionHit.add(sectionHit);
+
+        call("onCreate", []);
+    }
+
+    override function createPost() {
+        super.createPost();
+        call("onCreatePost", []);
+    }
+
+    override function tryUpdate(elapsed:Float):Void {
+        if (persistentUpdate || subState == null) {
+            call("onPreUpdate", [elapsed]);
+            update(elapsed);
+            call("onUpdatePost", [elapsed]);
+        }
+
+        if (_requestSubStateReset) {
+            _requestSubStateReset = false;
+            resetSubState();
+        }
+
+        if (subState != null)
+            subState.tryUpdate(elapsed);
+    }
+
+    override function update(elapsed:Float) {
+        if (FlxG.keys.justPressed.F5)
+            FlxG.resetState();
+
+        call("onUpdate", [elapsed]);
+
+        super.update(elapsed);
     }
 
 	public function beatHit(value:Int) {
@@ -90,6 +194,7 @@ class MusicBeatSubstate extends FlxUISubState implements MusicHandler {
             if(m != null && m is MusicHandler)
                 cast(m, MusicHandler).beatHit(value);
         }
+        call("onBeatHit", [value]);
     }
 
 	public function stepHit(value:Int) {
@@ -97,6 +202,7 @@ class MusicBeatSubstate extends FlxUISubState implements MusicHandler {
             if(m != null && m is MusicHandler)
                 cast(m, MusicHandler).stepHit(value);
         }
+        call("onStepHit", [value]);
     }
 
 	public function sectionHit(value:Int) {
@@ -104,5 +210,6 @@ class MusicBeatSubstate extends FlxUISubState implements MusicHandler {
             if(m != null && m is MusicHandler)
                 cast(m, MusicHandler).sectionHit(value);
         }
+        call("onSectionHit", [value]);
     }
 }

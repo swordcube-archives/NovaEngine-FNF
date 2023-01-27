@@ -12,6 +12,11 @@ class Main extends Sprite {
 		fullscreen: false
 	};
 
+	public static var engineVersion(get, never):String;
+	private static function get_engineVersion():String {
+		return lime.app.Application.current.meta.get("version");
+	}
+
 	public static var fpsOverlay:FPSOverlay;
 
 	public static function framerateAdjust(input:Float) {

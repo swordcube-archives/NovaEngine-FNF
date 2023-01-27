@@ -40,7 +40,7 @@ class Logs {
         Sys.println(switch(type) {
             case WARNING: timeStr + colors["yellow"] +  "[ 🟡 WARNING ] " + value + colors["reset"];
             case ERROR:   timeStr + colors["red"] +     "[  🔴 ERROR  ] " + value + colors["reset"];
-            case TRACE:   timeStr + colors["gray"] +    "[  ⚪ TRACE  ] " + value + colors["reset"];
+            case TRACE:   timeStr + colors["gray"] +    "[  ❕ TRACE  ] " + value + colors["reset"];
             case VERBOSE: timeStr + colors["magenta"] + "[ 🟣 VERBOSE ] " + value + colors["reset"];
             default:      timeStr + colors["cyan"] +    "[  🔵 INFO   ] " + value + colors["reset"];
         });

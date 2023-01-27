@@ -62,6 +62,8 @@ private class Cache {
 class Paths {
     public static var assetCache:Cache = new Cache();
 
+    public static var scriptExts:Array<String> = ["hx", "hxs", "hsc", "hscript"];
+
     // Functions that return data only
     public static function returnGraphic(path:String):Dynamic {
         if(!assetCache.exists(path)) {
@@ -166,6 +168,17 @@ class Paths {
 
     public static function vert(path:String, ?pathOnly:Bool = false):Dynamic {
         var p:String = getPath('$path.vert');
+        return pathOnly ? p : returnText(p);
+    }
+
+    public static function script(path:String, ?pathOnly:Bool = true):Dynamic {
+        for(ext in scriptExts) {
+            var pathToCheck:String = getPath('$path.$ext');
+            if(FileSystem.exists(pathToCheck))
+                return pathOnly ? pathToCheck : returnText(pathToCheck);
+        }
+
+        var p:String = getPath('$path.hx');
         return pathOnly ? p : returnText(p);
     }
 

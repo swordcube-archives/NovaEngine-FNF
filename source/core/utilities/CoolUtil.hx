@@ -26,6 +26,26 @@ class CoolUtil {
 		return daList;
 	}
 
+	/**
+	 * Gets the platform the game was compiled to.
+	 * @author swordcube
+	 */
+	public inline static function getPlatform():String {
+		#if sys
+		return Sys.systemName();
+		#elseif android
+		return "Android";
+		#elseif html5
+		return "HTML5";
+		#elseif (hl || hashlink) // idfk which one is hashlink so let's check both!! lol!!
+		return "Hashlink";
+		#elseif neko
+		return "Neko";
+		#else
+		return "Unknown";
+		#end
+	}
+
 	public static function addZeros(str:String, num:Int) {
 		while(str.length < num) str = '0${str}';
 		return str;

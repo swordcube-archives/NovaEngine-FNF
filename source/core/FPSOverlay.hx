@@ -1,6 +1,5 @@
 package core;
 
-import core.dependency.Memory;
 import haxe.Timer;
 import openfl.events.Event;
 import openfl.text.TextField;
