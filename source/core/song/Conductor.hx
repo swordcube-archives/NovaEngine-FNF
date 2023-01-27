@@ -70,8 +70,8 @@ class Conductor {
 	public static var curStep:Int = 0;
 	public static var curBeat:Int = 0;
 
-	public static var curDecStep:Float = 0;
-	public static var curDecBeat:Float = 0;
+	public static var preciseStep:Float = 0;
+	public static var preciseBeat:Float = 0;
 
 	public static var curSection:Int = 0;
 
@@ -152,10 +152,10 @@ class Conductor {
 
 	public static function update() {
 		curStep = getStepRounded(position);
-		curDecStep = getStep(position);
+		preciseStep = getStep(position);
 
 		curBeat = getBeatRounded(position);
-		curDecBeat = getBeat(position);
+		preciseBeat = getBeat(position);
 
 		var trueStep:Int = curStep;
 		for (i in storedSteps)

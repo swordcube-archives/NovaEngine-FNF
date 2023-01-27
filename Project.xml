@@ -70,7 +70,6 @@
 
 	<!-- Used to make HScript work much better -->
 	<haxedef name="hscriptPos" />
-	<haxeflag name="-dce no" />
 
 	<haxedef name="HXCPP_CHECK_POINTER" if="release" />
 	<haxedef name="HXCPP_STACK_LINE" if="release" />

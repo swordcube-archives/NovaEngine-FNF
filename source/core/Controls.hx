@@ -29,10 +29,10 @@ class Controls {
         "BACK" => [BACKSPACE, ESCAPE],
 
         // Game controls
-        "NOTE_0" => [A, LEFT],
-        "NOTE_1" => [S, DOWN],
-        "NOTE_2" => [W, UP],
-        "NOTE_3" => [D, RIGHT],
+        "NOTE_LEFT" => [A, LEFT],
+        "NOTE_DOWN" => [S, DOWN],
+        "NOTE_UP" => [W, UP],
+        "NOTE_RIGHT" => [D, RIGHT],
 
         // Debug controls
         "CHARTER" => [SEVEN, NUMPADSEVEN]
@@ -75,8 +75,58 @@ class Controls {
 
     // -- NON-STATIC VARIABLES & FUNCTIONS --------------------------------------------
 
+    // ui directional controls (just pressed)
+    public var UI_LEFT_P(get, never):Bool;
+    private function get_UI_LEFT_P() return __checkKeys(controlsList["UI_LEFT"], JUST_PRESSED);
+
+    public var UI_DOWN_P(get, never):Bool;
+    private function get_UI_DOWN_P() return __checkKeys(controlsList["UI_DOWN"], JUST_PRESSED);
+
+    public var UI_UP_P(get, never):Bool;
+    private function get_UI_UP_P() return __checkKeys(controlsList["UI_UP"], JUST_PRESSED);
+
+    public var UI_RIGHT_P(get, never):Bool;
+    private function get_UI_RIGHT_P() return __checkKeys(controlsList["UI_RIGHT"], JUST_PRESSED);
+
+    // ui directional controls (pressed)
+    public var UI_LEFT(get, never):Bool;
+    private function get_UI_LEFT() return __checkKeys(controlsList["UI_LEFT"], PRESSED);
+
+    public var UI_DOWN(get, never):Bool;
+    private function get_UI_DOWN() return __checkKeys(controlsList["UI_DOWN"], PRESSED);
+
+    public var UI_UP(get, never):Bool;
+    private function get_UI_UP() return __checkKeys(controlsList["UI_UP"], PRESSED);
+
+    public var UI_RIGHT(get, never):Bool;
+    private function get_UI_RIGHT() return __checkKeys(controlsList["UI_RIGHT"], PRESSED);
+
+    // ui directional controls (just released)
+    public var UI_LEFT_R(get, never):Bool;
+    private function get_UI_LEFT_R() return __checkKeys(controlsList["UI_LEFT"], JUST_RELEASED);
+
+    public var UI_DOWN_R(get, never):Bool;
+    private function get_UI_DOWN_R() return __checkKeys(controlsList["UI_DOWN"], JUST_RELEASED);
+
+    public var UI_UP_R(get, never):Bool;
+    private function get_UI_UP_R() return __checkKeys(controlsList["UI_UP"], JUST_RELEASED);
+
+    public var UI_RIGHT_R(get, never):Bool;
+    private function get_UI_RIGHT_R() return __checkKeys(controlsList["UI_RIGHT"], JUST_RELEASED);
+
+    // debug menus
+    public var CHARTER(get, never):Bool;
+    private function get_CHARTER() return __checkKeys(controlsList["CHARTER"], JUST_PRESSED);
+
+    // ui controls for anything else
     public var ACCEPT(get, never):Bool;
     private function get_ACCEPT() return __checkKeys(controlsList["ACCEPT"], JUST_PRESSED);
+
+    public var PAUSE(get, never):Bool;
+    private function get_PAUSE() return __checkKeys(controlsList["PAUSE"], JUST_PRESSED);
+
+    public var BACK(get, never):Bool;
+    private function get_BACK() return __checkKeys(controlsList["BACK"], JUST_PRESSED);
 
     // -- HELPER VARIABLES & FUNCTIONS ------------------------------------------------
 

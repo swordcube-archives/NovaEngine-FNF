@@ -8,7 +8,7 @@ import openfl.text.TextFormat;
 
 class FPSOverlay extends TextField {
 	private var times:Array<Float> = [];
-	private var memPeak:Float = 0;
+	public var memPeak:Float = 0;
 
     public var displayFPS:Bool = true;
     public var displayMemory:Bool = true;
@@ -36,9 +36,12 @@ class FPSOverlay extends TextField {
 		while (times[0] < now - 1) times.shift();
 
 		if (visible) {
+			var mem:Float = MemoryUtil.getCurrentUsage();
+			if(mem > memPeak) memPeak = mem;
+
             text = (
                 (displayFPS ? '${times.length} FPS\n' : '') +
-                (displayMemory ? '${CoolUtil.getSizeLabel(Memory.getCurrentUsage())} / ${CoolUtil.getSizeLabel(Memory.getPeakUsage())}\n' : '') +
+                (displayMemory ? '${CoolUtil.getSizeLabel(mem)} / ${CoolUtil.getSizeLabel(memPeak)}\n' : '') +
                 (displayDebug ? Type.getClassName(Type.getClass(FlxG.state)) : '')
             );
         }
