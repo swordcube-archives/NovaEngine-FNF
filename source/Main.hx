@@ -14,6 +14,10 @@ class Main extends Sprite {
 
 	public static var fpsOverlay:FPSOverlay;
 
+	public static function framerateAdjust(input:Float) {
+		return FlxG.elapsed * 60 * input;
+	}
+
 	public function new() {
 		super();
 		addChild(new FlxGame(gameSettings.width, gameSettings.height, Init, gameSettings.framerate, gameSettings.framerate, gameSettings.skipSplash, gameSettings.fullscreen));

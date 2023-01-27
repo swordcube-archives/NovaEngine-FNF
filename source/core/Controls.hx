@@ -71,13 +71,30 @@ class Controls {
 
     }
 
+    public function new() {}
+
     // -- NON-STATIC VARIABLES & FUNCTIONS --------------------------------------------
 
-    public function new() {}
+    public var ACCEPT(get, never):Bool;
+    private function get_ACCEPT() return __checkKeys(controlsList["ACCEPT"], JUST_PRESSED);
 
     // -- HELPER VARIABLES & FUNCTIONS ------------------------------------------------
 
-    private function __checkKey(key:String, ?state:KeyState = PRESSED) {
+    private function __checkKeys(list:KeyList, ?state:KeyState = PRESSED) {
+        return __checkKey(list[1], state) || __checkKey(list[0], state);
+    }
 
+    private function __checkKey(key:Null<FlxKey>, ?state:KeyState = PRESSED) {
+        return isKeyInvalid(key) ? false : switch(state) {
+            case JUST_PRESSED:  FlxG.keys.checkStatus(key, JUST_PRESSED);
+            case PRESSED:       FlxG.keys.checkStatus(key, PRESSED);
+            case JUST_RELEASED: FlxG.keys.checkStatus(key, JUST_RELEASED);
+            case RELEASED:      FlxG.keys.checkStatus(key, RELEASED);
+            default:            false;
+        };
+    }
+
+    public static function isKeyInvalid(key:Null<FlxKey>) {
+        return (key == null || key == 0 || key == NONE);
     }
 }

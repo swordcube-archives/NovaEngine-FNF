@@ -23,6 +23,18 @@ class FNFSprite extends FlxSprite {
         animOffsets.set(name, FlxPoint.get(x * (adjustToScale ? scale.x : 1), y * (adjustToScale ? scale.y : 1)));
     }
 
+    public function addAnim(name:String, prefix:String, ?fps:Int = 24, ?loop:Bool = false, ?offsets:FlxPoint) {
+        if(offsets == null) offsets = FlxPoint.get(0, 0);
+        animation.addByPrefix(name, prefix, fps, loop);
+        addOffset(name, offsets.x, offsets.y);
+    }
+
+    public function addAnimByIndices(name:String, prefix:String, indices:Array<Int>, ?fps:Int = 24, ?loop:Bool = false, ?offsets:FlxPoint) {
+        if(offsets == null) offsets = FlxPoint.get(0, 0);
+        animation.addByIndices(name, prefix, indices, "", fps, loop);
+        addOffset(name, offsets.x, offsets.y);
+    }
+
     public function playAnim(name:String, force:Bool = false, context:AnimationContext = NORMAL, frame:Int = 0) {
         animation.play(name, force, false, frame);
         lastAnimContext = context;

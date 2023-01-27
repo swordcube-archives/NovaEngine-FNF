@@ -17,10 +17,12 @@ private enum abstract CacheType(String) to String from String {
 
 private class CacheAsset {
     public var value:Dynamic;
+    public var path:String;
     public var type:CacheType = ANY;
 
-    public function new(value:Dynamic, ?type:CacheType = ANY) {
+    public function new(value:Dynamic, path:String, ?type:CacheType = ANY) {
         this.value = value;
+        this.path = path;
         this.type = type;
     }
 
@@ -155,6 +157,16 @@ class Paths {
     public static function json(path:String, ?pathOnly:Bool = false):Dynamic {
         var p:String = getPath('$path.json');
         return pathOnly ? p : returnJSON(p);
+    }
+
+    public static function frag(path:String, ?pathOnly:Bool = false):Dynamic {
+        var p:String = getPath('$path.frag');
+        return pathOnly ? p : returnText(p);
+    }
+
+    public static function vert(path:String, ?pathOnly:Bool = false):Dynamic {
+        var p:String = getPath('$path.vert');
+        return pathOnly ? p : returnText(p);
     }
 
     public static function songJson(song:String, ?diff:String = "normal", ?pathOnly:Bool = false):Dynamic {

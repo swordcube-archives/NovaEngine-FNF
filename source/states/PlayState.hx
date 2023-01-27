@@ -6,9 +6,17 @@ import flixel.FlxState;
 class PlayState extends FlxState {
 	public static var current:PlayState;
 	public static var SONG:SongData;
+
+	public static var assetModifier:String = "base";
+
+	public static function resetStatics() {
+		assetModifier = "base";
+	}
 	
 	override public function create() {
 		super.create();
+
+		resetStatics();
 
 		current = this;
 	}

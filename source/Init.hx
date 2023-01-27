@@ -20,8 +20,6 @@ class Init extends FlxState {
             FlxSprite.defaultAntialiasing = SettingsAPI.antialiasing;
         });
 
-        trace("testing trace lmao!");
-
         FlxG.switchState(new states.menus.TitleState());
     }
 }

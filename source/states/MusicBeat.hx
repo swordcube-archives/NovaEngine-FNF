@@ -10,6 +10,9 @@ class MusicBeatState extends FlxUIState implements MusicHandler {
     override function create() {
         super.create();
 
+        transIn = FlxTransitionableState.defaultTransIn;
+        transOut = FlxTransitionableState.defaultTransOut;
+
         Conductor.onBeatHit.add(beatHit);
         Conductor.onStepHit.add(stepHit);
         Conductor.onSectionHit.add(sectionHit);

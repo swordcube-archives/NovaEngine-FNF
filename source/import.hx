@@ -8,6 +8,7 @@ import sys.FileSystem;
 #end
 
 import haxe.Json;
+import flixel.addons.transition.FlxTransitionableState;
 
 import core.*;
 import core.dependency.*;
