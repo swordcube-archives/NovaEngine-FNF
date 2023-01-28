@@ -1,44 +1,50 @@
 package objects.ui;
 
-import core.utilities.FNFSprite.AnimationContext;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import states.PlayState;
+import objects.ui.Note;
+import core.utilities.FNFSprite.AnimationContext;
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
-typedef NoteSkinAnimation = {
-    var name:String;
-    var spritesheetName:String;
-    @:optional var fps:Null<Int>;
-    @:optional var loop:Null<Bool>;
+class StrumLine extends FlxTypedSpriteGroup<Receptor> {
+    public var downscroll:Bool = false;
+    public var skin:String = "default";
+    public var keyCount:Int = 4;
+
+    public function new(x:Float = 0, y:Float = 0, downscroll:Bool = false, skin:String = "default", keyCount:Int = 4) {
+        super(x, y);
+
+        this.downscroll = downscroll;
+        this.keyCount = keyCount;
+
+        generateReceptors();
+    }
+
+    public function generateReceptors() {
+        forEach((receptor:Receptor) -> {
+            receptor.kill();
+            receptor.destroy();
+            remove(receptor, true);
+        });
+        clear();
+
+        for(noteData in 0...keyCount) {
+            var receptor = new Receptor(Note.swagWidth * noteData, 0, skin, keyCount, noteData);
+            receptor.ID = noteData;
+            receptor.alpha = 0;
+            FlxTween.tween(receptor, {alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * noteData)});
+            add(receptor);
+        }
+    }
 }
 
-typedef NoteSkinData = {
-    @:optional var scale:Float;
-    @:optional var isPixel:Bool;
-    var animations:Array<NoteSkinAnimation>;
-}
-
-typedef ExtraKeyData = {
-    var directions:Array<String>;
-    @:optional var scale:Null<Float>;
-    @:optional var spacing:Null<Float>;
-}
-
-class Note extends FNFSprite {
+class Receptor extends FNFSprite {
     public var keyCount:Int = 4;
     public var noteData:Int = 0;
 
-    public var noteAngle:Float = 0;
-
-    public var strumLine:StrumLine;
-
     public var directionName(get, never):String;
-    private function get_directionName() return extraKeyInfo[keyCount].directions[noteData];
-
-    public static var extraKeyInfo:Map<Int, Dynamic> = [
-        4 => {
-            directions: ["left", "down", "up", "right"]
-        }
-    ];
-    public static var swagWidth:Float = 160 * 0.7;
+    private function get_directionName() return Note.extraKeyInfo[keyCount].directions[noteData];
 
     public var initialScale:Float = 0.7;
     public var skinData:NoteSkinData;
@@ -59,7 +65,7 @@ class Note extends FNFSprite {
             animation.setFieldDefault("loop", false);
             this.animation.addByPrefix(animation.name, animation.spritesheetName.replace("${DIRECTION}", directionName), animation.fps, animation.loop);
         }
-        playAnim("note");
+        playAnim("static");
         
         initialScale = skinData.scale;
         scale.set(initialScale, initialScale);
