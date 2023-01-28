@@ -84,9 +84,9 @@ class TitleState extends MusicBeatState {
         diamond.persist = true;
         diamond.destroyOnNoUse = false;
 
-        FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 0.3, new FlxPoint(0, -1), {asset: diamond, width: 32, height: 32},
+        FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 0.5, new FlxPoint(0, -1), {asset: diamond, width: 32, height: 32},
             new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
-        FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.3, new FlxPoint(0, 1),
+        FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.5, new FlxPoint(0, 1),
             {asset: diamond, width: 32, height: 32}, new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
 
 		transIn = FlxTransitionableState.defaultTransIn;
@@ -99,6 +99,8 @@ class TitleState extends MusicBeatState {
 
 		if(!initializedTransitions)
 			initTransitions();
+
+		if(!runDefaultCode) return;
 
 		if(FlxG.sound.music == null || (FlxG.sound.music != null && !FlxG.sound.music.playing))
 			NovaTools.playMenuMusic("freakyMenu", 0, 1, 4);
@@ -158,6 +160,8 @@ class TitleState extends MusicBeatState {
 	override public function update(elapsed:Float) {
 		super.update(elapsed);
 
+		if(!runDefaultCode) return;
+
 		if(FlxG.sound.music != null)
 			Conductor.position = FlxG.sound.music.time;
 		else
@@ -170,7 +174,7 @@ class TitleState extends MusicBeatState {
 				titleText.animation.play("press");
 
 				FlxG.camera.flash(0xFFFFFFFF, 1);
-				FlxG.sound.play(Paths.sound("menus/confirmMenu"));
+				CoolUtil.playMenuSFX(CONFIRM);
 
 				new FlxTimer().start(2, (tmr:FlxTimer) -> {
 					FlxG.switchState(new MainMenuState());
@@ -181,14 +185,16 @@ class TitleState extends MusicBeatState {
 	}
 
 	override public function beatHit(curBeat:Int) {
-		logo.animation.play("bump", true);
-		gfDance.animation.play((curBeat % 2 == 0) ? "danceLeft" : "danceRight");
+		if(runDefaultCode) {
+			logo.animation.play("bump", true);
+			gfDance.animation.play((curBeat % 2 == 0) ? "danceLeft" : "danceRight");
 
-		if(!skippedIntro && curBeat >= introLength)
-			skipIntro();
+			if(!skippedIntro && curBeat >= introLength)
+				skipIntro();
 
-		if(!skippedIntro && introLines.exists(curBeat))
-			introLines.get(curBeat).show();
+			if(!skippedIntro && introLines.exists(curBeat))
+				introLines.get(curBeat).show();
+		}
 
 		super.beatHit(curBeat);
 	}

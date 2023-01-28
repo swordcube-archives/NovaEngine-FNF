@@ -1,5 +1,6 @@
 package;
 
+import openfl.utils.Assets;
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.media.Sound;
 import openfl.display.BitmapData;
@@ -64,10 +65,17 @@ class Paths {
 
     public static var scriptExts:Array<String> = ["hx", "hxs", "hsc", "hscript"];
 
+    public static final FALLBACK_XML:String = '<?xml version="1.0" encoding="utf-8"?>
+    <TextureAtlas imagePath="fallback.png">
+        <SubTexture name="fallback0000" x="0" y="0" width="16" height="16"/>
+    </TextureAtlas>';
+
     // Functions that return data only
     public static function returnGraphic(path:String):Dynamic {
         if(!assetCache.exists(path)) {
             var bitmap = BitmapData.fromFile(path);
+            if(bitmap == null) bitmap = Assets.getBitmapData("flixel/images/logo/default.png");
+
             var graphic = FlxGraphic.fromBitmapData(bitmap, false, path, false);
             graphic.persist = true;
             graphic.destroyOnNoUse = false;
@@ -85,7 +93,7 @@ class Paths {
 
     public static function returnText(path:String):Dynamic {
         if(!assetCache.exists(path))
-            assetCache.set(path, new CacheAsset(File.getContent(path), TEXT));
+            assetCache.set(path, new CacheAsset(FileSystem.exists(path) ? File.getContent(path) : "", TEXT));
         
         return assetCache.get(path).value;
     }
@@ -93,11 +101,16 @@ class Paths {
     public static function returnJSON(path:String):Dynamic {
         if(!assetCache.exists(path))
             assetCache.set(path, new CacheAsset(try {
+                if(!FileSystem.exists(path))
+                    Logs.trace("JSON at path: "+path+" doesn't exist!", ERROR);
+
                 Json.parse(FileSystem.exists(path) ? File.getContent(path) : '{"error":null}');
-            } catch(e) {
+            } 
+            catch(e) {
                 Logs.trace("Error occured while loading JSON at path: "+path+" - "+e, ERROR);
                 {error:null};
-            }, JSON));
+            }, 
+            JSON));
         
         return assetCache.get(path).value;
     }
@@ -120,11 +133,16 @@ class Paths {
     }
 
     public static function getSparrowAtlas(path:String, ?pathOnly:Bool = false):FlxAtlasFrames {
-        return FlxAtlasFrames.fromSparrow(image(path), xml('images/$path'));
+        var xmlData:String = xml('images/$path');
+        return FlxAtlasFrames.fromSparrow(image(path), xmlData.length > 0 ? xmlData : FALLBACK_XML);
     }
 
     public static function getPackerAtlas(path:String, ?pathOnly:Bool = false):FlxAtlasFrames {
-        return FlxAtlasFrames.fromSpriteSheetPacker(image(path), txt('images/$path'));
+        var txtData:String = txt('images/$path');
+        if(txtData.length > 0)
+            return FlxAtlasFrames.fromSpriteSheetPacker(image(path), txtData);
+
+        return FlxAtlasFrames.fromSparrow(image(path), FALLBACK_XML);
     }
 
     public static function music(path:String, ?pathOnly:Bool = false):Dynamic {

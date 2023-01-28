@@ -26,6 +26,8 @@ class MusicBeatState extends FlxUIState implements MusicHandler {
     public var scriptName:String;
     public var script:ScriptModule;
 
+    public var runDefaultCode:Bool = true;
+
     public function new(?scriptName:String = null) {
         super();
         if(scriptName == null)

@@ -1,0 +1,42 @@
+{
+    "scale": 0.7,
+    "isPixel": false,
+    "animations": [
+        {
+            "name": "static",
+            "spritesheetName": "${DIRECTION} static0",
+            "fps": 24,
+            "loop": true
+        },
+        {
+            "name": "pressed",
+            "spritesheetName": "${DIRECTION} pressed0",
+            "fps": 24,
+            "loop": false
+        },
+        {
+            "name": "confirm",
+            "spritesheetName": "${DIRECTION} confirm0",
+            "fps": 24,
+            "loop": false
+        },
+        {
+            "name": "note",
+            "spritesheetName": "${DIRECTION}0",
+            "fps": 24,
+            "loop": true
+        },
+        {
+            "name": "hold",
+            "spritesheetName": "${DIRECTION} hold0",
+            "fps": 24,
+            "loop": true
+        },
+        {
+            "name": "holdend",
+            "spritesheetName": "${DIRECTION} hold end0",
+            "fps": 24,
+            "loop": true
+        }
+    ]
+}

@@ -1,9 +1,10 @@
 package states;
 
+import states.MusicBeat.MusicBeatState;
+import objects.ui.*;
 import core.song.SongFormat.SongData;
-import flixel.FlxState;
 
-class PlayState extends FlxState {
+class PlayState extends MusicBeatState {
 	public static var current:PlayState;
 	public static var SONG:SongData;
 
@@ -19,6 +20,14 @@ class PlayState extends FlxState {
 		resetStatics();
 
 		current = this;
+		FlxG.sound.music.stop();
+
+		// VVV -- PRELOADING -----------------------------------------------------------
+
+		var note = new Note();
+		add(note);
+
+		// ^^^ -- END OF PRELOADING ----------------------------------------------------
 	}
 
 	override public function update(elapsed:Float) {
