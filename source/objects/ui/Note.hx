@@ -1,5 +1,6 @@
 package objects.ui;
 
+import flixel.math.FlxMath;
 import core.utilities.FNFSprite.AnimationContext;
 import states.PlayState;
 
@@ -24,9 +25,39 @@ typedef ExtraKeyData = {
 
 class Note extends FNFSprite {
     public var keyCount:Int = 4;
+
+    public var rawNoteData:Int = 0;
     public var noteData:Int = 0;
 
+    public var strumTime:Float = 0;
+    public var sustainLength:Float = 0;
+
+    public var mustPress:Bool = false;
+    public var isSustainNote:Bool = false;
+    public var isSustainTail:Bool = false;
+
+    public var wasGoodHit:Bool = false;
+    public var canBeHit:Bool = false;
+    public var tooLate:Bool = false;
+    public var shouldHit:Bool = true;
+
+    public var parentNote:Note;
+    public var prevNote:Note;
+    public var curSection:Int = 0;
+
+    public var scrollSpeed(get, default):Null<Float> = null;
+    private function get_scrollSpeed():Float {
+        if(scrollSpeed != null)
+            return scrollSpeed;
+
+        if(strumLine != null && strumLine.members[noteData] != null && strumLine.members[noteData].scrollSpeed != null)
+            return strumLine.members[noteData].scrollSpeed;
+
+        return PlayState.current.scrollSpeed;
+    }
+    
     public var noteAngle:Float = 0;
+    public var stepCrochet:Float = 0;
 
     public var strumLine:StrumLine;
 
@@ -64,6 +95,57 @@ class Note extends FNFSprite {
         initialScale = skinData.scale;
         scale.set(initialScale, initialScale);
         updateHitbox();
+    }
+
+    public function resetAnim() {
+        if(isSustainNote) {
+            if(isSustainTail)
+                playAnim("holdend");
+            else
+                playAnim("hold");
+        } else
+            playAnim("note");
+    }
+
+    override function update(elapsed:Float) {
+        super.update(elapsed);
+
+        if (mustPress) {
+            if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset
+                && strumTime < Conductor.songPosition + Conductor.safeZoneOffset)
+                canBeHit = true;
+            else
+                canBeHit = false;
+
+            if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit)
+                tooLate = true;
+        }
+        else
+            canBeHit = false;
+
+        if (tooLate) alpha = 0.3;
+
+        if(isSustainNote) {
+            if(!isSustainTail) {
+                scale.y = 1 * ((stepCrochet / 100) * 1.05) * scrollSpeed;
+
+                if(skinData.isPixel) {
+					scale.y *= 1.19;
+					scale.y *= (6 / height);
+				}
+            }
+            
+            updateHitbox();
+            centerXOffset();
+        }
+    }
+
+    public function centerXOffset() {
+        if (!skinData.isPixel) {
+			offset.x = frameWidth * 0.5;
+			offset.x -= 156 * (initialScale * 0.5);
+		} else
+            offset.x = (frameWidth - width) * 0.5;
     }
 
     override function playAnim(name:String, force:Bool = false, context:AnimationContext = NORMAL, frame:Int = 0) {

@@ -45,7 +45,7 @@ class MainMenuState extends MusicBeatState {
 			FlxG.switchState(new StoryMenuState());
 		});
 		menuItems.createItem("freeplay", () -> {
-            PlayState.SONG = Song.loadChart("fresh", "hard");
+            PlayState.SONG = Song.loadChart("bopeebo", "hard");
 			FlxG.switchState(new PlayState());
 		});
 		menuItems.createItem("options", () -> {

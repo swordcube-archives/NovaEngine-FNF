@@ -14,6 +14,7 @@ typedef SongData = {
 	var noteSkin:String;
 	var splashSkin:String;
 	var assetModifier:String;
+	@:optional var keyCount:Null<Int>;
 }
 
 typedef SectionNote = Array<Dynamic>;

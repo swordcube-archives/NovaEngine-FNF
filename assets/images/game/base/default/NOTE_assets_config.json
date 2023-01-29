@@ -28,7 +28,7 @@
         },
         {
             "name": "hold",
-            "spritesheetName": "${DIRECTION} hold0",
+            "spritesheetName": "${DIRECTION} hold piece0",
             "fps": 24,
             "loop": true
         },

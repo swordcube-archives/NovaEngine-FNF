@@ -6,7 +6,7 @@ class Song {
     public static function loadChart(song:String, ?diff:String = "normal"):SongData {
         return try {
             var path:String = Paths.songJson(song, diff, true);
-            Json.parse(FileSystem.exists(path) ? File.getContent(path) : '{"error":null}');
+            Json.parse(FileSystem.exists(path) ? File.getContent(path) : '{"error":null}').song;
         } catch(e) {
             Logs.trace('Error occured while loading chart for $song on $diff difficulty: $e', ERROR);
             {
