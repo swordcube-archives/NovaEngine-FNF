@@ -42,6 +42,8 @@ class Note extends FNFSprite {
     public var shouldHit:Bool = true;
 
     public var parentNote:Note;
+    public var sustainNotes:Array<Note> = [];
+    
     public var prevNote:Note;
     public var curSection:Int = 0;
 
@@ -117,8 +119,11 @@ class Note extends FNFSprite {
             else
                 canBeHit = false;
 
-            if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit)
+            if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit && !tooLate) {
                 tooLate = true;
+                for(note in sustainNotes)
+                    note.tooLate = true;
+            }
         }
         else
             canBeHit = false;
@@ -127,7 +132,7 @@ class Note extends FNFSprite {
 
         if(isSustainNote) {
             if(!isSustainTail) {
-                scale.y = 1 * ((stepCrochet / 100) * 1.05) * scrollSpeed;
+                scale.y = 1 * ((stepCrochet / 100) * 1.05) * Math.abs(scrollSpeed);
 
                 if(skinData.isPixel) {
 					scale.y *= 1.19;

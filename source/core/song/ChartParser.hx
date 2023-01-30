@@ -56,9 +56,23 @@ class ChartParser {
                     susNote.stepCrochet = Conductor.stepCrochet;
                     susNote.resetAnim();
                     noteArray.push(susNote);
+
+                    swagNote.sustainNotes.push(susNote);
                 }
             }
         }
+
+        var oldNote:Note = null;
+        for(note in noteArray) {
+            if(oldNote != null && !note.isSustainNote && note.noteData == oldNote.noteData && note.strumTime <= oldNote.strumTime + 2) {
+                note.kill();
+                note.destroy();
+                noteArray.remove(note);
+            }
+            oldNote = note;
+        }
+        oldNote = null;
+
         noteArray.sort(sortByShit);
 
         return noteArray;

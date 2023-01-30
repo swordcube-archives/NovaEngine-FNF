@@ -1,5 +1,8 @@
 package objects.ui;
 
+import flixel.util.FlxSort;
+import flixel.input.keyboard.FlxKey;
+import openfl.events.KeyboardEvent;
 import flixel.math.FlxRect;
 import objects.ui.StrumLine;
 import flixel.math.FlxMath;
@@ -8,9 +11,95 @@ import states.PlayState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 
 class NoteField extends FlxTypedGroup<Note> {
+	private var __pressedKeys:Array<Bool> = [];
+
+	public function new() {
+		super();
+
+		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
+		FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
+	}
+
+	public function fillUpPressedKeys(length:Int) {
+		if(!(__pressedKeys.length < length)) return;
+
+		while(__pressedKeys.length < length)
+			__pressedKeys.push(false);
+	}
+
+	public function sortNotes(a:Note, b:Note):Int {
+		if (!a.shouldHit && b.shouldHit) return 1;
+		else if (a.shouldHit && !b.shouldHit) return -1;
+
+		return FlxSort.byValues(FlxSort.ASCENDING, a.strumTime, b.strumTime);
+	}
+
+	public function onKeyPress(event:KeyboardEvent) {
+		var game = PlayState.current;
+		var binds:Array<FlxKey> = [S,D,K,L];
+
+		fillUpPressedKeys(binds.length);
+		var data:FlxKey = binds.indexOf(event.keyCode);
+
+		if(data == -1 || __pressedKeys[data]) return;
+		__pressedKeys[data] = true;
+
+		var receptor:Receptor = game.playerStrums.members[data];
+		receptor.playAnim("pressed");
+
+        // Initialize a list of notes that are possible to hit
+        var possibleNotes:Array<Note> = [];
+
+        // Check for notes that are possible to hit and add them to possibleNotes
+        forEachAlive((note:Note) -> {
+            if(!note.tooLate && note.canBeHit && note.mustPress && !note.wasGoodHit) {
+                if(!note.isSustainNote) possibleNotes.push(note);
+            } else
+                return;
+        });
+
+        // Sort the possible notes so you can't hit like 3 notes with one input
+        possibleNotes.sort(sortNotes);
+
+        // Check if there are any notes to hit
+        if(possibleNotes.length > 0) {
+            var dontHit:Array<Bool> = [for(i in 0...game.playerStrums.keyCount) false];
+
+            for(note in possibleNotes) {
+                // Hit the note
+                if(!dontHit[data] && note.noteData == data) {
+                    dontHit[data] = true;
+
+                    receptor.playAnim("confirm");
+
+					note.kill();
+					note.destroy();
+					game.notes.remove(note, true);
+                    break;
+                }
+            }
+        }
+	}
+
+	public function onKeyRelease(event:KeyboardEvent) {
+		var game = PlayState.current;
+		var binds:Array<FlxKey> = [S,D,K,L];
+
+		fillUpPressedKeys(binds.length);
+		var data:FlxKey = binds.indexOf(event.keyCode);
+
+		if(data == -1) return;
+		__pressedKeys[data] = false;
+
+		var receptor:Receptor = game.playerStrums.members[data];
+		receptor.playAnim("static");
+	}
+
 	override public function update(elapsed:Float) {
 		super.update(elapsed);
 		forEach((note:Note) -> {
+			if (note.noteData < 0) return;
+
 			var strumLine:StrumLine = note.strumLine;
 
 			var roundedSpeed = FlxMath.roundDecimal(note.scrollSpeed, 2);
@@ -36,49 +125,40 @@ class NoteField extends FlxTypedGroup<Note> {
 			}
 
             // this dumb but it works
-			if (downscrollMultiplier < 0) {
-				note.y += receptor.height;
+			if (downscrollMultiplier < 0 && note.isSustainNote) {
+				note.y += Note.swagWidth;
 				note.y -= note.height;
 			}
 
 			note.angle = -note.noteAngle;
 
-			// clip rect shit!
-			var center:Float = receptor.y + Note.swagWidth * 0.5;
-			if (note.isSustainNote) {
-				if (downscrollMultiplier < 0) {
-					if ((note.parentNote != null && note.parentNote.wasGoodHit)
-						&& note.y - note.offset.y * note.scale.y + note.height >= center
-						&& (strumLine.autoplay || (note.wasGoodHit || (note.prevNote.wasGoodHit && !note.canBeHit)))) 
-                    {
-                        // downscroll
-                        var t = FlxMath.bound((Conductor.songPosition - note.strumTime) / (note.height / (0.45 * Math.abs(roundedSpeed))), 0, 1);
-                        var swagRect = new FlxRect(0, t * note.frameHeight, note.frameWidth, note.frameHeight);
-                        note.clipRect = swagRect;
-					}
-				} else if (downscrollMultiplier > 0) {
-					if ((note.parentNote != null && note.parentNote.wasGoodHit)
-						&& note.y + note.offset.y * note.scale.y <= center
-						&& (strumLine.autoplay || (note.wasGoodHit || (note.prevNote.wasGoodHit && !note.canBeHit))))
-                    {
-                        // upscroll
-                        var t = FlxMath.bound((Conductor.songPosition - note.strumTime) / (note.height / (0.45 * Math.abs(roundedSpeed))), 0, 1);
-                        var swagRect = new FlxRect(0, t * note.frameHeight, note.frameWidth, note.frameHeight);
-                        note.clipRect = swagRect;
-					}
-				}
-			}
-
 			// automatically hitting notes for opponent
 			if (strumLine.autoplay && !note.wasGoodHit && note.strumTime <= Conductor.position) {
 				receptor.playAnim("confirm", true);
-                note.wasGoodHit = true;
-                if(!note.isSustainNote) destroyNote(note);
+				note.wasGoodHit = true;
+				if(!note.isSustainNote) destroyNote(note);
+			}
+
+			// sustain input
+			if(note.isSustainNote && !strumLine.autoplay && __pressedKeys[note.noteData] && note.strumTime <= Conductor.position && !note.wasGoodHit && !note.tooLate) {
+				receptor.playAnim("confirm", true);
+				note.wasGoodHit = true;
+			}
+
+			// clip rect shit!
+			if (note.isSustainNote) {
+				note.flipY = downscrollMultiplier < 0;
+
+				if (strumLine.autoplay || (note.wasGoodHit || (note.prevNote.wasGoodHit && !note.canBeHit))) {
+					var t = FlxMath.bound((Conductor.position - note.strumTime) / (note.height / (0.45 * Math.abs(roundedSpeed))), 0, 1);
+					var swagRect = new FlxRect(0, t * note.frameHeight, note.frameWidth, note.frameHeight);
+					note.clipRect = swagRect;
+				}
 			}
 
 			// kill da note when it go off screen
-			// if ((downscrollMultiplier < 0 && note.y > FlxG.height + note.height) || (downscrollMultiplier > 0 && note.y < -note.height))
-			// 	destroyNote(note);
+			if ((downscrollMultiplier < 0 && note.y > FlxG.height + note.height) || (downscrollMultiplier > 0 && note.y < -note.height))
+				destroyNote(note);
 		});
 	}
 
@@ -86,5 +166,9 @@ class NoteField extends FlxTypedGroup<Note> {
 		note.kill();
 		note.destroy();
 		remove(note, true);
+	}
+
+	override public function destroy() {
+		super.destroy();
 	}
 }

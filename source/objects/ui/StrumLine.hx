@@ -83,10 +83,10 @@ class Receptor extends FNFSprite {
     override function update(elapsed:Float) {
         super.update(elapsed);
 
-        if(cpuAnimTimer > 0)
+        if(isCPU && cpuAnimTimer > 0)
             cpuAnimTimer -= elapsed;
         
-        if(animation.name == "confirm" && cpuAnimTimer <= 0)
+        if(isCPU && animation.name == "confirm" && cpuAnimTimer <= 0)
             playAnim("static");
     }
 
@@ -95,7 +95,7 @@ class Receptor extends FNFSprite {
     override function playAnim(name:String, force:Bool = false, context:AnimationContext = NORMAL, frame:Int = 0) {
         super.playAnim(name, force, context, frame);
 
-        if(name == "confirm")
+        if(isCPU && name == "confirm")
             cpuAnimTimer = (Conductor.stepCrochet / 500) * 0.5;
 
         centerOrigin();
