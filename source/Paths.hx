@@ -145,6 +145,30 @@ class Paths {
         return FlxAtlasFrames.fromSparrow(image(path), FALLBACK_XML);
     }
 
+    public static function songInst(song:String, ?diff:String = "normal", ?pathOnly:Bool = false):Dynamic {
+        var songPaths:Array<String> = [
+            getPath('songs/$song/Inst-$diff.ogg')
+        ];
+        for(p in songPaths) {
+            if(FileSystem.exists(p))
+                return pathOnly ? p : returnSound(p);
+        }
+        var p:String = getPath('songs/$song/Inst.ogg');
+        return pathOnly ? p : returnSound(p);
+    }
+
+    public static function songVoices(song:String, ?diff:String = "normal", ?pathOnly:Bool = false):Dynamic {
+        var songPaths:Array<String> = [
+            getPath('songs/$song/Voices-$diff.ogg')
+        ];
+        for(p in songPaths) {
+            if(FileSystem.exists(p))
+                return pathOnly ? p : returnSound(p);
+        }
+        var p:String = getPath('songs/$song/Voices.ogg');
+        return pathOnly ? p : returnSound(p);
+    }
+
     public static function music(path:String, ?pathOnly:Bool = false):Dynamic {
         var p:String = getPath('music/$path.ogg');
         return pathOnly ? p : returnSound(p);

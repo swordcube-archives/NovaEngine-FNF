@@ -77,13 +77,33 @@ class MusicBeatState extends FlxUIState implements MusicHandler {
             subState.tryUpdate(elapsed);
     }
 
+    public var fixedUpdateTimer:Float = 0;
+    public var fixedUpdateTime:Float = 1 / 60;
+
     override function update(elapsed:Float) {
         if (FlxG.keys.justPressed.F5)
             FlxG.resetState();
 
+        fixedUpdateTimer += elapsed;
+        if(fixedUpdateTimer >= fixedUpdateTime)
+            fixedUpdate(fixedUpdateTimer);
+        
         call("onUpdate", [elapsed]);
 
         super.update(elapsed);
+
+        if(fixedUpdateTimer >= fixedUpdateTime) {
+            fixedUpdatePost(fixedUpdateTimer);
+            fixedUpdateTimer = 0;
+        }
+    }
+
+    public function fixedUpdate(elapsed:Float) {
+        call("onFixedUpdate", [elapsed]);
+    }
+
+    public function fixedUpdatePost(elapsed:Float) {
+        call("onFixedUpdatePost", [elapsed]);
     }
 
 	public function beatHit(value:Int) {
@@ -182,13 +202,33 @@ class MusicBeatSubstate extends FlxUISubState implements MusicHandler {
             subState.tryUpdate(elapsed);
     }
 
+    public var fixedUpdateTimer:Float = 0;
+    public var fixedUpdateTime:Float = 1 / 60;
+
     override function update(elapsed:Float) {
         if (FlxG.keys.justPressed.F5)
             FlxG.resetState();
 
+        fixedUpdateTimer += elapsed;
+        if(fixedUpdateTimer >= fixedUpdateTime)
+            fixedUpdate(fixedUpdateTimer);
+        
         call("onUpdate", [elapsed]);
 
         super.update(elapsed);
+
+        if(fixedUpdateTimer >= fixedUpdateTime) {
+            fixedUpdatePost(fixedUpdateTimer);
+            fixedUpdateTimer = 0;
+        }
+    }
+
+    public function fixedUpdate(elapsed:Float) {
+        call("onFixedUpdate", [elapsed]);
+    }
+
+    public function fixedUpdatePost(elapsed:Float) {
+        call("onFixedUpdatePost", [elapsed]);
     }
 
 	public function beatHit(value:Int) {
