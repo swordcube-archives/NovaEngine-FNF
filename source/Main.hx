@@ -12,6 +12,7 @@ class Main extends Sprite {
 		fullscreen: false
 	};
 
+	public static var engineName:String = "Nova Engine";
 	public static var engineVersion(get, never):String;
 	private static function get_engineVersion():String {
 		return lime.app.Application.current.meta.get("version");

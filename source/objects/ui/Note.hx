@@ -24,6 +24,8 @@ typedef ExtraKeyData = {
 }
 
 class Note extends FNFSprite {
+    private var game = PlayState.current;
+    
     public var keyCount:Int = 4;
 
     public var rawNoteData:Int = 0;

@@ -1,5 +1,6 @@
 package states.menus;
 
+import flixel.text.FlxText;
 import flixel.FlxObject;
 import flixel.util.FlxTimer;
 import flixel.effects.FlxFlicker;
@@ -59,6 +60,12 @@ class MainMenuState extends MusicBeatState {
 			member.y += 160 * i;
 			member.y -= (160 * (menuItems.length - 1.5)) * 0.5;
 		}
+
+		var engineText = new FlxText(5, FlxG.height, 0, '${Main.engineName} v${Main.engineVersion}');
+		engineText.setFormat(Paths.font("vcr.ttf"), 16, 0xFFFFFFFF, LEFT, OUTLINE, 0xFF000000);
+		engineText.scrollFactor.set();
+		engineText.y -= engineText.height;
+		add(engineText);
 
         add(camFollow = new FlxObject(menuItems.members[curSelected].x, menuItems.members[curSelected].y, 1, 1));
         FlxG.camera.follow(camFollow, null, 0.06);

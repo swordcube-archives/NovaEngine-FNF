@@ -11,6 +11,7 @@ import states.PlayState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 
 class NoteField extends FlxTypedGroup<Note> {
+	private var game = PlayState.current;
 	private var __pressedKeys:Array<Bool> = [];
 
 	public function new() {
@@ -35,7 +36,6 @@ class NoteField extends FlxTypedGroup<Note> {
 	}
 
 	public function onKeyPress(event:KeyboardEvent) {
-		var game = PlayState.current;
 		var binds:Array<FlxKey> = [S,D,K,L];
 
 		fillUpPressedKeys(binds.length);
@@ -71,6 +71,7 @@ class NoteField extends FlxTypedGroup<Note> {
                     dontHit[data] = true;
 
                     receptor.playAnim("confirm");
+					game.health += 0.023;
 
 					note.kill();
 					note.destroy();
@@ -82,7 +83,6 @@ class NoteField extends FlxTypedGroup<Note> {
 	}
 
 	public function onKeyRelease(event:KeyboardEvent) {
-		var game = PlayState.current;
 		var binds:Array<FlxKey> = [S,D,K,L];
 
 		fillUpPressedKeys(binds.length);
@@ -143,6 +143,7 @@ class NoteField extends FlxTypedGroup<Note> {
 			if(note.isSustainNote && !strumLine.autoplay && __pressedKeys[note.noteData] && note.strumTime <= Conductor.position && !note.wasGoodHit && !note.tooLate) {
 				receptor.playAnim("confirm", true);
 				note.wasGoodHit = true;
+				game.health += 0.023;
 			}
 
 			// clip rect shit!
@@ -157,8 +158,12 @@ class NoteField extends FlxTypedGroup<Note> {
 			}
 
 			// kill da note when it go off screen
-			if ((downscrollMultiplier < 0 && note.y > FlxG.height + note.height) || (downscrollMultiplier > 0 && note.y < -note.height))
+			if ((downscrollMultiplier < 0 && note.y > FlxG.height + note.height) || (downscrollMultiplier > 0 && note.y < -note.height)) {
+				if(note.mustPress && !note.isSustainNote)
+					game.health -= 0.0475;
+				
 				destroyNote(note);
+			}
 		});
 	}
 
