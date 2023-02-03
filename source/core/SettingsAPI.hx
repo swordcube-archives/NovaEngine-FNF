@@ -9,6 +9,7 @@ class SettingsAPI {
 	public static var centeredNotefield:Bool = false;
 
     public static var antialiasing:Bool = true;
+    public static var noteOffset:Float = 0;
 
     // ^^^ -----------------------------------------------------------------------
 
@@ -55,5 +56,6 @@ class SettingsAPI {
                 Reflect.setField(__save.data, field, Reflect.field(SettingsAPI, field));
             }
 		}
+        __save.flush();
 	}
 }

@@ -1,11 +1,17 @@
 package states;
 
+import openfl.media.Sound;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.graphics.FlxGraphic;
+import flixel.util.FlxTimer;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 import flixel.ui.FlxBar;
 import objects.*;
 import objects.fonts.*;
 import objects.ui.*;
+import states.menus.*;
 import flixel.system.FlxSound;
 import states.MusicBeat.MusicBeatState;
 import core.song.SongFormat.SongData;
@@ -58,6 +64,12 @@ class PlayState extends MusicBeatState {
 	public var startingSong:Bool = true;
 	public var endingSong:Bool = false;
 
+	public var startTimer:FlxTimer;
+	public var finishTimer:FlxTimer;
+
+	public var countdownImages:Map<Int, FlxGraphic> = [];
+	public var countdownSounds:Map<Int, Sound> = [];
+
 	public var scrollSpeed:Float = 3.4;
 
 	public static function resetStatics() {
@@ -89,6 +101,11 @@ class PlayState extends MusicBeatState {
 
 		camGame.bgColor = FlxColor.WHITE; // placeholder
 
+		Conductor.bpm = SONG.bpm;
+		Conductor.position = Conductor.crochet * -5;
+
+		// scripts.call("onCreate", []); will add when i wanna add scripting
+
 		var receptorSpacing:Float = FlxG.width / 4;
 		var strumY:Float = SettingsAPI.downscroll ? FlxG.height - 160 : 50;
 
@@ -118,10 +135,71 @@ class PlayState extends MusicBeatState {
 		for(obj in [cpuStrums, playerStrums, notes, healthBarBG, healthBar])
 			obj.cameras = [camHUD];
 
-		Conductor.bpm = SONG.bpm;
-		Conductor.position = Conductor.crochet * -5;
+		countdownImages = [
+			3 => null,
+			2 => Paths.image('UI/$assetModifier/countdown/ready'),
+			1 => Paths.image('UI/$assetModifier/countdown/set'),
+			0 => Paths.image('UI/$assetModifier/countdown/go')
+		];
+		countdownSounds = [
+			3 => Paths.sound('game/countdown/$assetModifier/intro3'),
+			2 => Paths.sound('game/countdown/$assetModifier/intro2'),
+			1 => Paths.sound('game/countdown/$assetModifier/intro1'),
+			0 => Paths.sound('game/countdown/$assetModifier/introGo')
+		];
 
 		// ^^^ -- END OF PRELOADING ----------------------------------------------------
+
+		startCutscene();
+	}
+
+	public function startCutscene() {
+		startCountdown();
+	}
+
+	public function startEndCutscene() {
+		// placeholder
+	}
+
+	public function finishSong(?ignoreNoteOffset:Bool = false) {
+		FlxG.sound.music.volume = 0;
+		FlxG.sound.music.pause();
+		vocals.volume = 0;
+		vocals.pause();
+		if(SettingsAPI.noteOffset <= 0 || ignoreNoteOffset) {
+			endSong();
+		} else {
+			finishTimer = new FlxTimer().start(SettingsAPI.noteOffset / 1000, (tmr:FlxTimer) -> {
+				endSong();
+			});
+		}
+	}
+
+	public function endSong() {
+		endingSong = true;
+		FlxG.switchState(new MainMenuState());
+	}
+
+	public function startCountdown() {
+		// don't even need to do Json.parse because i made Paths cool 😎
+		var config:Dynamic = Paths.json('images/UI/$assetModifier/countdown/config');
+		config.setFieldDefault("scale", 1.0);
+
+		startTimer = new FlxTimer().start(Conductor.crochet / 1000, (tmr:FlxTimer) -> {
+			var spriteImage:FlxGraphic = countdownImages.get(tmr.loopsLeft);
+			if(spriteImage != null) {
+				var sprite = new FNFSprite().loadGraphic(spriteImage);
+				sprite.scale.set(config.scale, config.scale);
+				sprite.updateHitbox();
+				sprite.screenCenter();
+				add(sprite);
+
+				FlxTween.tween(sprite, {alpha: 0}, Conductor.crochet / 1000, {ease: FlxEase.cubeInOut});
+			}
+			var sound:Sound = countdownSounds.get(tmr.loopsLeft);
+			if(sound != null)
+				FlxG.sound.play(sound);
+		}, 4);
 	}
 
 	override public function update(elapsed:Float) {
@@ -147,14 +225,18 @@ class PlayState extends MusicBeatState {
 		}
 	}
 
-	override public function beatHit(value:Int) {
-		if(camBumping && camBumpingInterval > 0 && camGame.zoom < 1.35) {
+	override public function beatHit(curBeat:Int) {
+		if(FlxG.sound.music.time >= FlxG.sound.music.length || endingSong) return;
+		
+		if(camBumping && camBumpingInterval > 0 && curBeat % camBumpingInterval == 0 && camGame.zoom < 1.35) {
 			camGame.zoom += 0.015;
 			camHUD.zoom += 0.03;
 		}
 	}
 
-	override public function stepHit(value:Int) {
+	override public function stepHit(curStep:Int) {
+		if(FlxG.sound.music.time >= FlxG.sound.music.length || endingSong) return;
+
 		var resyncMS:Float = 20;
 
 		@:privateAccess
@@ -184,6 +266,7 @@ class PlayState extends MusicBeatState {
 		FlxG.sound.music.pause();
 		FlxG.sound.music.volume = 1;
 		FlxG.sound.music.time = vocals.time = Conductor.position = 0;
+		FlxG.sound.music.onComplete = finishSong.bind();
 		FlxG.sound.music.play();
 		vocals.play();
 

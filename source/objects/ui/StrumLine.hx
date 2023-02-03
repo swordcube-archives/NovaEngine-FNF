@@ -14,6 +14,8 @@ class StrumLine extends FlxTypedSpriteGroup<Receptor> {
     public var skin:String = "default";
     public var keyCount:Int = 4;
 
+    public var scrollSpeed:Null<Float> = null;
+
     public function new(x:Float = 0, y:Float = 0, downscroll:Bool = false, autoplay:Bool = false, skin:String = "default", keyCount:Int = 4) {
         super(x, y);
 

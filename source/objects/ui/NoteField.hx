@@ -159,8 +159,13 @@ class NoteField extends FlxTypedGroup<Note> {
 
 			// kill da note when it go off screen
 			if ((downscrollMultiplier < 0 && note.y > FlxG.height + note.height) || (downscrollMultiplier > 0 && note.y < -note.height)) {
-				if(note.mustPress && !note.isSustainNote)
+				if(note.mustPress && !note.wasGoodHit)
 					game.health -= 0.0475;
+
+				if(!note.isSustainNote) {
+					for(note in note.sustainNotes)
+						note.tooLate = true;
+				}
 				
 				destroyNote(note);
 			}

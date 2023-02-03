@@ -5,7 +5,12 @@ import flixel.input.keyboard.FlxKey;
 import core.utilities.IniParser;
 import flixel.animation.FlxAnimation;
 import haxe.io.Path;
+import openfl.utils.Assets;
+import lime.utils.Assets as LimeAssets;
+import openfl.system.System;
+import flixel.system.FlxSound;
 import flixel.system.FlxAssets.FlxSoundAsset;
+
 using StringTools;
 
 enum abstract MenuSFX(Int) from Int {
@@ -132,6 +137,34 @@ class CoolUtil {
 	public inline static function playSound(path:FlxSoundAsset, ?volume:Float = 1.0) {
 		if(path is String && !FileSystem.exists(path)) return null;
 		return FlxG.sound.play((path is String) ? Sound.fromFile(path) : path, volume);
+	}
+
+	/**
+	 * Clears all images and sounds from the cache.
+	 * @author swordcube
+	 */
+	public inline static function clearCache() {
+		// Clear assets from our custom asset system
+		Paths.assetCache.clear();
+		
+		// Clear OpenFL & Lime Assets
+		Assets.cache.clear();
+		LimeAssets.cache.clear();
+
+		// Clear all Flixel bitmaps
+		FlxG.bitmap.dumpCache();
+		FlxG.bitmap.clearCache();
+
+		// Clear all Flixel sounds
+		FlxG.sound.list.forEach((sound:FlxSound) -> {
+			sound.stop();
+			sound.kill();
+			sound.destroy();
+		});
+		FlxG.sound.list.clear();
+
+		// Run garbage collector just in case none of that worked
+		System.gc();
 	}
 
 	public static function setFieldDefault<T>(v:Dynamic, name:String, defaultValue:T):T {

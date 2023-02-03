@@ -2,9 +2,6 @@ package;
 
 import core.Controls;
 import flixel.FlxState;
-import openfl.utils.Assets;
-import lime.utils.Assets as LimeAssets;
-import openfl.system.System;
 
 class Init extends FlxState {
     override function create() {
@@ -17,10 +14,7 @@ class Init extends FlxState {
         FlxG.fixedTimestep = false;
 
         FlxG.signals.preStateCreate.add((state:FlxState) -> {
-            Paths.assetCache.clear();
-            Assets.cache.clear();
-            LimeAssets.cache.clear();
-            System.gc();
+            CoolUtil.clearCache();
             
             Controls.load();
             SettingsAPI.load();

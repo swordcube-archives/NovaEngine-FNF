@@ -31,7 +31,10 @@ class Note extends FNFSprite {
     public var rawNoteData:Int = 0;
     public var noteData:Int = 0;
 
-    public var strumTime:Float = 0;
+    public var strumTime(get, default):Float = 0;
+    private function get_strumTime():Float {
+        return strumTime + SettingsAPI.noteOffset;
+    }
     public var sustainLength:Float = 0;
 
     public var mustPress:Bool = false;
@@ -51,11 +54,14 @@ class Note extends FNFSprite {
 
     public var scrollSpeed(get, default):Null<Float> = null;
     private function get_scrollSpeed():Float {
-        if(scrollSpeed != null)
-            return scrollSpeed;
+        if(strumLine != null && strumLine.scrollSpeed != null)
+            return strumLine.scrollSpeed;
 
         if(strumLine != null && strumLine.members[noteData] != null && strumLine.members[noteData].scrollSpeed != null)
             return strumLine.members[noteData].scrollSpeed;
+
+        if(scrollSpeed != null)
+            return scrollSpeed;
 
         return PlayState.current.scrollSpeed;
     }
@@ -123,8 +129,10 @@ class Note extends FNFSprite {
 
             if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit && !tooLate) {
                 tooLate = true;
-                for(note in sustainNotes)
+                for(note in sustainNotes) {
                     note.tooLate = true;
+                    note.alpha = 0.3;
+                }
             }
         }
         else

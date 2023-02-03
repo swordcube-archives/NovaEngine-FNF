@@ -53,12 +53,12 @@ class Controls {
      */
     public static function load() {
         for(name => keys in __defaultControls) {
-            var savedKeys:KeyList = Reflect.field(FlxG.save.data, 'CONTROLS_$name');
+            var savedKeys:KeyList = Reflect.field(__save.data, 'CONTROLS_$name');
 
             if(savedKeys != null)
                 controlsList.set(name, savedKeys);
             else {
-                Reflect.setField(FlxG.save.data, 'CONTROLS_$name', keys);
+                Reflect.setField(__save.data, 'CONTROLS_$name', keys);
                 controlsList.set(name, keys);
             }
         }
@@ -68,7 +68,10 @@ class Controls {
      * Saves all of your controls.
      */
     public static function save() {
-
+        for(name => keys in controlsList)
+            Reflect.setField(__save.data, 'CONTROLS_$name', keys);
+        
+        __save.flush();
     }
 
     public function new() {}

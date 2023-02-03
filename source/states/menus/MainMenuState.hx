@@ -25,6 +25,9 @@ class MainMenuState extends MusicBeatState {
 	override public function create() {
 		super.create();
 
+		if(FlxG.sound.music == null || (FlxG.sound.music != null && !FlxG.sound.music.playing))
+			NovaTools.playMenuMusic("freakyMenu");
+
 		add(bg = new FNFSprite().loadGraphic(Paths.image("menus/base/menuBG")));
 		bg.scale.set(1.2, 1.2);
 		bg.updateHitbox();
