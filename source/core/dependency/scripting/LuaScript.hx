@@ -515,4 +515,10 @@ class LuaScript extends ScriptModule {
 			Logs.trace('Error occured on Lua script ($fileName) trying to import a class/enum: Unable to find class/enum from path "$path".', ERROR);
 		}
 	}
+
+	override function destroy() {
+		Lua.close(luaState);
+		luaState = null;
+		super.destroy();
+	}
 }

@@ -16,5 +16,5 @@ function onCreate()
 
     -- FlxTween:tween(sprite, {x = 10}, 10, {ease = FlxEase.cubeInOut})
 
-    -- FlxG:switchState(ModState:new("testicular")) -- DOESN'T WORK YET!!!
+    FlxG:switchState(ModState:new("testicular"))
 end

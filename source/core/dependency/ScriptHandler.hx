@@ -85,9 +85,9 @@ class ScriptHandler {
             "FNFSprite" => FNFSprite,
             "IniParser" => IniParser,
             "SettingsAPI" => SettingsAPI,
-            "ModState" => states.MusicBeat.MusicBeatState,
-            "ModSubstate" => states.MusicBeat.MusicBeatSubstate,
-            "ModSubState" => states.MusicBeat.MusicBeatSubstate,
+            "ModState" => states.ModState,
+            "ModSubstate" => states.ModState.ModSubstate,
+            "ModSubState" => states.ModState.ModSubstate,
             "Init" => Init,
             "Logs" => Logs,
 

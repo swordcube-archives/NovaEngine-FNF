@@ -4,10 +4,6 @@ import core.dependency.ScriptHandler;
 import flixel.addons.ui.FlxUISubState;
 import flixel.addons.ui.FlxUIState;
 
-typedef ModState = MusicBeatState;
-typedef ModSubState = MusicBeatSubstate;
-typedef ModSubstate = MusicBeatSubstate;
-
 class MusicBeatState extends FlxUIState implements MusicHandler {
     public var controls(get, never):Controls;
     function get_controls() return SettingsAPI.controls;
@@ -28,18 +24,22 @@ class MusicBeatState extends FlxUIState implements MusicHandler {
     private function get_curSection() return Conductor.curSection;
 
     public var scriptName:String;
+    public var scriptParameters:Array<Dynamic> = [];
+
     public var script:ScriptModule;
 
     public var runDefaultCode:Bool = true;
 
-    public function new(?scriptName:String = null) {
+    public function new(?scriptName:String = null, ?scriptParameters:Array<Dynamic>) {
         super();
         if(scriptName == null)
             scriptName = this.getClassName().split(".").last();
 
-        script = ScriptHandler.loadModule(Paths.script('data/states/$scriptName'));
-        script.setParent(this);
-        script.call("new", []);
+        if(scriptParameters == null)
+            scriptParameters = [];
+        
+        this.scriptName = scriptName;
+        this.scriptParameters = scriptParameters;
     }
 
     public function call(name:String, ?args:Array<Dynamic>, ?defaultReturn:Dynamic = null):Dynamic {
@@ -57,7 +57,10 @@ class MusicBeatState extends FlxUIState implements MusicHandler {
         Conductor.onStepHit.add(stepHit);
         Conductor.onSectionHit.add(sectionHit);
 
-        call("onCreate", []);
+        script = ScriptHandler.loadModule(Paths.script('data/states/$scriptName'));
+        script.setParent(this);
+        call("new", []);
+        call("onCreate", scriptParameters);
     }
 
     override function createPost() {
@@ -86,7 +89,7 @@ class MusicBeatState extends FlxUIState implements MusicHandler {
 
     override function update(elapsed:Float) {
         if (FlxG.keys.justPressed.F5)
-            FlxG.resetState();
+            FlxG.switchState(Type.createInstance(Type.getClass(this), [this.scriptName, this.scriptParameters]));
 
         fixedUpdateTimer += elapsed;
         if(fixedUpdateTimer >= fixedUpdateTime)
@@ -164,10 +167,6 @@ class MusicBeatSubstate extends FlxUISubState implements MusicHandler {
         super();
         if(scriptName == null)
             scriptName = this.getClassName().split(".").last();
-
-        script = ScriptHandler.loadModule(Paths.script('data/substates/$scriptName'));
-        script.setParent(this);
-        script.call("new", []);
     }
 
     public function call(name:String, ?args:Array<Dynamic>, ?defaultReturn:Dynamic = null):Dynamic {
@@ -182,6 +181,9 @@ class MusicBeatSubstate extends FlxUISubState implements MusicHandler {
         Conductor.onStepHit.add(stepHit);
         Conductor.onSectionHit.add(sectionHit);
 
+        script = ScriptHandler.loadModule(Paths.script('data/substates/$scriptName'));
+        script.setParent(this);
+        script.call("new", []);
         call("onCreate", []);
     }
 
