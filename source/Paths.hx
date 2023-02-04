@@ -5,65 +5,13 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.media.Sound;
 import openfl.display.BitmapData;
 import flixel.graphics.FlxGraphic;
+import core.dependency.CacheManager;
 import core.utilities.IniParser;
-
-private enum abstract CacheType(String) to String from String {
-    var IMAGE = "IMAGE";
-    var SOUND = "SOUND";
-    var TEXT = "TEXT";
-    var JSON = "JSON";
-    var INI = "INI";
-    var ANY = "ANY"; // Basically the "i don't fuckin know what this is" type
-}
-
-private class CacheAsset {
-    public var value:Dynamic;
-    public var path:String;
-    public var type:CacheType = ANY;
-
-    public function new(value:Dynamic, path:String, ?type:CacheType = ANY) {
-        this.value = value;
-        this.path = path;
-        this.type = type;
-    }
-
-    public function destroy() {
-        switch(type) {
-            case IMAGE:
-                var graphic:FlxGraphic = value;
-                graphic.persist = false;
-                graphic.destroyOnNoUse = true;
-                graphic.dump();
-                graphic.destroy();
-
-            default: value = null;
-        }
-    }
-}
-
-private class Cache {
-    private var __cache:Map<String, CacheAsset> = [];
-
-    public function new() {}
-    
-    public function get(name:String) return __cache.get(name);
-    public function set(name:String, value:CacheAsset) __cache.set(name, value);
-    public function exists(name:String) return __cache.exists(name);
-    
-    public function remove(name:String) {
-        __cache.get(name).destroy();
-        __cache.remove(name);
-    }
-    public function clear() {
-        for(key in __cache.keys())
-            remove(key);
-    }
-}
 
 class Paths {
     public static var assetCache:Cache = new Cache();
 
-    public static var scriptExts:Array<String> = ["hx", "hxs", "hsc", "hscript"];
+    public static var scriptExts:Array<String> = ["hx", "hxs", "hsc", "hscript", "lua"];
 
     public static final FALLBACK_XML:String = '<?xml version="1.0" encoding="utf-8"?>
     <TextureAtlas imagePath="fallback.png">

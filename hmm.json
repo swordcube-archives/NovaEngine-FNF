@@ -30,6 +30,13 @@
             "url": "https://www.github.com/YoshiCrafter29/hscript-improved"
         },
         {
+            "name": "linc_luajit",
+            "type": "git",
+            "dir": "linc_luajit",
+            "ref": "master",
+            "url": "https://github.com/swordcube/linc_luajit"
+        },
+        {
             "name": "hxCodec",
             "type": "git",
             "dir": "hxCodec",

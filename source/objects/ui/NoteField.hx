@@ -102,7 +102,7 @@ class NoteField extends FlxTypedGroup<Note> {
 
 			var strumLine:StrumLine = note.strumLine;
 
-			var roundedSpeed = FlxMath.roundDecimal(note.scrollSpeed, 2);
+			var roundedSpeed = FlxMath.roundDecimal(note.getScrollSpeed(), 2);
 			var downscrollMultiplier:Int = (strumLine.downscroll ? -1 : 1) * FlxMath.signOf(roundedSpeed);
 
 			var psuedoX:Float = 25;

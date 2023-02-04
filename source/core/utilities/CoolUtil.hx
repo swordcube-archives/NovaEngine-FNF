@@ -162,6 +162,7 @@ class CoolUtil {
 			sound.destroy();
 		});
 		FlxG.sound.list.clear();
+		FlxG.sound.destroy(false);
 
 		// Run garbage collector just in case none of that worked
 		System.gc();

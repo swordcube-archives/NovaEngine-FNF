@@ -50,6 +50,7 @@
 
 	<haxelib name="flixel-leather" />
 	<haxelib name="hscript-improved" />
+	<haxelib name="linc_luajit" />
 	<haxelib name="discord_rpc" if="DISCORD_RPC" />
 
 	<!-- ______________________________ Haxedefines _____________________________ -->

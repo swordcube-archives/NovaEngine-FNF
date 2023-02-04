@@ -52,8 +52,8 @@ class Note extends FNFSprite {
     public var prevNote:Note;
     public var curSection:Int = 0;
 
-    public var scrollSpeed(get, default):Null<Float> = null;
-    private function get_scrollSpeed():Float {
+    public var scrollSpeed:Null<Float> = null;
+    public function getScrollSpeed():Float {
         if(strumLine != null && strumLine.scrollSpeed != null)
             return strumLine.scrollSpeed;
 

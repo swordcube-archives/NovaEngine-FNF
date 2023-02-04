@@ -1,10 +1,16 @@
 package core.dependency;
 
+import core.dependency.scripting.*;
 import flixel.FlxBasic;
 import haxe.io.Path;
 import hscript.Expr;
 import hscript.Parser;
-import hscript.Interp;
+import flixel.util.FlxColor;
+import flixel.text.FlxText.FlxTextBorderStyle;
+import flixel.text.FlxText.FlxTextAlign;
+import flixel.FlxCamera.FlxCameraFollowStyle;
+import openfl.display.BlendMode;
+import flixel.input.keyboard.FlxKey;
 
 /**
  * The class that allows you to load scripts for things like stages, characters, modcharts, etc.
@@ -47,6 +53,200 @@ class ScriptHandler {
             "FlxEase" => flixel.tweens.FlxEase,
             "FlxTrail" => flixel.addons.effects.FlxTrail,
             "FlxBackdrop" => flixel.addons.display.FlxBackdrop,
+            "FlxColor" => {
+                "BLACK": FlxColor.BLACK,
+                "BLUE": FlxColor.BLUE,
+                "BROWN": FlxColor.BROWN,
+                "CYAN": FlxColor.CYAN,
+                "GRAY": FlxColor.GRAY,
+                "GREEN": FlxColor.GREEN,
+                "LIME": FlxColor.LIME,
+                "MAGENTA": FlxColor.MAGENTA,
+                "ORANGE": FlxColor.ORANGE,
+                "PINK": FlxColor.PINK,
+                "PURPLE": FlxColor.PURPLE,
+                "RED": FlxColor.RED,
+                "TRANSPARENT": FlxColor.TRANSPARENT,
+                "WHITE": FlxColor.WHITE,
+                "YELLOW": FlxColor.YELLOW,
+    
+                "add": FlxColor.add,
+                "fromCMYK": FlxColor.fromCMYK,
+                "fromHSB": FlxColor.fromHSB,
+                "fromHSL": FlxColor.fromHSL,
+                "fromInt": FlxColor.fromInt,
+                "fromRGB": FlxColor.fromRGB,
+                "fromRGBFloat": FlxColor.fromRGBFloat,
+                "fromString": FlxColor.fromString,
+                "interpolate": FlxColor.interpolate,
+                "to24Bit": function(color:Int) {
+                    return color & 0xffffff;
+                },
+            },
+            "FlxKey" => {
+                'ANY': -2,
+                'NONE': -1,
+                'A': 65,
+                'B': 66,
+                'C': 67,
+                'D': 68,
+                'E': 69,
+                'F': 70,
+                'G': 71,
+                'H': 72,
+                'I': 73,
+                'J': 74,
+                'K': 75,
+                'L': 76,
+                'M': 77,
+                'N': 78,
+                'O': 79,
+                'P': 80,
+                'Q': 81,
+                'R': 82,
+                'S': 83,
+                'T': 84,
+                'U': 85,
+                'V': 86,
+                'W': 87,
+                'X': 88,
+                'Y': 89,
+                'Z': 90,
+                'ZERO': 48,
+                'ONE': 49,
+                'TWO': 50,
+                'THREE': 51,
+                'FOUR': 52,
+                'FIVE': 53,
+                'SIX': 54,
+                'SEVEN': 55,
+                'EIGHT': 56,
+                'NINE': 57,
+                'PAGEUP': 33,
+                'PAGEDOWN': 34,
+                'HOME': 36,
+                'END': 35,
+                'INSERT': 45,
+                'ESCAPE': 27,
+                'MINUS': 189,
+                'PLUS': 187,
+                'DELETE': 46,
+                'BACKSPACE': 8,
+                'LBRACKET': 219,
+                'RBRACKET': 221,
+                'BACKSLASH': 220,
+                'CAPSLOCK': 20,
+                'SEMICOLON': 186,
+                'QUOTE': 222,
+                'ENTER': 13,
+                'SHIFT': 16,
+                'COMMA': 188,
+                'PERIOD': 190,
+                'SLASH': 191,
+                'GRAVEACCENT': 192,
+                'CONTROL': 17,
+                'ALT': 18,
+                'SPACE': 32,
+                'UP': 38,
+                'DOWN': 40,
+                'LEFT': 37,
+                'RIGHT': 39,
+                'TAB': 9,
+                'PRINTSCREEN': 301,
+                'F1': 112,
+                'F2': 113,
+                'F3': 114,
+                'F4': 115,
+                'F5': 116,
+                'F6': 117,
+                'F7': 118,
+                'F8': 119,
+                'F9': 120,
+                'F10': 121,
+                'F11': 122,
+                'F12': 123,
+                'NUMPADZERO': 96,
+                'NUMPADONE': 97,
+                'NUMPADTWO': 98,
+                'NUMPADTHREE': 99,
+                'NUMPADFOUR': 100,
+                'NUMPADFIVE': 101,
+                'NUMPADSIX': 102,
+                'NUMPADSEVEN': 103,
+                'NUMPADEIGHT': 104,
+                'NUMPADNINE': 105,
+                'NUMPADMINUS': 109,
+                'NUMPADPLUS': 107,
+                'NUMPADPERIOD': 110,
+                'NUMPADMULTIPLY': 106,
+    
+                'fromStringMap': FlxKey.fromStringMap,
+                'toStringMap': FlxKey.toStringMap,
+                'fromString': FlxKey.fromString,
+                'toString': function(key:Int) {
+                    return FlxKey.toStringMap.get(key);
+                },
+            },
+            "BlendMode" => {
+                "ADD": BlendMode.ADD,
+                "ALPHA": BlendMode.ALPHA,
+                "DARKEN": BlendMode.DARKEN,
+                "DIFFERENCE": BlendMode.DIFFERENCE,
+                "ERASE": BlendMode.ERASE,
+                "HARDLIGHT": BlendMode.HARDLIGHT,
+                "INVERT": BlendMode.INVERT,
+                "LAYER": BlendMode.LAYER,
+                "LIGHTEN": BlendMode.LIGHTEN,
+                "MULTIPLY": BlendMode.MULTIPLY,
+                "NORMAL": BlendMode.NORMAL,
+                "OVERLAY": BlendMode.OVERLAY,
+                "SCREEN": BlendMode.SCREEN,
+                "SHADER": BlendMode.SHADER,
+                "SUBTRACT": BlendMode.SUBTRACT
+            },
+            "FlxCameraFollowStyle" => {
+                "LOCKON": FlxCameraFollowStyle.LOCKON,
+                "PLATFORMER": FlxCameraFollowStyle.PLATFORMER,
+                "TOPDOWN": FlxCameraFollowStyle.TOPDOWN,
+                "TOPDOWN_TIGHT": FlxCameraFollowStyle.TOPDOWN_TIGHT,
+                "SCREEN_BY_SCREEN": FlxCameraFollowStyle.SCREEN_BY_SCREEN,
+                "NO_DEAD_ZONE": FlxCameraFollowStyle.NO_DEAD_ZONE
+            },
+            "FlxTextAlign" => {
+                "LEFT": FlxTextAlign.LEFT,
+                "CENTER": FlxTextAlign.CENTER,
+                "RIGHT": FlxTextAlign.RIGHT,
+                "JUSTIFY": FlxTextAlign.JUSTIFY,
+                "fromOpenFL": FlxTextAlign.fromOpenFL,
+                "toOpenFL": FlxTextAlign.toOpenFL
+            },
+            "FlxTextBorderStyle" => {
+                "NONE": FlxTextBorderStyle.NONE,
+                "SHADOW": FlxTextBorderStyle.SHADOW,
+                "OUTLINE": FlxTextBorderStyle.OUTLINE,
+                "OUTLINE_FAST": FlxTextBorderStyle.OUTLINE_FAST
+            },
+            "FlxAxes" => {
+                "X": flixel.util.FlxAxes.X,
+                "Y": flixel.util.FlxAxes.Y,
+                "XY": flixel.util.FlxAxes.XY,
+                "YX": flixel.util.FlxAxes.XY,
+                "NONE": flixel.util.FlxAxes.NONE,
+                "fromString": function(str:String) {
+                    return switch(str.toLowerCase()) {
+                        case "x": flixel.util.FlxAxes.X;
+                        case "y": flixel.util.FlxAxes.Y;
+                        case "xy", "yx", "both": flixel.util.FlxAxes.XY;
+                        case "none", "", null: flixel.util.FlxAxes.NONE;
+                        default: flixel.util.FlxAxes.NONE;
+                    }
+                },
+                "fromBools": function(x:Bool, y:Bool) {
+                    return cast(x ? (cast flixel.util.FlxAxes.X : Int) : 0) | (y ? (cast flixel.util.FlxAxes.Y : Int) : 0);
+                }
+            },
+            @:access(flixel.math.FlxPoint.FlxBasePoint)
+            "FlxPoint" => flixel.math.FlxPoint.FlxBasePoint,
 
             // Classes [Funkin]
             "CoolUtil" => CoolUtil,
@@ -71,6 +271,7 @@ class ScriptHandler {
 
             // Variables
             "platform" => CoolUtil.getPlatform(), // Shortcut to "CoolUtil.getPlatform()".
+            "window" => lime.app.Application.current.window,
         ];
 
         compilerFlags = [
@@ -91,108 +292,68 @@ class ScriptHandler {
         parser.preprocesorValues = compilerFlags;
     }
 
-    public static function loadModule(path:String) {
-        var expr:Expr = null;
-        try {
-            if(!FileSystem.exists(path))
-                throw 'Script doesn\'t exist at path: $path';
-            
-            expr = parser.parseString(File.getContent(path));
-        } 
-        catch(e) {
-            expr = null;
-            Logs.trace('Error occured while loading a script! - $e', ERROR);
-        }
+    public static function loadModule(path:String):ScriptModule {
+        if(!FileSystem.exists(path) || !Paths.scriptExts.contains(Path.extension(path)))
+            return new DummyScript(path, "dummy");
 
-        return new ScriptModule(expr, Path.withoutDirectory(path));
+        var fileName:String = Path.withoutDirectory(path);
+
+        return switch(Path.extension(path)) {
+            // haxe scripting
+            case "hx", "hxs", "hsc", "hscript":
+                new HScript(path, fileName);
+
+            // lua scripting
+            case "lua":
+                new LuaScript(path, fileName);
+
+            // dummy script for files that don't exist or unsupported script types
+            default:
+                new DummyScript(path, "dummy");
+        }
     }
 }
 
 class ScriptModule extends FlxBasic {
-    public var interp:Interp;
+    public var path:String;
     public var fileName:String;
 
-    private function __errorHandler(error:Error) {
-        var fn = '$fileName:${error.line}: ';
-        var err = error.toString();
-        if (err.startsWith(fn)) err = err.substr(fn.length);
+    public var parent:Dynamic;
 
-        Logs.trace('Error occured on script: $fileName at Line ${error.line} - $err', ERROR);
-    }
-
-    public function new(expr:Expr, ?fileName:String = "hscript") {
+    public function new(path:String, fileName:String = "hscript") {
         super();
+        this.path = path;
         this.fileName = fileName;
-        
-        // If the script failed to load, just treat it as a dummy script!
-        if(expr == null) return;
-
-        interp = new Interp();
-        interp.errorHandler = __errorHandler;
-
-        interp.variables.set("trace", Reflect.makeVarArgs((args) -> {
-            var v:String = Std.string(args.shift());
-            for (a in args) v += ", " + Std.string(a);
-            this.trace(v);
-        }));
-
-        for(name => value in ScriptHandler.preset)
-            interp.variables.set(name, value);
-
-        interp.execute(expr);
     }
 
     /**
      * Gets a variable from this script and returns it.
      * @param val The name of the variable to get.
      */
-    public function get(val:String):Dynamic {
-        if(interp == null) return null;
-        return interp.variables.get(val);
-    }
+    public function get(val:String):Dynamic {return null;}
 
     /**
      * Sets a variable from this script.
      * @param val The name of the variable to set.
      * @param value The value to set the variable to.
      */
-    public function set(val:String, value:Dynamic) {
-        if(interp == null) return;
-        interp.variables.set(val, value);
-    }
+    public function set(val:String, value:Dynamic) {}
 
     /**
      * Calls a function from this script and returns whatever the function returns (Can be `null`!).
      * @param funcName The name of the function to call.
      * @param parameters The parameters/arguments to give the function when calling it.
      */
-    public function call(funcName:String, parameters:Array<Dynamic>):Dynamic {
-        if(interp == null) return null;
+    public function call(funcName:String, parameters:Array<Dynamic>):Dynamic {return null;}
 
-        var func:Dynamic = interp.variables.get(funcName);
-        if(func != null && Reflect.isFunction(func))
-            return (parameters != null && parameters.length > 0) ? Reflect.callMethod(null, func, parameters) : func();
-
-        return null;
-    }
-
-    public function trace(v:Dynamic) {
-        if(interp == null) return Logs.trace(v, TRACE);
-
-        var pos = interp.posInfos();
-        Logs.trace('$fileName - Line ${pos.lineNumber}: $v', TRACE);
-    }
+    public function trace(v:Dynamic) {}
 
     override public function destroy() {
-        interp = null;
         fileName = null;
         super.destroy();
     }
 
-    public function setParent(parent:Dynamic) {
-        if(interp == null) return;
-        interp.scriptObject = parent;
-    }
+    public function setParent(parent:Dynamic) {}
 }
 
 /**
