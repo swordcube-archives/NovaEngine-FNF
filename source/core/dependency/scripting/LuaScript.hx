@@ -90,6 +90,8 @@ class LuaScript extends ScriptModule {
 		for(name => value in ScriptHandler.preset)
             set(name, value);
 
+		set("parent", parent);
+
 		execute();
     }
 
@@ -138,6 +140,8 @@ class LuaScript extends ScriptModule {
 			"fileName": fileName,
 			"parent": this.parent = parent
 		};
+		set("parent", parent);
+		
 		specialVars[0] = script;
 	}
 
@@ -442,7 +446,7 @@ class LuaScript extends ScriptModule {
 		try {
 			returned = Type.createInstance(params[0], params[1]);
 		} catch (e) {
-			trace("Lua Instance Creation Error: " + e.details());
+			Logs.trace("Lua Instance Creation Error: " + e.details(), ERROR);
 		}
 		Lua.settop(currentLua.luaState, 0);
 

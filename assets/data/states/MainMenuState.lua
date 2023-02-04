@@ -1,15 +1,20 @@
-function onCreatePost()
-    print("printing test")
+script:import("flixel.tweens.FlxTween")
+script:import("flixel.tweens.FlxEase")
 
-    local sprite = FlxSprite:new()
-    sprite.scrollFactor.set(0, 0)
-    sprite.screenCenter()
-    sprite.loadGraphic(Paths:image("game/base/default/NOTE_assets"))
-    script.parent.add(sprite)
+function onCreate()
+    print("ham brugeerrbg")
 
-    print("fuck sprites don't work that well, does flxkey work though?")
-    print(FlxKey)
-    print(FlxAxes)
-    print("FUCK IT DON'T, ALSO WHY DOES FLXAXES PRINT CORE.CONTROLS WHART")
-    print("NONE OF THESE WORK THAT WELL :((, I'LL FIGURE THIS SHIT OUT LATER PROBABLY MAYBE I HOPE")
+    -- uncomment the code below to see what object oriented lua does
+
+    -- parent.runDefaultCode = false
+
+    -- local sprite = FlxSprite:new():loadGraphic(Paths:image("game/base/default/NOTE_assets"))
+    -- sprite.scrollFactor:set(0, 0)
+    -- sprite:screenCenter(FlxAxes.X)
+    -- sprite.color = FlxColor:fromString("#FF0000")
+    -- parent:add(sprite)
+
+    -- FlxTween:tween(sprite, {x = 10}, 10, {ease = FlxEase.cubeInOut})
+
+    -- FlxG:switchState(ModState:new("testicular")) -- DOESN'T WORK YET!!!
 end

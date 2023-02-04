@@ -25,6 +25,8 @@ class MainMenuState extends MusicBeatState {
 	override public function create() {
 		super.create();
 
+		if(!runDefaultCode) return;
+
 		if(FlxG.sound.music == null || (FlxG.sound.music != null && !FlxG.sound.music.playing))
 			NovaTools.playMenuMusic("freakyMenu");
 

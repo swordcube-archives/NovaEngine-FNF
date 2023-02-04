@@ -4,6 +4,10 @@ import core.dependency.ScriptHandler;
 import flixel.addons.ui.FlxUISubState;
 import flixel.addons.ui.FlxUIState;
 
+typedef ModState = MusicBeatState;
+typedef ModSubState = MusicBeatSubstate;
+typedef ModSubstate = MusicBeatSubstate;
+
 class MusicBeatState extends FlxUIState implements MusicHandler {
     public var controls(get, never):Controls;
     function get_controls() return SettingsAPI.controls;
