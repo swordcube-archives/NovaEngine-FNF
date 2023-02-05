@@ -179,6 +179,8 @@ class NoteField extends FlxTypedGroup<Note> {
 	}
 
 	override public function destroy() {
+		FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
+		FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
 		super.destroy();
 	}
 }

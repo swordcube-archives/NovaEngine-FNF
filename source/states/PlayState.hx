@@ -365,6 +365,7 @@ class PlayState extends MusicBeatState {
 
 	override public function destroy() {
 		current = null;
+		scripts.destroy();
 		super.destroy();
 	}
 }
