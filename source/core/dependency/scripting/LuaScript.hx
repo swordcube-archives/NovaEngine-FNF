@@ -1,5 +1,6 @@
 package core.dependency.scripting;
 
+import core.dependency.scripting.lua.LuaUtil;
 import haxe.DynamicAccess;
 import cpp.Callable;
 import llua.Lua;
@@ -9,6 +10,7 @@ import llua.Convert;
 import llua.Macro.*;
 import lime.app.Application;
 import core.dependency.ScriptHandler;
+import core.dependency.scripting.helperClasses.StringHelper;
 
 /**
  * The class used for handling Lua functionality.
@@ -96,6 +98,7 @@ class LuaScript extends ScriptModule {
     }
 
     public function execute() {
+		var lastLua:LuaScript = currentLua;
 		currentLua = this;
 
 		script = {
@@ -106,6 +109,10 @@ class LuaScript extends ScriptModule {
 		};
 		specialVars[0] = script;
 
+		// idk how else to allow splitting string like a normal lua function
+		// callbacks are dumb >:(
+		LuaL.dostring(luaState, LuaUtil.STRING_HELPER);
+
         if (LuaL.dostring(luaState, File.getContent(path)) != 0) {
 			var error = Lua.tostring(luaState, -1);
             var msg:String = 'Lua file at path: $path couldn\'t be ran! Here\'s the error message:\n$error';
@@ -115,6 +122,7 @@ class LuaScript extends ScriptModule {
             Application.current.window.alert(msg);
             #end
 		}
+		currentLua = lastLua;
     }
 
 	override public function trace(v:Dynamic) {
@@ -127,12 +135,15 @@ class LuaScript extends ScriptModule {
 	}
 
 	override public function set(name:String, newValue:Dynamic) {
+		var lastLua:LuaScript = currentLua;
 		currentLua = this;
 		toLua(newValue);
 		Lua.setglobal(luaState, name);
+		currentLua = lastLua;
 	}
 
 	override public function setParent(parent:Dynamic) {
+		var lastLua:LuaScript = currentLua;
 		currentLua = this;
 		script = {
 			"import": importClass,
@@ -143,9 +154,11 @@ class LuaScript extends ScriptModule {
 		set("parent", parent);
 		
 		specialVars[0] = script;
+		currentLua = lastLua;
 	}
 
 	override public function call(name:String, params:Array<Dynamic>):Dynamic {
+		var lastLua:LuaScript = currentLua;
 		currentLua = this;
 		script = {
 			"import": importClass,
@@ -179,6 +192,7 @@ class LuaScript extends ScriptModule {
 		// Grabs and returns the result of the function.
 		var v = fromLua(Lua.gettop(luaState));
 		Lua.settop(luaState, 0);
+		currentLua = lastLua;
 		return v;
 	}
 
@@ -278,8 +292,8 @@ class LuaScript extends ScriptModule {
 	 */
 	public function fromLua(stackPos:Int):Dynamic {
 		var ret:Any = null;
-
-		switch (Lua.type(luaState, stackPos)) {
+		var vtype:Int = Lua.type(luaState, stackPos);
+		switch (vtype) {
 			case Lua.LUA_TNIL:
 				ret = null;
 			case Lua.LUA_TBOOLEAN:
@@ -291,10 +305,10 @@ class LuaScript extends ScriptModule {
 			case Lua.LUA_TTABLE:
 				ret = toHaxeObj(stackPos);
 			case Lua.LUA_TFUNCTION:
-				null; // no support for functions yet
-			case idk:
+				null;
+			default:
 				ret = null;
-				trace('Return value not supported: ${Std.string(idk)} - $stackPos');
+				trace("return value not supported\nvalue: "+stackPos+"\ntype: "+vtype);
 		}
 
 		// This is to check if the object has a special field and converts it back if so.

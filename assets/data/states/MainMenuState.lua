@@ -1,20 +1,33 @@
 script:import("flixel.tweens.FlxTween")
 script:import("flixel.tweens.FlxEase")
 
-function onCreate()
-    print("ham brugeerrbg")
+local easterEggKeys = {"LUATEST"}
+local allowedKeys = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+local easterEggKeysBuffer = ""
 
-    -- uncomment the code below to see what object oriented lua does
+function onUpdate(elapsed)
+    local pressedKey = FlxG.keys:firstJustPressed()
+    if pressedKey ~= FlxKey.NONE then
 
-    -- parent.runDefaultCode = false
+        local keyName = FlxKey:toString(pressedKey)
+        if string:contains(allowedKeys, keyName) then
+            easterEggKeysBuffer = easterEggKeysBuffer .. keyName
+            if #easterEggKeysBuffer >= 32 then
+                easterEggKeysBuffer = string:substr(easterEggKeysBuffer, 1)             
+            end
 
-    -- local sprite = FlxSprite:new():loadGraphic(Paths:image("game/base/default/NOTE_assets"))
-    -- sprite.scrollFactor:set(0, 0)
-    -- sprite:screenCenter(FlxAxes.X)
-    -- sprite.color = FlxColor:fromString("#FF0000")
-    -- parent:add(sprite)
+            for i = 1, #easterEggKeys do
+                local word = string:upper(easterEggKeys[i])
+                if string:contains(easterEggKeysBuffer, word) then
+                    doEasterEggWord(word)
+                end
+            end
+        end
+    end
+end
 
-    -- FlxTween:tween(sprite, {x = 10}, 10, {ease = FlxEase.cubeInOut})
-
-    FlxG:switchState(ModState:new("testicular"))
+function doEasterEggWord(word)
+    if word == easterEggKeys[1] then
+        FlxG:switchState(ModState:new("LuaState"))
+    end
 end

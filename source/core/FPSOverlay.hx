@@ -38,8 +38,12 @@ class FPSOverlay extends TextField {
 			var mem:Float = MemoryUtil.getCurrentUsage();
 			if(mem > memPeak) memPeak = mem;
 
-			var state:Dynamic = FlxG.state;
-			var stateDisplay:String = (state is states.ModState) ? "states."+state.scriptName.replace("/", ".") : Type.getClassName(Type.getClass(FlxG.state));
+			var stateDisplay:String = null;
+			if(Std.isOfType(FlxG.state, states.ModState))
+				stateDisplay = "states." + cast(FlxG.state, states.ModState).scriptName.replace("/", ".");
+			else
+				stateDisplay = Type.getClassName(Type.getClass(FlxG.state));
+
             text = (
                 (displayFPS ? '${times.length} FPS\n' : '') +
                 (displayMemory ? '${CoolUtil.getSizeLabel(mem)} / ${CoolUtil.getSizeLabel(memPeak)}\n' : '') +

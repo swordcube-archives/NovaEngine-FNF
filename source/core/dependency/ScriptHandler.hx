@@ -63,6 +63,7 @@ class ScriptHandler {
             "FlxTextAlign" => core.dependency.scripting.helperClasses.FlxTextAlignHelper,
             "FlxTextBorderStyle" => core.dependency.scripting.helperClasses.FlxTextBorderStyleHelper,
             "FlxAxes" => core.dependency.scripting.helperClasses.FlxAxesHelper,
+            "StringHelper" => core.dependency.scripting.helperClasses.StringHelper,
 
             // ^^^ -------------------------------------------------------------
 
