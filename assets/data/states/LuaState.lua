@@ -40,7 +40,7 @@ function onUpdate(elapsed)
         ((FlxG.width - spinningBruj.width) * 0.5) + math.sin(bitch * 2) * 250,
         ((FlxG.height - spinningBruj.height) * 0.5) + math.cos(bitch * 3) * 250
     )
-    local movementSpeed = elapsed * 60 * 10
+    local movementSpeed = Main:framerateAdjust(10)
 
     if parent.controls.BACK then
         FlxG:switchState(MainMenuState:new())

@@ -142,7 +142,7 @@ class Note extends FNFSprite {
 
         if(isSustainNote) {
             if(!isSustainTail) {
-                scale.y = 1 * ((stepCrochet / 100) * 1.05) * Math.abs(scrollSpeed);
+                scale.y = 1 * ((stepCrochet / 100) * 1.05) * Math.abs(getScrollSpeed());
 
                 if(skinData.isPixel) {
 					scale.y *= 1.19;

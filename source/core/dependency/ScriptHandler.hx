@@ -1,5 +1,6 @@
 package core.dependency;
 
+import core.dependency.scripting.events.CancellableEvent;
 import core.dependency.scripting.*;
 import flixel.FlxBasic;
 import haxe.io.Path;
@@ -230,6 +231,21 @@ class ScriptGroup extends FlxBasic {
         }
 
         return finalizedReturn;
+    }
+
+    /**
+     * Runs a function on all scripts in this group with an event that can be cancelled.
+     * Useful for stopping certain things from running in `PlayState`.
+     * 
+     * @param funcName The name of the function to call.
+     * @param event The event to run.
+     */
+    public function event<T:CancellableEvent>(funcName:String, event:T):T {
+        for(script in __scripts) {
+            if(event.cancelled) break;
+            script.call(funcName, [event]);
+        }
+        return event;
     }
 
     override public function destroy() {

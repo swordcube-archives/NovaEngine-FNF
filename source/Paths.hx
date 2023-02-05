@@ -70,6 +70,24 @@ class Paths {
         return assetCache.get(path).value;
     }
 
+    // Useful functions
+    public static function getFolderContents(path:String, ?returnFullPath:Bool = false, ?noDirectories:Bool = false):Array<String> {
+        path = getPath(path);
+        if(!FileSystem.exists(path)) return [];
+
+        var coolList:Array<String> = [];
+
+        for(item in FileSystem.readDirectory(path)) {
+            var fullPath:String = '$path/$item';
+            if(!FileSystem.exists(fullPath) || (noDirectories && FileSystem.isDirectory(fullPath)))
+                continue;
+
+            coolList.push(returnFullPath ? fullPath : item);
+        }
+
+        return coolList;
+    }
+
     // Functions that can return a path only when needed or data (default)
     public static function getPath(path:String) return './assets/$path';
 
@@ -95,25 +113,25 @@ class Paths {
 
     public static function songInst(song:String, ?diff:String = "normal", ?pathOnly:Bool = false):Dynamic {
         var songPaths:Array<String> = [
-            getPath('songs/$song/Inst-$diff.ogg')
+            getPath('songs/${song.toLowerCase()}/Inst-$diff.ogg')
         ];
         for(p in songPaths) {
             if(FileSystem.exists(p))
                 return pathOnly ? p : returnSound(p);
         }
-        var p:String = getPath('songs/$song/Inst.ogg');
+        var p:String = getPath('songs/${song.toLowerCase()}/Inst.ogg');
         return pathOnly ? p : returnSound(p);
     }
 
     public static function songVoices(song:String, ?diff:String = "normal", ?pathOnly:Bool = false):Dynamic {
         var songPaths:Array<String> = [
-            getPath('songs/$song/Voices-$diff.ogg')
+            getPath('songs/${song.toLowerCase()}/Voices-$diff.ogg')
         ];
         for(p in songPaths) {
             if(FileSystem.exists(p))
                 return pathOnly ? p : returnSound(p);
         }
-        var p:String = getPath('songs/$song/Voices.ogg');
+        var p:String = getPath('songs/${song.toLowerCase()}/Voices.ogg');
         return pathOnly ? p : returnSound(p);
     }
 

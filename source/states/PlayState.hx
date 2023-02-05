@@ -1,5 +1,8 @@
 package states;
 
+import haxe.io.Path;
+import core.dependency.ScriptHandler;
+import core.dependency.scripting.events.*;
 import openfl.media.Sound;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -70,6 +73,7 @@ class PlayState extends MusicBeatState {
 	public var countdownImages:Map<Int, FlxGraphic> = [];
 	public var countdownSounds:Map<Int, Sound> = [];
 
+	public var scripts:ScriptGroup;
 	public var scrollSpeed:Float = 3.4;
 
 	public static function resetStatics() {
@@ -84,6 +88,8 @@ class PlayState extends MusicBeatState {
 
 		current = this;
 		FlxG.sound.music.stop();
+
+		(scripts = new ScriptGroup()).setParent(this);
 
 		// VVV -- PRELOADING -----------------------------------------------------------
 
@@ -104,7 +110,25 @@ class PlayState extends MusicBeatState {
 		Conductor.bpm = SONG.bpm;
 		Conductor.position = Conductor.crochet * -5;
 
-		// scripts.call("onCreate", []); will add when i wanna add scripting
+		// ^^^ -- END OF PRELOADING ----------------------------------------------------
+
+		// Global song scripts
+		for(path in Paths.getFolderContents("songs", true, true)) {
+			if(!FileSystem.exists(path) || !Paths.scriptExts.contains(Path.extension(path)))
+				continue;
+
+			scripts.add(ScriptHandler.loadModule(path));
+		}
+
+		// Scripts specific to the current song
+		for(path in Paths.getFolderContents('songs/${SONG.song.toLowerCase()}', true, true)) {
+			if(!FileSystem.exists(path) || !Paths.scriptExts.contains(Path.extension(path)))
+				continue;
+			
+			scripts.add(ScriptHandler.loadModule(path));
+		}
+
+		scripts.call("onCreate", []);
 
 		var receptorSpacing:Float = FlxG.width / 4;
 		var strumY:Float = SettingsAPI.downscroll ? FlxG.height - 160 : 50;
@@ -148,9 +172,12 @@ class PlayState extends MusicBeatState {
 			0 => Paths.sound('game/countdown/$assetModifier/introGo')
 		];
 
-		// ^^^ -- END OF PRELOADING ----------------------------------------------------
-
 		startCutscene();
+	}
+
+	override public function createPost() {
+		super.createPost();
+		scripts.call("onCreatePost", []);
 	}
 
 	public function startCutscene() {
@@ -173,37 +200,67 @@ class PlayState extends MusicBeatState {
 				endSong();
 			});
 		}
+		scripts.call("onFinishSong", []);
+		scripts.call("onSongFinish", []);
 	}
 
 	public function endSong() {
 		endingSong = true;
+
+		var event = scripts.event("onEndSong", new CancellableEvent());
+		event = scripts.event("onSongEnd", event);
+
+		if(event.cancelled) return;
+
 		FlxG.switchState(new MainMenuState());
 	}
 
 	public function startCountdown() {
+		var event = scripts.event("onStartCountdown", new CancellableEvent());
+		event = scripts.event("onCountdownStart", event);
+
+		if(event.cancelled) return;
+		
 		// don't even need to do Json.parse because i made Paths cool 😎
 		var config:Dynamic = Paths.json('images/UI/$assetModifier/countdown/config');
 		config.setFieldDefault("scale", 1.0);
 
 		startTimer = new FlxTimer().start(Conductor.crochet / 1000, (tmr:FlxTimer) -> {
-			var spriteImage:FlxGraphic = countdownImages.get(tmr.loopsLeft);
-			if(spriteImage != null) {
-				var sprite = new FNFSprite().loadGraphic(spriteImage);
-				sprite.scale.set(config.scale, config.scale);
+			var event = scripts.event("onCountdownTick", new CountdownEvent(
+				countdownImages.get(tmr.loopsLeft),
+				countdownSounds.get(tmr.loopsLeft),
+				config.scale,
+				tmr.loops - tmr.loopsLeft,
+				tmr.loopsLeft
+			));
+			event = scripts.event("onCountdown", event);
+			event = scripts.event("onTickCountdown", event);
+
+			if(event.image != null && !event.cancelled) {
+				var sprite = new FNFSprite().loadGraphic(event.image);
+				sprite.scale.set(event.scale, event.scale);
 				sprite.updateHitbox();
 				sprite.screenCenter();
+				event.sprite = sprite;
 				add(sprite);
 
 				FlxTween.tween(sprite, {alpha: 0}, Conductor.crochet / 1000, {ease: FlxEase.cubeInOut});
 			}
-			var sound:Sound = countdownSounds.get(tmr.loopsLeft);
-			if(sound != null)
-				FlxG.sound.play(sound);
+			if(event.sound != null && !event.cancelled)
+				FlxG.sound.play(event.sound);
+
+			scripts.event("onCountdownPost", event);
+			scripts.event("onCountdownTickPost", event);
+			scripts.event("onTickCountdownPost", event);
 		}, 4);
+
+		scripts.event("onStartCountdownPost", event);
+		scripts.event("onCountdownStartPost", event);
 	}
 
 	override public function update(elapsed:Float) {
 		super.update(elapsed);
+		scripts.call("onUpdate", [elapsed]);
 
 		if(camZooming) {
 			var zoomSpeed:Float = Main.framerateAdjust(0.05);	
@@ -211,18 +268,38 @@ class PlayState extends MusicBeatState {
 			camHUD.zoom = FlxMath.lerp(camHUD.zoom, camHUD.initialZoom, zoomSpeed);
 		}
 
-		Conductor.position += elapsed * 1000;
-		if(Conductor.position >= 0 && startingSong)
-			startSong();
+		if(controls.PAUSE) {
+			var event = scripts.event("onPause", new CancellableEvent());
+			event = scripts.event("onPauseSong", event);
+			event = scripts.event("onSongPause", event);
+
+			if(!event.cancelled) {
+				// pause menu code will be made eventually
+			}
+		}
+
+		if(!endingSong) {
+			Conductor.position += elapsed * 1000;
+			if(Conductor.position >= 0 && startingSong)
+				startSong();
+		}
+
+		scripts.call("onUpdatePost", [elapsed]);
 	}
 
 	override public function fixedUpdate(elapsed:Float) {
 		super.fixedUpdate(elapsed);
+		scripts.call("onFixedUpdate", [elapsed]);
 
 		if(unspawnNotes.length > 0 && unspawnNotes[0] != null && unspawnNotes[0].strumTime <= Conductor.position + (3500 / Math.abs(unspawnNotes[0].scrollSpeed))) {
 			while(unspawnNotes.length > 0 && unspawnNotes[0] != null && unspawnNotes[0].strumTime <= Conductor.position + (3500 / Math.abs(unspawnNotes[0].scrollSpeed)))
 				notes.add(unspawnNotes.shift());
 		}
+	}
+
+	override public function fixedUpdatePost(elapsed:Float) {
+		super.fixedUpdatePost(elapsed);
+		scripts.call("onFixedUpdatePost", [elapsed]);
 	}
 
 	override public function beatHit(curBeat:Int) {
@@ -232,6 +309,8 @@ class PlayState extends MusicBeatState {
 			camGame.zoom += 0.015;
 			camHUD.zoom += 0.03;
 		}
+
+		scripts.call("onBeatHit", [curBeat]);
 	}
 
 	override public function stepHit(curStep:Int) {
@@ -245,6 +324,14 @@ class PlayState extends MusicBeatState {
 		{
 			resyncVocals();
 		}
+
+		scripts.call("onStepHit", [curStep]);
+	}
+
+	override public function sectionHit(curSection:Int) {
+		if(FlxG.sound.music.time >= FlxG.sound.music.length || endingSong) return;
+
+		scripts.call("onSectionHit", [curSection]);
 	}
 
 	public function resyncVocals() {
@@ -258,6 +345,7 @@ class PlayState extends MusicBeatState {
 			vocals.time = Conductor.position;
 		
 		vocals.play();
+		scripts.call("onResyncVocals", []);
 	}
 
 	public function startSong() {
@@ -271,6 +359,8 @@ class PlayState extends MusicBeatState {
 		vocals.play();
 
 		resyncVocals();
+		scripts.call("onStartSong", []);
+		scripts.call("onSongStart", []);
 	}
 
 	override public function destroy() {
