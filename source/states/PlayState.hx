@@ -44,6 +44,8 @@ class PlayState extends MusicBeatState {
 
 	public var healthBarBG:TrackingSprite;
 	public var healthBar:FlxBar;
+	public var iconP1:HealthIcon;
+	public var iconP2:HealthIcon;
 
 	public var health(default, set):Float = 1;
 	private function set_health(value:Float):Float {
@@ -156,7 +158,17 @@ class PlayState extends MusicBeatState {
 		healthBarBG.trackingMode = LEFT;
 		healthBarBG.tracked = healthBar;
 
-		for(obj in [cpuStrums, playerStrums, notes, healthBarBG, healthBar])
+		add(iconP1 = new HealthIcon(0, healthBar.y, SONG.player1));
+		iconP1.flipX = true;
+
+		add(iconP2 = new HealthIcon(0, healthBar.y, SONG.player2));
+
+		for(obj in [iconP1, iconP2]) {
+			obj.trackingMode = RIGHT;
+			obj.tracked = healthBar;
+		}
+
+		for(obj in [cpuStrums, playerStrums, notes, healthBarBG, healthBar, iconP1, iconP2])
 			obj.cameras = [camHUD];
 
 		countdownImages = [
@@ -258,9 +270,24 @@ class PlayState extends MusicBeatState {
 		scripts.event("onCountdownStartPost", event);
 	}
 
+	public function positionIcons() {
+		var iconOffset:Int = 26;
+		iconP1.trackingOffset.set((healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset) - healthBar.width, -iconP1.initialHeight * 0.5);
+		iconP2.trackingOffset.set((healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset) - healthBar.width, -iconP2.initialHeight * 0.5);
+	}
+
 	override public function update(elapsed:Float) {
 		super.update(elapsed);
 		scripts.call("onUpdate", [elapsed]);
+
+		var iconLerp:Float = Main.framerateAdjust(0.5);
+		iconP1.scale.set(FlxMath.lerp(iconP1.scale.x, iconP1.initialScale, iconLerp), FlxMath.lerp(iconP1.scale.y, iconP1.initialScale, iconLerp));
+		iconP1.updateHitbox();
+
+		iconP2.scale.set(FlxMath.lerp(iconP2.scale.x, iconP2.initialScale, iconLerp), FlxMath.lerp(iconP2.scale.y, iconP2.initialScale, iconLerp));
+		iconP2.updateHitbox();
+		
+		positionIcons();
 
 		if(camZooming) {
 			var zoomSpeed:Float = Main.framerateAdjust(0.05);	
@@ -309,6 +336,14 @@ class PlayState extends MusicBeatState {
 			camGame.zoom += 0.015;
 			camHUD.zoom += 0.03;
 		}
+
+		iconP1.scale.add(0.3, 0.3);
+		iconP1.updateHitbox();
+
+		iconP2.scale.add(0.3, 0.3);
+		iconP2.updateHitbox();
+
+		positionIcons();
 
 		scripts.call("onBeatHit", [curBeat]);
 	}
