@@ -24,8 +24,6 @@ typedef ExtraKeyData = {
 }
 
 class Note extends FNFSprite {
-    private var game = PlayState.current;
-    
     public var keyCount:Int = 4;
 
     public var rawNoteData:Int = 0;
@@ -83,6 +81,7 @@ class Note extends FNFSprite {
 
     public var initialScale:Float = 0.7;
     public var skinData:NoteSkinData;
+    public var splashSkin:String = "noteSplashes";
 
     public function new(?x:Float = 0, ?y:Float = 0, ?skin:String = "default", ?keyCount:Int = 4, ?noteData:Int = 0) {
         super(x, y);

@@ -10,7 +10,7 @@ import flixel.math.FlxAngle;
 import states.PlayState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 
-class NoteField extends FlxTypedGroup<Note> {
+class NoteField extends NoteGroup {
 	private var game = PlayState.current;
 	private var __pressedKeys:Array<Bool> = [];
 
@@ -28,7 +28,7 @@ class NoteField extends FlxTypedGroup<Note> {
 			__pressedKeys.push(false);
 	}
 
-	public function sortNotes(a:Note, b:Note):Int {
+	public function sortHitNotes(a:Note, b:Note):Int {
 		if (!a.shouldHit && b.shouldHit) return 1;
 		else if (a.shouldHit && !b.shouldHit) return -1;
 
@@ -59,7 +59,7 @@ class NoteField extends FlxTypedGroup<Note> {
         });
 
         // Sort the possible notes so you can't hit like 3 notes with one input
-        possibleNotes.sort(sortNotes);
+        possibleNotes.sort(sortHitNotes);
 
         // Check if there are any notes to hit
         if(possibleNotes.length > 0) {
@@ -71,11 +71,8 @@ class NoteField extends FlxTypedGroup<Note> {
                     dontHit[data] = true;
 
                     receptor.playAnim("confirm");
-					game.health += 0.023;
+					game.goodNoteHit(note);
 
-					note.kill();
-					note.destroy();
-					game.notes.remove(note, true);
                     break;
                 }
             }
@@ -136,6 +133,7 @@ class NoteField extends FlxTypedGroup<Note> {
 			if (strumLine.autoplay && !note.wasGoodHit && note.strumTime <= Conductor.position) {
 				receptor.playAnim("confirm", true);
 				note.wasGoodHit = true;
+				game.vocals.volume = 1;
 				if(!note.isSustainNote) destroyNote(note);
 			}
 
@@ -144,6 +142,7 @@ class NoteField extends FlxTypedGroup<Note> {
 				receptor.playAnim("confirm", true);
 				note.wasGoodHit = true;
 				game.health += 0.023;
+				game.vocals.volume = 1;
 			}
 
 			// clip rect shit!
@@ -159,8 +158,10 @@ class NoteField extends FlxTypedGroup<Note> {
 
 			// kill da note when it go off screen
 			if ((downscrollMultiplier < 0 && note.y > FlxG.height + note.height) || (downscrollMultiplier > 0 && note.y < -note.height)) {
-				if(note.mustPress && !note.wasGoodHit)
+				if(note.mustPress && !note.wasGoodHit) {
 					game.health -= 0.0475;
+					game.vocals.volume = 0;
+				}
 
 				if(!note.isSustainNote) {
 					for(note in note.sustainNotes)

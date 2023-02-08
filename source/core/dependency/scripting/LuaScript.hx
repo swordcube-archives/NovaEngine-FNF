@@ -10,7 +10,6 @@ import llua.Convert;
 import llua.Macro.*;
 import lime.app.Application;
 import core.dependency.ScriptHandler;
-import core.dependency.scripting.helperClasses.StringHelper;
 
 /**
  * The class used for handling Lua functionality.

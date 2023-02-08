@@ -1,0 +1,17 @@
+{
+    "scale": 1,
+    "alpha": 0.6,
+    "positionOffset": {"x": -50, "y": -50},
+    "animations": [
+        {
+            "spritesheetName": "splash ${DIRECTION} 1",
+            "fps": 24,
+            "offset": {"x": 0, "y": 0}
+        },
+        {
+            "spritesheetName": "splash ${DIRECTION} 2",
+            "fps": 24,
+            "offset": {"x": 0, "y": 0}
+        }
+    ]
+}

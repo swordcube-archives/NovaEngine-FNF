@@ -8,6 +8,12 @@ import flixel.graphics.FlxGraphic;
 import core.dependency.CacheManager;
 import core.utilities.IniParser;
 
+enum abstract DirectoryFilter(Int) to Int from Int {
+    var DIRS_AND_FILES = 0;
+    var DIRS_ONLY = 1;
+    var FILES_ONLY = 2;
+}
+
 class Paths {
     public static var assetCache:Cache = new Cache();
 
@@ -71,7 +77,7 @@ class Paths {
     }
 
     // Useful functions
-    public static function getFolderContents(path:String, ?returnFullPath:Bool = false, ?noDirectories:Bool = false):Array<String> {
+    public static function getFolderContents(path:String, ?returnFullPath:Bool = false, ?directoryFilter:DirectoryFilter = DIRS_AND_FILES):Array<String> {
         path = getPath(path);
         if(!FileSystem.exists(path)) return [];
 
@@ -79,8 +85,20 @@ class Paths {
 
         for(item in FileSystem.readDirectory(path)) {
             var fullPath:String = '$path/$item';
-            if(!FileSystem.exists(fullPath) || (noDirectories && FileSystem.isDirectory(fullPath)))
+            if(!FileSystem.exists(fullPath))
                 continue;
+
+            switch(directoryFilter) {
+                case FILES_ONLY:
+                    if(FileSystem.isDirectory(fullPath))
+                        continue;
+
+                case DIRS_ONLY:
+                    if(!FileSystem.isDirectory(fullPath))
+                        continue;
+
+                default: // fuck you
+            }
 
             coolList.push(returnFullPath ? fullPath : item);
         }

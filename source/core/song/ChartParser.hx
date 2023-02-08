@@ -1,18 +1,10 @@
 package core.song;
 
-import flixel.util.FlxSort;
 import states.PlayState;
 import objects.ui.Note;
 import core.song.SongFormat.SongData;
 
-class ChartParser {
-    static function sortByShit(n1:Note, n2:Note):Int {
-		if (n1.strumTime == n2.strumTime)
-			return n1.isSustainNote ? -1 : 1;
-
-		return FlxSort.byValues(FlxSort.ASCENDING, n1.strumTime, n2.strumTime);
-	}
-    
+class ChartParser {    
     public static function parseChart(songData:SongData) {
         var noteArray:Array<Note> = [];
 
@@ -72,8 +64,6 @@ class ChartParser {
             oldNote = note;
         }
         oldNote = null;
-
-        noteArray.sort(sortByShit);
 
         return noteArray;
     }

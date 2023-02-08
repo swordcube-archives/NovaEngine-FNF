@@ -1,5 +1,8 @@
 package states;
 
+import objects.ui.StrumLine.Receptor;
+import flixel.util.FlxSort;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import haxe.io.Path;
 import core.dependency.ScriptHandler;
 import core.dependency.scripting.events.*;
@@ -38,8 +41,8 @@ class PlayState extends MusicBeatState {
 
 	public var cpuStrums:StrumLine;
 	public var playerStrums:StrumLine;
+	public var grpNoteSplashes:FlxTypedGroup<NoteSplash>;
 
-	public var unspawnNotes:Array<Note> = [];
 	public var notes:NoteField;
 
 	public var healthBarBG:TrackingSprite;
@@ -107,7 +110,7 @@ class PlayState extends MusicBeatState {
 		FlxG.cameras.add(camHUD = new FNFCamera(), false);
 		FlxG.cameras.add(camOther = new FNFCamera(), false);
 
-		camGame.bgColor = FlxColor.WHITE; // placeholder
+		camGame.bgColor = FlxColor.GRAY; // placeholder
 
 		Conductor.bpm = SONG.bpm;
 		Conductor.position = Conductor.crochet * -5;
@@ -115,7 +118,7 @@ class PlayState extends MusicBeatState {
 		// ^^^ -- END OF PRELOADING ----------------------------------------------------
 
 		// Global song scripts
-		for(path in Paths.getFolderContents("songs", true, true)) {
+		for(path in Paths.getFolderContents("songs", true, FILES_ONLY)) {
 			if(!FileSystem.exists(path) || !Paths.scriptExts.contains(Path.extension(path)))
 				continue;
 
@@ -123,7 +126,7 @@ class PlayState extends MusicBeatState {
 		}
 
 		// Scripts specific to the current song
-		for(path in Paths.getFolderContents('songs/${SONG.song.toLowerCase()}', true, true)) {
+		for(path in Paths.getFolderContents('songs/${SONG.song.toLowerCase()}', true, FILES_ONLY)) {
 			if(!FileSystem.exists(path) || !Paths.scriptExts.contains(Path.extension(path)))
 				continue;
 			
@@ -144,7 +147,10 @@ class PlayState extends MusicBeatState {
 		playerStrums.x += receptorSpacing;
 
 		add(notes = new NoteField());
-		unspawnNotes = ChartParser.parseChart(SONG);
+		add(grpNoteSplashes = new FlxTypedGroup<NoteSplash>());
+		
+		notes.addNotes(ChartParser.parseChart(SONG));
+		notes.sortNotes();
 
 		healthBarBG = new TrackingSprite(0, FlxG.height * (SettingsAPI.downscroll ? 0.1 : 0.9)).loadGraphic(Paths.image("UI/base/healthBar"));
 		healthBarBG.screenCenter(X);
@@ -163,14 +169,10 @@ class PlayState extends MusicBeatState {
 
 		add(iconP2 = new HealthIcon(0, healthBar.y, SONG.player2));
 
-		for(obj in [iconP1, iconP2]) {
-			obj.trackingMode = RIGHT;
-			obj.tracked = healthBar;
-		}
-
-		for(obj in [cpuStrums, playerStrums, notes, healthBarBG, healthBar, iconP1, iconP2])
+		for(obj in [cpuStrums, playerStrums, notes, grpNoteSplashes, healthBarBG, healthBar, iconP1, iconP2])
 			obj.cameras = [camHUD];
 
+		// Preload countdown & note splashes
 		countdownImages = [
 			3 => null,
 			2 => Paths.image('UI/$assetModifier/countdown/ready'),
@@ -183,8 +185,29 @@ class PlayState extends MusicBeatState {
 			1 => Paths.sound('game/countdown/$assetModifier/intro1'),
 			0 => Paths.sound('game/countdown/$assetModifier/introGo')
 		];
+		
+		var loadedSplashes:Array<String> = [];
+		for(note in notes.members) {
+			if(loadedSplashes.contains(note.splashSkin))
+				continue;
 
+			var noteSplash = new NoteSplash(-10000, -10000, note.splashSkin, note.keyCount, note.noteData);
+			noteSplash.alpha = 0.00001;
+			grpNoteSplashes.add(noteSplash);
+
+			loadedSplashes.push(note.splashSkin);
+		}
+
+		// Start the song's cutscene if it exists
+		// or the countdown if it doesn't exist
 		startCutscene();
+	}
+
+	public function sortByShit(n1:Note, n2:Note):Int {
+		if (n1.strumTime == n2.strumTime)
+			return n1.isSustainNote ? -1 : 1;
+
+		return FlxSort.byValues(FlxSort.ASCENDING, n1.strumTime, n2.strumTime);
 	}
 
 	override public function createPost() {
@@ -194,10 +217,13 @@ class PlayState extends MusicBeatState {
 
 	public function startCutscene() {
 		startCountdown();
+		scripts.call("onStartCutscene", []);
 	}
 
 	public function startEndCutscene() {
-		// placeholder
+		finishSong();
+		scripts.call("onStartEndCutscene", []);
+		scripts.call("onEndCutscene", []);
 	}
 
 	public function finishSong(?ignoreNoteOffset:Bool = false) {
@@ -225,6 +251,35 @@ class PlayState extends MusicBeatState {
 		if(event.cancelled) return;
 
 		FlxG.switchState(new MainMenuState());
+	}
+
+	public function goodNoteHit(note:Note) {
+		var rating:String = "sick";
+		var doSplash:Bool = true;
+
+		var receptor:Receptor = note.strumLine.members[note.noteData];
+
+		if(note.mustPress)
+			health += 0.023;
+
+		vocals.volume = 1;
+
+		if(doSplash) {
+			var splash:NoteSplash = grpNoteSplashes.recycle(NoteSplash);
+			splash.setup(receptor.x, receptor.y, note.splashSkin, note.keyCount, note.noteData);
+			splash.animation.finishCallback = (name:String) -> {
+				splash.kill();
+				splash.destroy();
+				grpNoteSplashes.remove(splash, true);
+			};
+			grpNoteSplashes.add(splash);
+		}
+
+		if(!note.isSustainNote) {
+			note.kill();
+			note.destroy();
+			notes.remove(note, true);
+		}
 	}
 
 	public function startCountdown() {
@@ -272,8 +327,8 @@ class PlayState extends MusicBeatState {
 
 	public function positionIcons() {
 		var iconOffset:Int = 26;
-		iconP1.trackingOffset.set((healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset) - healthBar.width, -iconP1.initialHeight * 0.5);
-		iconP2.trackingOffset.set((healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset) - healthBar.width, -iconP2.initialHeight * 0.5);
+		iconP1.setPosition(healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset), healthBar.y - (iconP1.initialHeight * 0.5));
+		iconP2.setPosition(healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset), healthBar.y - (iconP2.initialHeight * 0.5));
 	}
 
 	override public function update(elapsed:Float) {
@@ -317,11 +372,6 @@ class PlayState extends MusicBeatState {
 	override public function fixedUpdate(elapsed:Float) {
 		super.fixedUpdate(elapsed);
 		scripts.call("onFixedUpdate", [elapsed]);
-
-		if(unspawnNotes.length > 0 && unspawnNotes[0] != null && unspawnNotes[0].strumTime <= Conductor.position + (3500 / Math.abs(unspawnNotes[0].scrollSpeed))) {
-			while(unspawnNotes.length > 0 && unspawnNotes[0] != null && unspawnNotes[0].strumTime <= Conductor.position + (3500 / Math.abs(unspawnNotes[0].scrollSpeed)))
-				notes.add(unspawnNotes.shift());
-		}
 	}
 
 	override public function fixedUpdatePost(elapsed:Float) {
@@ -354,8 +404,8 @@ class PlayState extends MusicBeatState {
 		var resyncMS:Float = 20;
 
 		@:privateAccess
-		if (Math.abs(FlxG.sound.music.time - Conductor.songPosition) > resyncMS
-			|| (vocals._sound != null && Math.abs(vocals.time - Conductor.songPosition) > resyncMS))
+		if (Math.abs(FlxG.sound.music.time - Conductor.position) > resyncMS
+			|| (vocals._sound != null && Math.abs(vocals.time - Conductor.position) > resyncMS))
 		{
 			resyncVocals();
 		}
@@ -389,7 +439,7 @@ class PlayState extends MusicBeatState {
 		FlxG.sound.music.pause();
 		FlxG.sound.music.volume = 1;
 		FlxG.sound.music.time = vocals.time = Conductor.position = 0;
-		FlxG.sound.music.onComplete = finishSong.bind();
+		FlxG.sound.music.onComplete = startEndCutscene;
 		FlxG.sound.music.play();
 		vocals.play();
 
