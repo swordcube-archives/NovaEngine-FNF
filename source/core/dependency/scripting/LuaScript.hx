@@ -17,6 +17,7 @@ import core.dependency.ScriptHandler;
  */
 class LuaScript extends ScriptModule {
 	static var currentLua:LuaScript;
+	static var workaroundCallable:Callable<llua.State.StatePointer->Int> = Callable.fromStaticFunction(instanceWorkAround);
 
 	var luaState:State;
 	var script:Dynamic = {parent: null};
@@ -289,7 +290,7 @@ class LuaScript extends ScriptModule {
 	 * Converts a lua variable to haxe. Used for lua function returns.
 	 * @param stackPos The position of the lua variable.
 	 */
-	public function fromLua(stackPos:Int):Dynamic {
+	public function fromLua(stackPos:Int, ?inTable:Bool = false):Dynamic {
 		var ret:Any = null;
 		var vtype:Int = Lua.type(luaState, stackPos);
 		switch (vtype) {
@@ -304,7 +305,49 @@ class LuaScript extends ScriptModule {
 			case Lua.LUA_TTABLE:
 				ret = toHaxeObj(stackPos);
 			case Lua.LUA_TFUNCTION:
-				null;
+				if (Lua.tocfunction(luaState, stackPos) != workaroundCallable) {
+					var ref = LuaL.ref(luaState, Lua.LUA_REGISTRYINDEX);
+
+					if (inTable) {
+						Logs.trace("FUNCTIONS MAY NOT BE USED IN TABLES AS THEY CRASH THE GAME.\nIf you're trying to add `onComplete` to a tween, (most common use for local funcs)\ndo `tween.onComplete = func` instead please.", ERROR);
+						return null;
+					}
+
+					ret = function(...startParams:Dynamic) {
+						var lastLua:LuaScript = currentLua;
+						currentLua = this;
+
+						script = { //Overriding `set_parent` wasnt working for me soo.....
+							"import": importClass,
+							"path": path,
+							"fileName": fileName,
+							"parent": parent
+						};
+						specialVars[0] = script;
+
+						Lua.settop(luaState, 0);
+						Lua.rawgeti(luaState, Lua.LUA_REGISTRYINDEX, ref);
+
+						if (Lua.isfunction(luaState, -1)) {
+							//Pushes the parameters of the script.
+							var params = [];
+							if (startParams != null)
+								params = startParams.toArray();
+							var nparams:Int = 0;
+							if (params != null && params.length > 0) {
+								nparams = params.length;
+								for (val in params)
+									toLua(val);
+							}
+
+							//Calls the function of the script. If it does not return 0, will trace what went wrong.
+							if (Lua.pcall(luaState, nparams, 1, 0) != 0)
+								Logs.trace('Lua Function(LOCAL) Error: ${Lua.tostring(luaState, -1)}', ERROR);
+						}
+
+						currentLua = lastLua;
+					}
+				}
 			default:
 				ret = null;
 				trace("return value not supported\nvalue: "+stackPos+"\ntype: "+vtype);
@@ -364,8 +407,8 @@ class LuaScript extends ScriptModule {
 					Lua.settable(luaState, tableIndex);
 
 					Lua.pushstring(luaState, "new"); // This implements the work around function to create the class instance.
-					Lua.pushcfunction(luaState, Callable.fromStaticFunction(instanceWorkAround));
-					Lua.settable(luaState, tableIndex);
+					Lua.pushcfunction(luaState, workaroundCallable);
+					Lua.rawset(luaState, tableIndex);
 
 					LuaL.getmetatable(luaState, "__scriptMetatable");
 					Lua.setmetatable(luaState, tableIndex);
@@ -373,7 +416,14 @@ class LuaScript extends ScriptModule {
 					return true;
 				}
 
-				@:privateAccess Convert.objectToLua(luaState, val);
+				var fields = Reflect.fields(val);
+
+				Lua.createtable(luaState, fields.length, 0);
+				for (field in fields) {
+					Lua.pushstring(luaState, field);
+					toLua(Reflect.field(val, field));
+					Lua.settable(luaState, -3);
+				}
 			default: // Didn't fit any of the var types. Assuming it's an instance/pointer, reating table, and attaching table to metatable.
 				var location = specialVars.indexOf(val);
 				if (location < 0) {
@@ -425,15 +475,15 @@ class LuaScript extends ScriptModule {
 			var v = [];
 			loopTable(luaState, i, {
 				var index = Std.int(Lua.tonumber(luaState, -2)) - 1;
-				v[index] = fromLua(-1);
+				v[index] = fromLua(-1, true);
 			});
 			cast v;
 		} else {
 			var v:DynamicAccess<Any> = {};
 			loopTable(luaState, i, {
 				switch Lua.type(luaState, -2) {
-					case t if (t == Lua.LUA_TSTRING): v.set(Lua.tostring(luaState, -2), fromLua(-1));
-					case t if (t == Lua.LUA_TNUMBER): v.set(Std.string(Lua.tonumber(luaState, -2)), fromLua(-1));
+					case t if (t == Lua.LUA_TSTRING): v.set(Lua.tostring(luaState, -2), fromLua(-1, true));
+					case t if (t == Lua.LUA_TNUMBER): v.set(Std.string(Lua.tonumber(luaState, -2)), fromLua(-1, true));
 				}
 			});
 			cast v;
@@ -499,8 +549,8 @@ class LuaScript extends ScriptModule {
 			Lua.settable(luaState, tableIndex);
 
 			Lua.pushstring(luaState, "new"); // This implements the work around function to create the class instance.
-			Lua.pushcfunction(luaState, Callable.fromStaticFunction(instanceWorkAround));
-			Lua.settable(luaState, tableIndex);
+			Lua.pushcfunction(luaState, workaroundCallable);
+			Lua.rawset(luaState, tableIndex);
 
 			LuaL.getmetatable(luaState, "__scriptMetatable");
 			Lua.setmetatable(luaState, tableIndex);

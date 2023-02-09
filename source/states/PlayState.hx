@@ -1,5 +1,6 @@
 package states;
 
+import core.song.Ranking;
 import objects.ui.StrumLine.Receptor;
 import flixel.util.FlxSort;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -110,8 +111,6 @@ class PlayState extends MusicBeatState {
 		FlxG.cameras.add(camHUD = new FNFCamera(), false);
 		FlxG.cameras.add(camOther = new FNFCamera(), false);
 
-		camGame.bgColor = FlxColor.GRAY; // placeholder
-
 		Conductor.bpm = SONG.bpm;
 		Conductor.position = Conductor.crochet * -5;
 
@@ -150,7 +149,6 @@ class PlayState extends MusicBeatState {
 		add(grpNoteSplashes = new FlxTypedGroup<NoteSplash>());
 		
 		notes.addNotes(ChartParser.parseChart(SONG));
-		notes.sortNotes();
 
 		healthBarBG = new TrackingSprite(0, FlxG.height * (SettingsAPI.downscroll ? 0.1 : 0.9)).loadGraphic(Paths.image("UI/base/healthBar"));
 		healthBarBG.screenCenter(X);
@@ -203,13 +201,6 @@ class PlayState extends MusicBeatState {
 		startCutscene();
 	}
 
-	public function sortByShit(n1:Note, n2:Note):Int {
-		if (n1.strumTime == n2.strumTime)
-			return n1.isSustainNote ? -1 : 1;
-
-		return FlxSort.byValues(FlxSort.ASCENDING, n1.strumTime, n2.strumTime);
-	}
-
 	override public function createPost() {
 		super.createPost();
 		scripts.call("onCreatePost", []);
@@ -251,20 +242,28 @@ class PlayState extends MusicBeatState {
 		if(event.cancelled) return;
 
 		FlxG.switchState(new MainMenuState());
+		NovaTools.playMenuMusic("freakyMenu");
 	}
 
 	public function goodNoteHit(note:Note) {
-		var rating:String = "sick";
-		var doSplash:Bool = true;
+		vocals.volume = 1;
+		note.wasGoodHit = true;
+
+		if(note.isSustainNote) return;
+
+		var judgeData:Judgement = note.mustPress ? Ranking.judgementFromTime(note.strumTime - Conductor.position) : Ranking.judgements[0];
+
+		var rating:String = judgeData.name;
+		var showSplash:Bool = note.mustPress && judgeData.showSplash;
 
 		var receptor:Receptor = note.strumLine.members[note.noteData];
 
-		if(note.mustPress)
+		if(note.mustPress) {
 			health += 0.023;
+			trace("u hit a "+rating);
+		}
 
-		vocals.volume = 1;
-
-		if(doSplash) {
+		if(showSplash) {
 			var splash:NoteSplash = grpNoteSplashes.recycle(NoteSplash);
 			splash.setup(receptor.x, receptor.y, note.splashSkin, note.keyCount, note.noteData);
 			splash.animation.finishCallback = (name:String) -> {
@@ -275,11 +274,9 @@ class PlayState extends MusicBeatState {
 			grpNoteSplashes.add(splash);
 		}
 
-		if(!note.isSustainNote) {
-			note.kill();
-			note.destroy();
-			notes.remove(note, true);
-		}
+		note.kill();
+		note.destroy();
+		notes.remove(note, true);
 	}
 
 	public function startCountdown() {
@@ -327,8 +324,11 @@ class PlayState extends MusicBeatState {
 
 	public function positionIcons() {
 		var iconOffset:Int = 26;
-		iconP1.setPosition(healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset), healthBar.y - (iconP1.initialHeight * 0.5));
-		iconP2.setPosition(healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset), healthBar.y - (iconP2.initialHeight * 0.5));
+
+		// fuck you remapToRange you aren't needed here!!!
+		// i think!
+		iconP1.setPosition(healthBar.x + (healthBar.width * ((100 - healthBar.percent) / 100) - iconOffset), healthBar.y - (iconP1.initialHeight * 0.5));
+		iconP2.setPosition(healthBar.x + (healthBar.width * ((100 - healthBar.percent) / 100)) - (iconP2.width - iconOffset), healthBar.y - (iconP2.initialHeight * 0.5));
 	}
 
 	override public function update(elapsed:Float) {
@@ -345,9 +345,9 @@ class PlayState extends MusicBeatState {
 		positionIcons();
 
 		if(camZooming) {
-			var zoomSpeed:Float = Main.framerateAdjust(0.05);	
-			camGame.zoom = FlxMath.lerp(camGame.zoom, defaultCamZoom, zoomSpeed);
-			camHUD.zoom = FlxMath.lerp(camHUD.zoom, camHUD.initialZoom, zoomSpeed);
+			var camLerp:Float = Main.framerateAdjust(0.05);	
+			camGame.zoom = FlxMath.lerp(camGame.zoom, defaultCamZoom, camLerp);
+			camHUD.zoom = FlxMath.lerp(camHUD.zoom, camHUD.initialZoom, camLerp);
 		}
 
 		if(controls.PAUSE) {

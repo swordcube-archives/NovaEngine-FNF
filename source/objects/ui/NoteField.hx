@@ -41,7 +41,7 @@ class NoteField extends NoteGroup {
 		fillUpPressedKeys(binds.length);
 		var data:FlxKey = binds.indexOf(event.keyCode);
 
-		if(data == -1 || __pressedKeys[data]) return;
+		if(data == -1 || __pressedKeys[data] || game.playerStrums.autoplay) return;
 		__pressedKeys[data] = true;
 
 		var receptor:Receptor = game.playerStrums.members[data];
@@ -85,7 +85,7 @@ class NoteField extends NoteGroup {
 		fillUpPressedKeys(binds.length);
 		var data:FlxKey = binds.indexOf(event.keyCode);
 
-		if(data == -1) return;
+		if(data == -1 || game.playerStrums.autoplay) return;
 		__pressedKeys[data] = false;
 
 		var receptor:Receptor = game.playerStrums.members[data];
@@ -132,17 +132,13 @@ class NoteField extends NoteGroup {
 			// automatically hitting notes for opponent
 			if (strumLine.autoplay && !note.wasGoodHit && note.strumTime <= Conductor.position) {
 				receptor.playAnim("confirm", true);
-				note.wasGoodHit = true;
-				game.vocals.volume = 1;
-				if(!note.isSustainNote) destroyNote(note);
+				game.goodNoteHit(note);
 			}
 
 			// sustain input
 			if(note.isSustainNote && !strumLine.autoplay && __pressedKeys[note.noteData] && note.strumTime <= Conductor.position && !note.wasGoodHit && !note.tooLate) {
 				receptor.playAnim("confirm", true);
-				note.wasGoodHit = true;
-				game.health += 0.023;
-				game.vocals.volume = 1;
+				game.goodNoteHit(note);
 			}
 
 			// clip rect shit!
