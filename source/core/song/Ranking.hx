@@ -2,11 +2,13 @@ package core.song;
 
 class Judgement {
     public var name:String;
+    public var score:Int;
     public var timing:Float;
     public var showSplash:Bool;
 
-    public function new(name:String, timing:Float, showSplash:Bool) {
+    public function new(name:String, score:Int, timing:Float, showSplash:Bool) {
         this.name = name;
+        this.score = score;
         this.timing = timing;
         this.showSplash = showSplash;
     }
@@ -24,10 +26,10 @@ class Rank {
 
 class Ranking {
     public static var judgements:Array<Judgement> = [
-        new Judgement("sick", 45, true),
-        new Judgement("good", 75, false),
-        new Judgement("bad",  90, false),
-        new Judgement("shit", 135, false)
+        new Judgement("sick", 350, 45,  true),
+        new Judgement("good", 200, 75,  false),
+        new Judgement("bad",  100, 90,  false),
+        new Judgement("shit", 50,  135, false)
     ];
 
     public static var ranks:Array<Rank> = [

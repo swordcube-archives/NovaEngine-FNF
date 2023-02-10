@@ -19,7 +19,8 @@ class Song {
 				bpm: 100,
 				notes: [],
 				events: [],
-				noteSkin: "",
+				changeableSkin: null,
+				noteSkin: null,
 				splashSkin: "noteSplashes",
 				needsVoices: false,
 				assetModifier: "base"

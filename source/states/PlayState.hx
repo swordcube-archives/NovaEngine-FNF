@@ -76,6 +76,7 @@ class PlayState extends MusicBeatState {
 	public var startTimer:FlxTimer;
 	public var finishTimer:FlxTimer;
 
+	public var noteTypeScripts:Map<String, ScriptModule> = [];
 	public var countdownImages:Map<Int, FlxGraphic> = [];
 	public var countdownSounds:Map<Int, Sound> = [];
 
@@ -100,6 +101,18 @@ class PlayState extends MusicBeatState {
 		// VVV -- PRELOADING -----------------------------------------------------------
 
 		SONG.setFieldDefault("keyCount", 4);
+
+		if(SONG.assetModifier != null)
+			assetModifier = SONG.assetModifier;
+
+		if(SONG.noteSkin != null)
+			changeableSkin = SONG.noteSkin;
+
+		if(SONG.changeableSkin != null)
+			changeableSkin = SONG.changeableSkin;
+
+		if(SONG.splashSkin == null)
+			SONG.splashSkin = "noteSplashes";
 
 		FlxG.sound.playMusic(Paths.songInst(SONG.song, storyDifficulty), 0, false);
 		FlxG.sound.list.add(vocals = new FlxSound());
@@ -186,14 +199,12 @@ class PlayState extends MusicBeatState {
 		
 		var loadedSplashes:Array<String> = [];
 		for(note in notes.members) {
-			if(loadedSplashes.contains(note.splashSkin))
-				continue;
-
-			var noteSplash = new NoteSplash(-10000, -10000, note.splashSkin, note.keyCount, note.noteData);
-			noteSplash.alpha = 0.00001;
-			grpNoteSplashes.add(noteSplash);
-
-			loadedSplashes.push(note.splashSkin);
+			if(!loadedSplashes.contains(note.splashSkin)) {
+				var noteSplash = new NoteSplash(-10000, -10000, note.splashSkin, note.keyCount, note.noteData);
+				noteSplash.alpha = 0.00001;
+				grpNoteSplashes.add(noteSplash);
+				loadedSplashes.push(note.splashSkin);
+			}
 		}
 
 		// Start the song's cutscene if it exists
@@ -222,6 +233,7 @@ class PlayState extends MusicBeatState {
 		FlxG.sound.music.pause();
 		vocals.volume = 0;
 		vocals.pause();
+
 		if(SettingsAPI.noteOffset <= 0 || ignoreNoteOffset) {
 			endSong();
 		} else {
@@ -249,21 +261,34 @@ class PlayState extends MusicBeatState {
 		vocals.volume = 1;
 		note.wasGoodHit = true;
 
+		var judgeData:Judgement = (note.mustPress && !note.strumLine.autoplay) ? Ranking.judgementFromTime(note.strumTime - Conductor.position) : Ranking.judgements[0];
+
+		var funcName:String = note.mustPress ? "onPlayerHit" : "onOpponentHit";
+		// other function names u can use if you're used to how another engine does it
+		var funcNames:Array<Array<String>> = [
+			["onBfHit", "onDadHit"],
+			["goodNoteHit", "opponentNoteHit"]
+		];
+			
+		var event = scripts.event(funcName, new NoteHitEvent(note, judgeData, note.mustPress ? judgeData.score : 0, note.mustPress && judgeData.showSplash));
+		event = noteTypeScripts.get(note.noteType).event(funcName, event);
+
+		for(f in funcNames)
+			event = scripts.event(note.mustPress ? f[0] : f[1], event);
+
+		for(f in funcNames)
+			event = noteTypeScripts.get(note.noteType).event(note.mustPress ? f[0] : f[1], event);
+
+		if(event.cancelled) return;
+
+		if(note.mustPress)
+			health += event.healthGain;
+
 		if(note.isSustainNote) return;
-
-		var judgeData:Judgement = note.mustPress ? Ranking.judgementFromTime(note.strumTime - Conductor.position) : Ranking.judgements[0];
-
-		var rating:String = judgeData.name;
-		var showSplash:Bool = note.mustPress && judgeData.showSplash;
 
 		var receptor:Receptor = note.strumLine.members[note.noteData];
 
-		if(note.mustPress) {
-			health += 0.023;
-			trace("u hit a "+rating);
-		}
-
-		if(showSplash) {
+		if(event.showSplash) {
 			var splash:NoteSplash = grpNoteSplashes.recycle(NoteSplash);
 			splash.setup(receptor.x, receptor.y, note.splashSkin, note.keyCount, note.noteData);
 			splash.animation.finishCallback = (name:String) -> {
@@ -334,6 +359,11 @@ class PlayState extends MusicBeatState {
 	override public function update(elapsed:Float) {
 		super.update(elapsed);
 		scripts.call("onUpdate", [elapsed]);
+		for(script in noteTypeScripts)
+			script.call("onUpdate", [elapsed]);
+
+		iconP1.health = healthBar.percent / 100;
+		iconP2.health = 1 - (healthBar.percent / 100);
 
 		var iconLerp:Float = Main.framerateAdjust(0.5);
 		iconP1.scale.set(FlxMath.lerp(iconP1.scale.x, iconP1.initialScale, iconLerp), FlxMath.lerp(iconP1.scale.y, iconP1.initialScale, iconLerp));
@@ -351,9 +381,19 @@ class PlayState extends MusicBeatState {
 		}
 
 		if(controls.PAUSE) {
+			var pauseFuncs:Array<String> = [
+				"onPauseSong",
+				"onSongPause"
+			];
+
 			var event = scripts.event("onPause", new CancellableEvent());
-			event = scripts.event("onPauseSong", event);
-			event = scripts.event("onSongPause", event);
+			for(f in pauseFuncs)
+				event = scripts.event(f, event);
+
+			for(script in noteTypeScripts) {
+				for(f in pauseFuncs)
+					event = script.event(f, event);
+			}
 
 			if(!event.cancelled) {
 				// pause menu code will be made eventually
@@ -367,16 +407,22 @@ class PlayState extends MusicBeatState {
 		}
 
 		scripts.call("onUpdatePost", [elapsed]);
+		for(script in noteTypeScripts)
+			script.call("onUpdatePost", [elapsed]);
 	}
 
 	override public function fixedUpdate(elapsed:Float) {
 		super.fixedUpdate(elapsed);
 		scripts.call("onFixedUpdate", [elapsed]);
+		for(script in noteTypeScripts)
+			script.call("onFixedUpdate", [elapsed]);
 	}
 
 	override public function fixedUpdatePost(elapsed:Float) {
 		super.fixedUpdatePost(elapsed);
 		scripts.call("onFixedUpdatePost", [elapsed]);
+		for(script in noteTypeScripts)
+			script.call("onFixedUpdatePost", [elapsed]);
 	}
 
 	override public function beatHit(curBeat:Int) {
@@ -396,6 +442,8 @@ class PlayState extends MusicBeatState {
 		positionIcons();
 
 		scripts.call("onBeatHit", [curBeat]);
+		for(script in noteTypeScripts)
+			script.call("onBeatHit", [curBeat]);
 	}
 
 	override public function stepHit(curStep:Int) {
@@ -411,12 +459,16 @@ class PlayState extends MusicBeatState {
 		}
 
 		scripts.call("onStepHit", [curStep]);
+		for(script in noteTypeScripts)
+			script.call("onStepHit", [curStep]);
 	}
 
 	override public function sectionHit(curSection:Int) {
 		if(FlxG.sound.music.time >= FlxG.sound.music.length || endingSong) return;
 
 		scripts.call("onSectionHit", [curSection]);
+		for(script in noteTypeScripts)
+			script.call("onSectionHit", [curSection]);
 	}
 
 	public function resyncVocals() {
@@ -431,6 +483,8 @@ class PlayState extends MusicBeatState {
 		
 		vocals.play();
 		scripts.call("onResyncVocals", []);
+		for(script in noteTypeScripts)
+			script.call("onResyncVocals", []);
 	}
 
 	public function startSong() {
@@ -446,11 +500,20 @@ class PlayState extends MusicBeatState {
 		resyncVocals();
 		scripts.call("onStartSong", []);
 		scripts.call("onSongStart", []);
+		for(script in noteTypeScripts) {
+			script.call("onStartSong", []);
+			script.call("onSongStart", []);
+		}
 	}
 
 	override public function destroy() {
 		current = null;
+		scripts.call("onDestroy", []);
 		scripts.destroy();
+		for(script in noteTypeScripts) {
+			script.call("onDestroy", []);
+			script.destroy();
+		}
 		super.destroy();
 	}
 }

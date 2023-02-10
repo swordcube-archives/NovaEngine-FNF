@@ -1,8 +1,10 @@
 package core.song;
 
+import core.dependency.scripting.events.*;
 import states.PlayState;
 import objects.ui.Note;
 import core.song.SongFormat.SongData;
+import core.dependency.ScriptHandler;
 
 class ChartParser {    
     public static function parseChart(songData:SongData) {
@@ -15,9 +17,21 @@ class ChartParser {
                 var daStrumTime:Float = note[0];
 				var daNoteData:Int = Std.int(note[1]);
 
+                var daNoteType:Dynamic = (note[3] != null) ? note[3] : "Default";
+                if(!Std.isOfType(daNoteType, String) && daNoteType == true)
+                    daNoteType = "Alt Animation"; // week 7 chart compatibility
+
 				var gottaHitNote:Bool = section.mustHitSection;
                 if(daNoteData > songData.keyCount - 1)
                     gottaHitNote = !section.mustHitSection;
+
+                // loading note type scripts
+                if(!game.noteTypeScripts.exists(daNoteType)) {
+                    var script = ScriptHandler.loadModule(Paths.script('data/notetypes/$daNoteType'));
+                    script.setParent(game);
+                    script.call("onCreate", []);
+                    game.noteTypeScripts.set(daNoteType, script);
+                }
 
                 var oldNote:Note = (noteArray.length > 0 && noteArray.last() != null) ? noteArray.last() : null;
 
@@ -29,7 +43,10 @@ class ChartParser {
                 swagNote.mustPress = gottaHitNote;
                 swagNote.strumLine = gottaHitNote ? game.playerStrums : game.cpuStrums;
                 swagNote.rawNoteData = daNoteData;
+                swagNote.noteType = daNoteType;
                 noteArray.push(swagNote);
+
+                game.noteTypeScripts.get(daNoteType).event("onNoteCreation", new SimpleNoteEvent(swagNote));
 
                 var susLength:Int = Math.floor(swagNote.sustainLength / Conductor.stepCrochet);
                 for(i in 0...susLength) {
@@ -46,10 +63,13 @@ class ChartParser {
                     susNote.alpha = 0.6;
                     susNote.parentNote = swagNote;
                     susNote.stepCrochet = Conductor.stepCrochet;
+                    susNote.noteType = daNoteType;
                     susNote.resetAnim();
                     noteArray.push(susNote);
 
                     swagNote.sustainNotes.push(susNote);
+
+                    game.noteTypeScripts.get(daNoteType).event("onNoteCreation", new SimpleNoteEvent(susNote));
                 }
             }
         }

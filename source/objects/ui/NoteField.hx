@@ -1,5 +1,6 @@
 package objects.ui;
 
+import core.dependency.scripting.events.*;
 import flixel.util.FlxSort;
 import flixel.input.keyboard.FlxKey;
 import openfl.events.KeyboardEvent;
@@ -130,7 +131,7 @@ class NoteField extends NoteGroup {
 			note.angle = -note.noteAngle;
 
 			// automatically hitting notes for opponent
-			if (strumLine.autoplay && !note.wasGoodHit && note.strumTime <= Conductor.position) {
+			if (strumLine.autoplay && !note.wasGoodHit && note.strumTime <= Conductor.position && note.shouldHit) {
 				receptor.playAnim("confirm", true);
 				game.goodNoteHit(note);
 			}
@@ -145,7 +146,7 @@ class NoteField extends NoteGroup {
 			if (note.isSustainNote) {
 				note.flipY = downscrollMultiplier < 0;
 
-				if (strumLine.autoplay || (note.wasGoodHit || (note.prevNote.wasGoodHit && !note.canBeHit))) {
+				if ((strumLine.autoplay && note.shouldHit) || (note.wasGoodHit || (note.prevNote.wasGoodHit && !note.canBeHit))) {
 					var t = FlxMath.bound((Conductor.position - note.strumTime) / (note.height / (0.45 * Math.abs(roundedSpeed))), 0, 1);
 					var swagRect = new FlxRect(0, t * note.frameHeight, note.frameWidth, note.frameHeight);
 					note.clipRect = swagRect;
@@ -154,17 +155,37 @@ class NoteField extends NoteGroup {
 
 			// kill da note when it go off screen
 			if ((downscrollMultiplier < 0 && note.y > FlxG.height + note.height) || (downscrollMultiplier > 0 && note.y < -note.height)) {
-				if(note.mustPress && !note.wasGoodHit) {
-					game.health -= 0.0475;
-					game.vocals.volume = 0;
-				}
+				var funcName:String = note.mustPress ? "onPlayerMiss" : "onOpponentMiss";
+				// other function names u can use if you're used to how another engine does it
+				var funcNames:Array<Array<String>> = [
+					["onBfMiss", "onDadMiss"],
+					["noteMiss", "opponentNoteMiss"]
+				];
+					
+				var event = game.scripts.event(funcName, new NoteMissEvent(note, 10));
+				event = game.noteTypeScripts.get(note.noteType).event(funcName, event);
+		
+				for(f in funcNames)
+					event = game.scripts.event(note.mustPress ? f[0] : f[1], event);
+		
+				for(f in funcNames)
+					event = game.noteTypeScripts.get(note.noteType).event(note.mustPress ? f[0] : f[1], event);
 
-				if(!note.isSustainNote) {
-					for(note in note.sustainNotes)
-						note.tooLate = true;
+				if(!event.cancelled) {
+					if(note.mustPress && !note.wasGoodHit && note.shouldHit) {
+						game.health -= event.healthLoss;
+
+						if(note.shouldHit)
+							game.vocals.volume = 0;
+					}
+
+					if(!note.isSustainNote && note.shouldHit) {
+						for(note in note.sustainNotes)
+							note.tooLate = true;
+					}
+					
+					destroyNote(note);
 				}
-				
-				destroyNote(note);
 			}
 		});
 	}

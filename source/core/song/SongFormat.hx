@@ -11,6 +11,7 @@ typedef SongData = {
 	var player2:String;
 	var gfVersion:String;
 	var stage:String;
+	var changeableSkin:String;
 	var noteSkin:String;
 	var splashSkin:String;
 	var assetModifier:String;

@@ -175,6 +175,19 @@ class ScriptModule extends FlxBasic {
      */
     public function call(funcName:String, parameters:Array<Dynamic>):Dynamic {return null;}
 
+    /**
+     * Calls a function from this script with an event that can be cancelled.
+     * Useful for stopping certain things from running in `PlayState`.
+     * 
+     * @param funcName The name of the function to call.
+     * @param event The event to run.
+     */
+     public function event<T:CancellableEvent>(funcName:String, event:T):T {
+        if(event.cancelled) return event;
+        call(funcName, [event]);
+        return event;
+    }
+
     public function trace(v:Dynamic) {}
 
     override public function destroy() {
@@ -234,7 +247,7 @@ class ScriptGroup extends FlxBasic {
     }
 
     /**
-     * Runs a function on all scripts in this group with an event that can be cancelled.
+     * Calls a function on all scripts in this group with an event that can be cancelled.
      * Useful for stopping certain things from running in `PlayState`.
      * 
      * @param funcName The name of the function to call.

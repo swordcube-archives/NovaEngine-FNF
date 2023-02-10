@@ -44,6 +44,8 @@ class Note extends FNFSprite {
     public var tooLate:Bool = false;
     public var shouldHit:Bool = true;
 
+    public var noteType:String = "Default";
+
     public var parentNote:Note;
     public var sustainNotes:Array<Note> = [];
     
@@ -81,7 +83,7 @@ class Note extends FNFSprite {
 
     public var initialScale:Float = 0.7;
     public var skinData:NoteSkinData;
-    public var splashSkin:String = "noteSplashes";
+    public var splashSkin:String = (FlxG.state == PlayState.current && PlayState.SONG != null) ? PlayState.SONG.splashSkin : "noteSplashes";
 
     public function new(?x:Float = 0, ?y:Float = 0, ?skin:String = "default", ?keyCount:Int = 4, ?noteData:Int = 0) {
         super(x, y);
