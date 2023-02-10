@@ -17,8 +17,8 @@ class ChartParser {
                 var daStrumTime:Float = note[0];
 				var daNoteData:Int = Std.int(note[1]);
 
-                var daNoteType:Dynamic = (note[3] != null) ? note[3] : "Default";
-                if(!Std.isOfType(daNoteType, String) && daNoteType == true)
+                var daNoteType:String = (note[3] != null && note[3] is String) ? note[3] : "Default";
+                if((note[3] is Bool) && note[3] == true)
                     daNoteType = "Alt Animation"; // week 7 chart compatibility
 
 				var gottaHitNote:Bool = section.mustHitSection;

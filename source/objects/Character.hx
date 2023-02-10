@@ -215,7 +215,7 @@ class Character extends FNFSprite implements MusicHandler {
 		}
 		if (isPlayer)
 			flipX = !flipX;
-		
+
 		__baseFlipped = flipX;
 		dance();
 
@@ -491,22 +491,12 @@ class Character extends FNFSprite implements MusicHandler {
 				dance();
 			}
 
-			if (!isPlayer) {
-				if (animation.curAnim != null && animation.name.startsWith('sing'))
-					holdTimer += elapsed * FlxG.sound.music.pitch;
+			if (animation.curAnim != null && animation.name.startsWith('sing'))
+				holdTimer += elapsed * FlxG.sound.music.pitch;
 
-				if (lastAnimContext == SING && holdTimer >= Conductor.stepCrochet * singDuration * 0.0011) {
-					dance();
-					holdTimer = 0;
-				}
-			} else {
-				if (animation.curAnim != null && animation.name.startsWith('sing'))
-					holdTimer += elapsed * FlxG.sound.music.pitch;
-				else
-					holdTimer = 0;
-
-				if (animation.curAnim != null && animation.name.endsWith('miss') && animation.curAnim.finished && !debugMode)
-					playAnim('idle', true, NORMAL, 10);
+			if (lastAnimContext == SING && holdTimer >= Conductor.stepCrochet * singDuration * 0.0011) {
+				dance();
+				holdTimer = 0;
 			}
 
 			if (animation.curAnim != null && animation.curAnim.finished && animation.exists(animation.name + '-loop'))

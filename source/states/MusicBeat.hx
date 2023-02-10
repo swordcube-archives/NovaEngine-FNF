@@ -169,6 +169,8 @@ class MusicBeatSubstate extends FlxUISubState implements MusicHandler {
 
     public var script:ScriptModule;
 
+    public var runDefaultCode:Bool = true;
+
     public function new(?scriptName:String = null, ?scriptParameters:Array<Dynamic>) {
         super();
         if(scriptName == null)

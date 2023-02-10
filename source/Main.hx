@@ -1,6 +1,7 @@
 package;
 
 import flixel.FlxGame;
+import flixel.math.FlxMath;
 import openfl.display.Sprite;
 
 class Main extends Sprite {
@@ -21,7 +22,7 @@ class Main extends Sprite {
 	public static var fpsOverlay:FPSOverlay;
 
 	public static function framerateAdjust(input:Float) {
-		return FlxG.elapsed * 60 * input;
+		return FlxMath.bound(FlxG.elapsed * 60 * input, 0, 1);
 	}
 
 	public function new() {

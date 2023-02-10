@@ -32,6 +32,8 @@ class PlayState extends MusicBeatState {
 	public static var assetModifier:String = "base";
 	public static var changeableSkin:String = "default";
 
+	public static var paused:Bool = false;
+
 	public var vocals:FlxSound;
 
 	public var defaultCamZoom:Float = 1.05;
@@ -39,6 +41,20 @@ class PlayState extends MusicBeatState {
 	public var camGame:FNFCamera;
 	public var camHUD:FNFCamera;
 	public var camOther:FNFCamera;
+
+	public var stage:Stage;
+
+	public var dad:Character;
+	public var gf:Character;
+	public var boyfriend:Character;
+
+	public var bf(get, set):Character;
+	private function get_bf():Character {
+		return boyfriend;
+	}
+	private function set_bf(newChar:Character):Character {
+		return boyfriend = newChar;
+	}
 
 	public var cpuStrums:StrumLine;
 	public var playerStrums:StrumLine;
@@ -84,6 +100,7 @@ class PlayState extends MusicBeatState {
 	public var scrollSpeed:Float = 3.4;
 
 	public static function resetStatics() {
+		paused = false;
 		assetModifier = "base";
 		changeableSkin = "default";
 	}
@@ -100,13 +117,11 @@ class PlayState extends MusicBeatState {
 
 		// VVV -- PRELOADING -----------------------------------------------------------
 
-		SONG.setFieldDefault("keyCount", 4);
+		if(SONG == null)
+			SONG = Song.fallbackSong;
 
 		if(SONG.assetModifier != null)
 			assetModifier = SONG.assetModifier;
-
-		if(SONG.noteSkin != null)
-			changeableSkin = SONG.noteSkin;
 
 		if(SONG.changeableSkin != null)
 			changeableSkin = SONG.changeableSkin;
@@ -127,6 +142,17 @@ class PlayState extends MusicBeatState {
 		Conductor.bpm = SONG.bpm;
 		Conductor.position = Conductor.crochet * -5;
 
+		add(stage = new Stage(SONG.stage));
+
+		add(gf = new Character(stage.gfPos.x, stage.gfPos.y, SONG.gfVersion));
+		add(stage.gfLayer);
+
+		add(dad = new Character(stage.dadPos.x, stage.dadPos.y, SONG.player2));
+		add(stage.dadLayer);
+
+		add(boyfriend = new Character(stage.bfPos.x, stage.bfPos.y, SONG.player1, true));
+		add(stage.bfLayer);
+
 		// ^^^ -- END OF PRELOADING ----------------------------------------------------
 
 		// Global song scripts
@@ -146,6 +172,7 @@ class PlayState extends MusicBeatState {
 		}
 
 		scripts.call("onCreate", []);
+		camGame.zoom = defaultCamZoom;
 
 		var receptorSpacing:Float = FlxG.width / 4;
 		var strumY:Float = SettingsAPI.downscroll ? FlxG.height - 160 : 50;
@@ -316,14 +343,19 @@ class PlayState extends MusicBeatState {
 
 		startTimer = new FlxTimer().start(Conductor.crochet / 1000, (tmr:FlxTimer) -> {
 			var event = scripts.event("onCountdownTick", new CountdownEvent(
-				countdownImages.get(tmr.loopsLeft),
-				countdownSounds.get(tmr.loopsLeft),
+				countdownImages.get(tmr.loopsLeft - 1),
+				countdownSounds.get(tmr.loopsLeft - 1),
 				config.scale,
 				tmr.loops - tmr.loopsLeft,
 				tmr.loopsLeft
 			));
 			event = scripts.event("onCountdown", event);
 			event = scripts.event("onTickCountdown", event);
+
+			for(m in members) {
+				if(m != null && m is MusicHandler)
+					cast(m, MusicHandler).beatHit((tmr.loops - tmr.loopsLeft) - 5);
+			}
 
 			if(event.image != null && !event.cancelled) {
 				var sprite = new FNFSprite().loadGraphic(event.image);
@@ -341,7 +373,7 @@ class PlayState extends MusicBeatState {
 			scripts.event("onCountdownPost", event);
 			scripts.event("onCountdownTickPost", event);
 			scripts.event("onTickCountdownPost", event);
-		}, 4);
+		}, 5);
 
 		scripts.event("onStartCountdownPost", event);
 		scripts.event("onCountdownStartPost", event);
@@ -390,13 +422,14 @@ class PlayState extends MusicBeatState {
 			for(f in pauseFuncs)
 				event = scripts.event(f, event);
 
-			for(script in noteTypeScripts) {
-				for(f in pauseFuncs)
-					event = script.event(f, event);
-			}
-
 			if(!event.cancelled) {
-				// pause menu code will be made eventually
+				persistentUpdate = false;
+				persistentDraw = true;
+				paused = true;
+				FlxG.sound.music.pause();
+				vocals.pause();
+				openSubState(new PauseSubState());
+				scripts.call("onPausePost", []);
 			}
 		}
 
@@ -427,6 +460,8 @@ class PlayState extends MusicBeatState {
 
 	override public function beatHit(curBeat:Int) {
 		if(FlxG.sound.music.time >= FlxG.sound.music.length || endingSong) return;
+
+		super.beatHit(curBeat);
 		
 		if(camBumping && camBumpingInterval > 0 && curBeat % camBumpingInterval == 0 && camGame.zoom < 1.35) {
 			camGame.zoom += 0.015;
@@ -449,6 +484,8 @@ class PlayState extends MusicBeatState {
 	override public function stepHit(curStep:Int) {
 		if(FlxG.sound.music.time >= FlxG.sound.music.length || endingSong) return;
 
+		super.stepHit(curStep);
+
 		var resyncMS:Float = 20;
 
 		@:privateAccess
@@ -465,6 +502,8 @@ class PlayState extends MusicBeatState {
 
 	override public function sectionHit(curSection:Int) {
 		if(FlxG.sound.music.time >= FlxG.sound.music.length || endingSong) return;
+
+		super.sectionHit(curSection);
 
 		scripts.call("onSectionHit", [curSection]);
 		for(script in noteTypeScripts)

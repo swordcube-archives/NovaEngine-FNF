@@ -42,7 +42,7 @@ class NoteField extends NoteGroup {
 		fillUpPressedKeys(binds.length);
 		var data:FlxKey = binds.indexOf(event.keyCode);
 
-		if(data == -1 || __pressedKeys[data] || game.playerStrums.autoplay) return;
+		if(PlayState.paused || data == -1 || __pressedKeys[data] || game.playerStrums.autoplay) return;
 		__pressedKeys[data] = true;
 
 		var receptor:Receptor = game.playerStrums.members[data];
@@ -86,7 +86,7 @@ class NoteField extends NoteGroup {
 		fillUpPressedKeys(binds.length);
 		var data:FlxKey = binds.indexOf(event.keyCode);
 
-		if(data == -1 || game.playerStrums.autoplay) return;
+		if(PlayState.paused || data == -1 || game.playerStrums.autoplay) return;
 		__pressedKeys[data] = false;
 
 		var receptor:Receptor = game.playerStrums.members[data];

@@ -9,10 +9,11 @@ typedef SongData = {
 	var speed:Float;
 	var player1:String;
 	var player2:String;
-	var gfVersion:String;
+	@:optional var player3:String;
+	@:optional var gfVersion:String;
+	@:optional var gf:String;
 	var stage:String;
 	var changeableSkin:String;
-	var noteSkin:String;
 	var splashSkin:String;
 	var assetModifier:String;
 	@:optional var keyCount:Null<Int>;
