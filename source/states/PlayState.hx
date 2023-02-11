@@ -1,5 +1,6 @@
 package states;
 
+import flixel.text.FlxText;
 import core.song.Ranking;
 import objects.ui.StrumLine.Receptor;
 import flixel.util.FlxSort;
@@ -66,6 +67,8 @@ class PlayState extends MusicBeatState {
 	public var healthBar:FlxBar;
 	public var iconP1:HealthIcon;
 	public var iconP2:HealthIcon;
+
+	public var scoreTxt:FlxText;
 
 	public var health(default, set):Float = 1;
 	private function set_health(value:Float):Float {
@@ -207,7 +210,13 @@ class PlayState extends MusicBeatState {
 
 		add(iconP2 = new HealthIcon(0, healthBar.y, SONG.player2));
 
-		for(obj in [cpuStrums, playerStrums, notes, grpNoteSplashes, healthBarBG, healthBar, iconP1, iconP2])
+		scoreTxt = new FlxText(0, healthBarBG.y + 36, 0, "obtain realism", 18);
+		scoreTxt.setFormat(Paths.font("vcr.ttf"), 18, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		scoreTxt.scrollFactor.set();
+		scoreTxt.borderSize = 2;
+		add(scoreTxt);
+
+		for(obj in [cpuStrums, playerStrums, notes, grpNoteSplashes, healthBarBG, healthBar, iconP1, iconP2, scoreTxt])
 			obj.cameras = [camHUD];
 
 		// Preload countdown & note splashes
