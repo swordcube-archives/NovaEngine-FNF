@@ -99,8 +99,48 @@ class PlayState extends MusicBeatState {
 	public var countdownImages:Map<Int, FlxGraphic> = [];
 	public var countdownSounds:Map<Int, Sound> = [];
 
+	public var accuracyPressedNotes:Int = 0;
+	public var accuracyTotalHit:Float = 0;
+
+	/**
+	 * This variable is a shortcut to `accuracyTotalHit / accuracyPressedNotes`.
+	 */
+	public var accuracy(get, never):Float;
+	private function get_accuracy():Float {
+		if(accuracyTotalHit != 0 && accuracyPressedNotes != 0)
+			return accuracyTotalHit / accuracyPressedNotes;
+
+		return 0;
+	}
+
+	public var songScore:Int = 0;
+	public var songMisses:Int = 0;
+
+	public var score(get, set):Int;
+	private function get_score():Int {
+		return songScore;
+	}
+	private function set_score(v:Int):Int {
+		return songScore = v;
+	}
+
+	public var misses(get, set):Int;
+	private function get_misses():Int {
+		return songMisses;
+	}
+	private function set_misses(v:Int):Int {
+		return songMisses = v;
+	}
+
+	public var sicks:Int = 0;
+	public var goods:Int = 0;
+	public var bads:Int = 0;
+	public var shits:Int = 0;
+
 	public var scripts:ScriptGroup;
 	public var scrollSpeed:Float = 3.4;
+
+	public var rankFormat = new FlxTextFormatMarkerPair(new FlxTextFormat(0xFF888888, false), "<rank>");
 
 	public static function resetStatics() {
 		paused = false;
@@ -210,11 +250,10 @@ class PlayState extends MusicBeatState {
 
 		add(iconP2 = new HealthIcon(0, healthBar.y, SONG.player2));
 
-		scoreTxt = new FlxText(0, healthBarBG.y + 36, 0, "obtain realism", 18);
+		add(scoreTxt = new FlxText(0, healthBarBG.y + 36, 0, "obtain realism", 18));
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), 18, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		scoreTxt.scrollFactor.set();
 		scoreTxt.borderSize = 2;
-		add(scoreTxt);
+		updateScoreText();
 
 		for(obj in [cpuStrums, playerStrums, notes, grpNoteSplashes, healthBarBG, healthBar, iconP1, iconP2, scoreTxt])
 			obj.cameras = [camHUD];
@@ -317,8 +356,24 @@ class PlayState extends MusicBeatState {
 
 		if(event.cancelled) return;
 
-		if(note.mustPress)
+		if(note.mustPress) {
 			health += event.healthGain;
+
+			if(!note.isSustainNote) {
+				accuracyPressedNotes++;
+				accuracyTotalHit += event.accuracy;
+				songScore += event.score;
+
+				switch(event.rating) {
+					case "sick": sicks++;
+					case "good": goods++;
+					case "bad":  bads++;
+					case "shit": shits++;
+				}
+
+				updateScoreText();
+			}
+		}
 
 		if(note.isSustainNote) return;
 
@@ -392,9 +447,40 @@ class PlayState extends MusicBeatState {
 		var iconOffset:Int = 26;
 
 		// fuck you remapToRange you aren't needed here!!!
-		// i think!
 		iconP1.setPosition(healthBar.x + (healthBar.width * ((100 - healthBar.percent) / 100) - iconOffset), healthBar.y - (iconP1.initialHeight * 0.5));
 		iconP2.setPosition(healthBar.x + (healthBar.width * ((100 - healthBar.percent) / 100)) - (iconP2.width - iconOffset), healthBar.y - (iconP2.initialHeight * 0.5));
+	}
+
+	public function getFCRank() {
+		if(sicks > 0 && goods <= 0 && bads <= 0 && shits <= 0 && songMisses <= 0)
+			return "SFC";
+
+		if(goods > 0 && bads <= 0 && shits <= 0 && songMisses <= 0)
+			return "GFC";
+
+		if((bads > 0 || shits > 0) && songMisses <= 0)
+			return "FC";
+
+		if(songMisses > 0 && songMisses < 10)
+			return "SDCB";
+
+		if(songMisses >= 10)
+			return "CLEAR";
+
+		return "N/A";
+	}
+
+	public function updateScoreText() {
+		var rank:Rank = Ranking.rankFromAccuracy(accuracy * 100);
+
+		var fcRank:String = '[${getFCRank()}]';
+		var accRank:String = (accuracyPressedNotes > 0) ? ' • Rank: <rank>${rank}<rank>' : '';
+		scoreTxt.text = 'Score: $songScore • Misses: $songMisses • Accuracy: ${FlxMath.roundDecimal(accuracy * 100, 2)}% $fcRank$accRank';
+
+		@:privateAccess rankFormat.format.format.color = rank.color;
+		scoreTxt.applyMarkup(scoreTxt.text, [rankFormat]);
+
+		scoreTxt.screenCenter(X);
 	}
 
 	override public function update(elapsed:Float) {

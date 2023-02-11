@@ -174,6 +174,10 @@ class NoteField extends NoteGroup {
 				if(!event.cancelled) {
 					if(note.mustPress && !note.wasGoodHit && note.shouldHit) {
 						game.health -= event.healthLoss;
+						game.songScore -= event.score;
+						game.songMisses++;
+						game.accuracyPressedNotes++;
+						game.updateScoreText();
 
 						if(note.shouldHit)
 							game.vocals.volume = 0;

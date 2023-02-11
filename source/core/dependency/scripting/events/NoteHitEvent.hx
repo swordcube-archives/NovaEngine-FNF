@@ -24,6 +24,11 @@ class NoteHitEvent extends CancellableEvent {
     public var rating:String = "sick";
 
     /**
+     * The accuracy you gained when hitting this note.
+     */
+    public var accuracy:Float = 1;
+
+    /**
      * The score you got when hitting this note.
      */
     public var score:Int;
@@ -69,6 +74,7 @@ class NoteHitEvent extends CancellableEvent {
         this.note = note;
         this.judgeData = judgeData;
         this.rating = judgeData.name;
+        this.accuracy = judgeData.accuracy;
         this.score = score;
         this.showSplash = showSplash;
     }
