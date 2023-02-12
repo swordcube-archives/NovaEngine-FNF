@@ -39,6 +39,8 @@ class Note extends FNFSprite {
     public var isSustainNote:Bool = false;
     public var isSustainTail:Bool = false;
 
+    public var altAnim:Bool = false;
+
     public var wasGoodHit:Bool = false;
     public var canBeHit:Bool = false;
     public var tooLate:Bool = false;

@@ -44,6 +44,7 @@ class ChartParser {
                 swagNote.strumLine = gottaHitNote ? game.playerStrums : game.cpuStrums;
                 swagNote.rawNoteData = daNoteData;
                 swagNote.noteType = daNoteType;
+                swagNote.altAnim = (daNoteType == "Alt Animation") || section.altAnim;
                 noteArray.push(swagNote);
 
                 game.noteTypeScripts.get(daNoteType).event("onNoteCreation", new SimpleNoteEvent(swagNote));
@@ -64,6 +65,7 @@ class ChartParser {
                     susNote.parentNote = swagNote;
                     susNote.stepCrochet = Conductor.stepCrochet;
                     susNote.noteType = daNoteType;
+                    susNote.altAnim = (daNoteType == "Alt Animation") || section.altAnim;
                     susNote.resetAnim();
                     noteArray.push(susNote);
 

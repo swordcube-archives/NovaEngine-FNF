@@ -140,6 +140,14 @@ class MusicBeatState extends FlxUIState implements MusicHandler {
         }
         call("onSectionHit", [value]);
     }
+
+    override function destroy() {
+        Conductor.onBeatHit.remove(beatHit);
+        Conductor.onStepHit.remove(stepHit);
+        Conductor.onSectionHit.remove(sectionHit);
+
+        super.destroy();
+    }
 }
 
 // fuck you
@@ -273,5 +281,13 @@ class MusicBeatSubstate extends FlxUISubState implements MusicHandler {
                 cast(m, MusicHandler).sectionHit(value);
         }
         call("onSectionHit", [value]);
+    }
+
+    override function destroy() {
+        Conductor.onBeatHit.remove(beatHit);
+        Conductor.onStepHit.remove(stepHit);
+        Conductor.onSectionHit.remove(sectionHit);
+
+        super.destroy();
     }
 }

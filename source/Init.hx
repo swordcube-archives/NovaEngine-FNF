@@ -19,6 +19,7 @@ class Init extends FlxState {
             Controls.load();
             SettingsAPI.load();
             Conductor.reset();
+            
             FlxSprite.defaultAntialiasing = SettingsAPI.antialiasing;
         });
 

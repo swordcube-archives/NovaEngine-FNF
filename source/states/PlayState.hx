@@ -3,7 +3,7 @@ package states;
 import flixel.text.FlxText;
 import core.song.Ranking;
 import objects.ui.StrumLine.Receptor;
-import flixel.util.FlxSort;
+import flixel.FlxObject;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import haxe.io.Path;
 import core.dependency.ScriptHandler;
@@ -42,6 +42,9 @@ class PlayState extends MusicBeatState {
 	public var camGame:FNFCamera;
 	public var camHUD:FNFCamera;
 	public var camOther:FNFCamera;
+
+	public var camFollow:FlxObject;
+	public static var prevCamFollow:FlxObject;
 
 	public var stage:Stage;
 
@@ -183,6 +186,8 @@ class PlayState extends MusicBeatState {
 		FlxG.cameras.add(camOther = new FNFCamera(), false);
 
 		Conductor.bpm = SONG.bpm;
+		Conductor.mapBPMChanges(SONG);
+
 		Conductor.position = Conductor.crochet * -5;
 
 		add(stage = new Stage(SONG.stage));
@@ -195,6 +200,8 @@ class PlayState extends MusicBeatState {
 
 		add(boyfriend = new Character(stage.bfPos.x, stage.bfPos.y, SONG.player1, true));
 		add(stage.bfLayer);
+
+		add(camFollow = new FlxObject(0, 0, 1, 1));
 
 		// ^^^ -- END OF PRELOADING ----------------------------------------------------
 
@@ -216,6 +223,10 @@ class PlayState extends MusicBeatState {
 
 		scripts.call("onCreate", []);
 		camGame.zoom = defaultCamZoom;
+
+		camFollow.setPosition(gf.getMidpoint().x - 100, (boyfriend.getCameraPosition().y) - 100);
+		camGame.follow(camFollow, null, 0.04);
+		camGame.snapToTarget();
 
 		var receptorSpacing:Float = FlxG.width / 4;
 		var strumY:Float = SettingsAPI.downscroll ? FlxG.height - 160 : 50;
@@ -375,6 +386,21 @@ class PlayState extends MusicBeatState {
 			}
 		}
 
+		if(!event.cancelSingAnim || note.noteType == "No Animation") {
+			var singAnim:String = "sing"+event.note.directionName.toUpperCase();
+			if(event.characters != null && event.characters.length > 0) {
+				for(char in event.characters) {
+					char.holdTimer = 0;
+					var altShit:String = char.animation.exists(singAnim+"-alt") ? "-alt" : "";
+					char.playAnim(singAnim+altShit, true);
+				}
+			} else {
+				var char:Character = (note.mustPress) ? boyfriend : dad;
+				var altShit:String = char.animation.exists(singAnim+"-alt") ? "-alt" : "";
+				char.playAnim(singAnim+altShit, true);
+			}
+		}
+
 		if(note.isSustainNote) return;
 
 		var receptor:Receptor = note.strumLine.members[note.noteData];
@@ -405,13 +431,18 @@ class PlayState extends MusicBeatState {
 		var config:Dynamic = Paths.json('images/UI/$assetModifier/countdown/config');
 		config.setFieldDefault("scale", 1.0);
 
+		var swagCounter:Int = 0;
 		startTimer = new FlxTimer().start(Conductor.crochet / 1000, (tmr:FlxTimer) -> {
+			var char:Character = ((SONG.notes[0] != null && SONG.notes[0].mustHitSection) ? boyfriend : dad);
+			var pos = char.getCameraPosition();
+			if(swagCounter == 0) camFollow.setPosition(pos.x, pos.y);
+
 			var event = scripts.event("onCountdownTick", new CountdownEvent(
 				countdownImages.get(tmr.loopsLeft - 1),
 				countdownSounds.get(tmr.loopsLeft - 1),
 				config.scale,
-				tmr.loops - tmr.loopsLeft,
-				tmr.loopsLeft
+				swagCounter++,
+				tmr.loopsLeft - 1
 			));
 			event = scripts.event("onCountdown", event);
 			event = scripts.event("onTickCountdown", event);
@@ -426,6 +457,7 @@ class PlayState extends MusicBeatState {
 				sprite.scale.set(event.scale, event.scale);
 				sprite.updateHitbox();
 				sprite.screenCenter();
+				sprite.scrollFactor.set();
 				event.sprite = sprite;
 				add(sprite);
 
@@ -599,6 +631,13 @@ class PlayState extends MusicBeatState {
 		if(FlxG.sound.music.time >= FlxG.sound.music.length || endingSong) return;
 
 		super.sectionHit(curSection);
+
+		if(SONG.notes[curSection] != null && SONG.notes[curSection].changeBPM)
+			Conductor.bpm = SONG.notes[curSection].bpm;
+
+		var char:Character = ((SONG.notes[curSection] != null && SONG.notes[curSection].mustHitSection) ? boyfriend : dad);
+		var pos = char.getCameraPosition();
+		camFollow.setPosition(pos.x, pos.y);
 
 		scripts.call("onSectionHit", [curSection]);
 		for(script in noteTypeScripts)

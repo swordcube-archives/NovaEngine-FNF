@@ -179,6 +179,20 @@ class NoteField extends NoteGroup {
 						game.accuracyPressedNotes++;
 						game.updateScoreText();
 
+						if(!event.cancelSingAnim || note.noteType == "No Animation") {
+							var singAnim:String = "sing"+event.note.directionName.toUpperCase()+"miss";
+							if(event.characters != null && event.characters.length > 0) {
+								for(char in event.characters) {
+									char.holdTimer = 0;
+									var altShit:String = char.animation.exists(singAnim+"-alt") ? "-alt" : "";
+									char.playAnim(singAnim+altShit, true);
+								}
+							} else {
+								var altShit:String = game.boyfriend.animation.exists(singAnim+"-alt") ? "-alt" : "";
+								game.boyfriend.playAnim(singAnim+altShit, true);
+							}
+						}
+
 						if(note.shouldHit)
 							game.vocals.volume = 0;
 					}
