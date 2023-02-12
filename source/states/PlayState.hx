@@ -209,7 +209,12 @@ class PlayState extends MusicBeatState {
 		add(boyfriend = new Character(stage.bfPos.x, stage.bfPos.y, SONG.player1, true));
 		add(stage.bfLayer);
 
-		add(camFollow = new FlxObject(0, 0, 1, 1));
+		camFollow = new FlxObject(0, 0, 1, 1);
+		if(prevCamFollow != null) {
+			camFollow = prevCamFollow;
+			prevCamFollow = null;
+		}
+		add(camFollow);
 
 		// ^^^ -- END OF PRELOADING ----------------------------------------------------
 
