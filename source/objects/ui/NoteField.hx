@@ -175,11 +175,14 @@ class NoteField extends NoteGroup {
 					if(note.mustPress && !note.wasGoodHit && note.shouldHit) {
 						game.health -= event.healthLoss;
 						game.songScore -= event.score;
-						game.songMisses++;
+
+						if(!note.isSustainNote)
+							game.songMisses++;
+
 						game.accuracyPressedNotes++;
 						game.updateScoreText();
 
-						if(!event.cancelSingAnim || note.noteType == "No Animation") {
+						if(!event.cancelSingAnim) {
 							var singAnim:String = "sing"+event.note.directionName.toUpperCase()+"miss";
 							if(event.characters != null && event.characters.length > 0) {
 								for(char in event.characters) {

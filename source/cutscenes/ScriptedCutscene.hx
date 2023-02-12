@@ -18,16 +18,23 @@ class ScriptedCutscene extends Cutscene {
     override function create() {
         super.create();
         if (script is DummyScript) {
-            Logs.trace('Could not find script for scripted cutscene at data/cutscenes/${scriptPath}', ERROR);
+            Logs.trace('Could not find script for scripted cutscene at data/cutscenes/$scriptPath', ERROR);
             close();
         }
     }
 
     public function startVideo(path:String, ?callback:Void->Void) {
-        persistentDraw = false;
-        openSubState(new VideoCutscene(path, function() {
-            if (callback != null)
+        var sprite = new VideoSprite();
+        sprite.cameras = [game.camOther];
+        sprite.finishCallback = () -> {
+            sprite.kill();
+            sprite.destroy();
+            game.remove(sprite, true);
+
+            if(callback != null)
                 callback();
-        }));
+        }
+        sprite.play(path, false);
+        game.add(sprite);
     }
 }

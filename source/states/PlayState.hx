@@ -24,7 +24,6 @@ import states.menus.*;
 import flixel.system.FlxSound;
 import states.MusicBeat.MusicBeatState;
 import core.song.SongFormat.SongData;
-import flixel.addons.transition.FlxTransitionableState;
 
 class PlayState extends MusicBeatState {
 	public static var current:PlayState;
@@ -38,7 +37,7 @@ class PlayState extends MusicBeatState {
 	public static var paused:Bool = false;
 	public static var isStoryMode:Bool = false;
 
-	public var playCutscenes:Bool = true;
+	public var playCutscenes:Bool = isStoryMode;
 
 	public var vocals:FlxSound;
 
@@ -323,19 +322,29 @@ class PlayState extends MusicBeatState {
 		else {
 			var videoCutscene = Paths.video('${PlayState.SONG.song.toLowerCase()}-cutscene');
 			persistentUpdate = false;
+			persistentDraw = false;
 			if (cutscene != null) {
+				inCutscene = true;
+
 				openSubState(new ScriptedCutscene(cutscene, () -> {
 					startCountdown();
 				}));
-			} 
+			}
 			else if (FileSystem.exists(videoCutscene)) {
-				FlxTransitionableState.skipNextTransIn = true;
 				inCutscene = true;
-				openSubState(new VideoCutscene(videoCutscene, () -> {
+
+				var sprite = new VideoSprite();
+				sprite.cameras = [camOther];
+				sprite.finishCallback = () -> {
+					sprite.kill();
+					sprite.destroy();
+					remove(sprite, true);
+
 					startCountdown();
-				}));
-				persistentDraw = false;
-			} 
+				}
+				sprite.play(videoCutscene, false);
+				add(sprite);
+			}
 			else
 				startCountdown();
 		}
@@ -356,12 +365,19 @@ class PlayState extends MusicBeatState {
 				}));
 			} 
 			else if (FileSystem.exists(videoCutscene)) {
-				FlxTransitionableState.skipNextTransIn = true;
 				inCutscene = true;
-				openSubState(new VideoCutscene(videoCutscene, () -> {
+
+				var sprite = new VideoSprite();
+				sprite.cameras = [camOther];
+				sprite.finishCallback = () -> {
+					sprite.kill();
+					sprite.destroy();
+					remove(sprite, true);
+					
 					endSong();
-				}));
-				persistentDraw = false;
+				}
+				sprite.play(videoCutscene, false);
+				add(sprite);
 			} 
 			else
 				endSong();
@@ -390,8 +406,6 @@ class PlayState extends MusicBeatState {
 	public function endSong() {
 		inCutscene = false;
 		endingSong = true;
-
-		FlxTransitionableState.skipNextTransIn = false;
 
 		var event = scripts.event("onEndSong", new CancellableEvent());
 		event = scripts.event("onSongEnd", event);
@@ -445,7 +459,7 @@ class PlayState extends MusicBeatState {
 			}
 		}
 
-		if(!event.cancelSingAnim || note.noteType == "No Animation") {
+		if(!event.cancelSingAnim) {
 			var singAnim:String = "sing"+event.note.directionName.toUpperCase();
 			if(event.characters != null && event.characters.length > 0) {
 				for(char in event.characters) {
@@ -573,7 +587,8 @@ class PlayState extends MusicBeatState {
 		@:privateAccess rankFormat.format.format.color = rank.color;
 		scoreTxt.applyMarkup(scoreTxt.text, [rankFormat]);
 
-		scoreTxt.screenCenter(X);
+		// doin this so the text doesn't look weird when centered & antialiased
+		scoreTxt.x = Math.floor((FlxG.width - scoreTxt.width) * 0.5);
 	}
 
 	override public function update(elapsed:Float) {
@@ -585,19 +600,19 @@ class PlayState extends MusicBeatState {
 		iconP1.health = healthBar.percent / 100;
 		iconP2.health = 1 - (healthBar.percent / 100);
 
-		var iconLerp:Float = Main.framerateAdjust(0.5);
-		iconP1.scale.set(FlxMath.lerp(iconP1.scale.x, iconP1.initialScale, iconLerp), FlxMath.lerp(iconP1.scale.y, iconP1.initialScale, iconLerp));
+		var iconLerp:Float = 0.5;
+		iconP1.scale.set(MathUtil.lerp(iconP1.scale.x, iconP1.initialScale, iconLerp), MathUtil.lerp(iconP1.scale.y, iconP1.initialScale, iconLerp));
 		iconP1.updateHitbox();
 
-		iconP2.scale.set(FlxMath.lerp(iconP2.scale.x, iconP2.initialScale, iconLerp), FlxMath.lerp(iconP2.scale.y, iconP2.initialScale, iconLerp));
+		iconP2.scale.set(MathUtil.lerp(iconP2.scale.x, iconP2.initialScale, iconLerp), MathUtil.lerp(iconP2.scale.y, iconP2.initialScale, iconLerp));
 		iconP2.updateHitbox();
 		
 		positionIcons();
 
 		if(camZooming) {
-			var camLerp:Float = Main.framerateAdjust(0.05);	
-			camGame.zoom = FlxMath.lerp(camGame.zoom, defaultCamZoom, camLerp);
-			camHUD.zoom = FlxMath.lerp(camHUD.zoom, camHUD.initialZoom, camLerp);
+			var camLerp:Float = 0.05;
+			camGame.zoom = MathUtil.lerp(camGame.zoom, defaultCamZoom, camLerp);
+			camHUD.zoom = MathUtil.lerp(camHUD.zoom, camHUD.initialZoom, camLerp);
 		}
 
 		if(controls.PAUSE) {
@@ -621,7 +636,7 @@ class PlayState extends MusicBeatState {
 			}
 		}
 
-		if(!endingSong) {
+		if(!endingSong && !inCutscene) {
 			Conductor.position += elapsed * 1000;
 			if(Conductor.position >= 0 && startingSong)
 				startSong();

@@ -35,5 +35,6 @@ class NoteMissEvent extends CancellableEvent {
         super();
         this.note = note;
         this.score = score;
+        this.cancelSingAnim = (note.noteType == "No Animation");
     }
 }

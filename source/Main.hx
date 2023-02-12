@@ -22,7 +22,7 @@ class Main extends Sprite {
 	public static var fpsOverlay:FPSOverlay;
 
 	public static function framerateAdjust(input:Float) {
-		return FlxMath.bound(FlxG.elapsed * 60 * input, 0, 1);
+		return FlxG.elapsed * 60 * input;
 	}
 
 	public function new() {

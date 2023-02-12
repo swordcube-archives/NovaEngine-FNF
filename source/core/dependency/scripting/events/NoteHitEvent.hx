@@ -77,5 +77,6 @@ class NoteHitEvent extends CancellableEvent {
         this.accuracy = judgeData.accuracy;
         this.score = score;
         this.showSplash = showSplash;
+        this.cancelSingAnim = (note.noteType == "No Animation");
     }
 }
