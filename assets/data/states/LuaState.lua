@@ -27,9 +27,11 @@ function onCreate()
     coolText:screenCenter(FlxAxes.XY)
     parent:add(coolText)
 
-    -- ONCOMPLETE NEEDS TO BE FIXED, BUT ONCE THAT'S FIXED
-    -- I THINK WE ARE GOOD
-    -- FlxTween:tween(brujSprite, {x = 500}, 2, {ease = FlxEase.cubeInOut})
+    local tween = FlxTween:tween(coolText, {y = FlxG.height + 30}, 10, {ease = FlxEase.cubeInOut})
+    tween.onComplete = function(tween)
+        print("dihe ewudhueid gu")
+        print(tween.backward)
+    end
 end
 
 local bitch = 0.0

@@ -313,7 +313,7 @@ class LuaScript extends ScriptModule {
 						return null;
 					}
 
-					ret = function(...startParams:Dynamic) {
+					ret = Reflect.makeVarArgs((params:Array<Dynamic>) -> {
 						var lastLua:LuaScript = currentLua;
 						currentLua = this;
 
@@ -330,9 +330,6 @@ class LuaScript extends ScriptModule {
 
 						if (Lua.isfunction(luaState, -1)) {
 							//Pushes the parameters of the script.
-							var params = [];
-							if (startParams != null)
-								params = startParams.toArray();
 							var nparams:Int = 0;
 							if (params != null && params.length > 0) {
 								nparams = params.length;
@@ -346,7 +343,7 @@ class LuaScript extends ScriptModule {
 						}
 
 						currentLua = lastLua;
-					}
+					});
 				}
 			default:
 				ret = null;
