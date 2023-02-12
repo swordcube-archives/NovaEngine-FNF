@@ -36,13 +36,19 @@
 	<assets path="assets" />
 
 	<!-- ____________________________ Custom Defines ____________________________ -->
-
-	<!-- Comment this out to prevent Discord Rich Presence from working. -->
-	<define name="DISCORD_RPC" unless="web || hl || neko" />
 	
 	<!-- Comment this out to prevent unused classes from being compiled.
 		 Reduces compilation time at the cost of limited HScript flexibility. !-->
 	<define name="COMPILE_ALL_CLASSES" />
+
+	<!-- Allows the "mods" folder to be used. -->
+	<define name="MOD_SUPPORT" unless="web"/>
+
+	<!-- Allows video cutscenes to work. -->
+	<define name="VIDEO_CUTSCENES" unless="web || hl || mac"/>
+
+	<!-- Allows Discord RPC to be used. -->
+	<define name="DISCORD_RPC" unless="web || hl || neko"/>
 
 	<!-- _______________________________ Libraries ______________________________ -->
 
@@ -52,6 +58,7 @@
 	<haxelib name="hscript-improved" />
 	<haxelib name="linc_luajit" />
 	<haxelib name="discord_rpc" if="DISCORD_RPC" />
+	<haxelib name="hxCodec" if="VIDEO_CUTSCENES" />
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
 

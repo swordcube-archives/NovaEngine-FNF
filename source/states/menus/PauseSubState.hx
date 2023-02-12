@@ -13,6 +13,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import flixel.util.FlxSignal.FlxTypedSignal;
 import flixel.system.FlxSound;
+import flixel.addons.transition.FlxTransitionableState;
 
 /**
  * The pause screen. You can modify this to your liking with scripts!
@@ -92,7 +93,10 @@ class PauseSubState extends MusicBeatSubstate {
 
         // VVV - ADD PAUSE OPTIONS HERE!
         grpAlphabet.createItem("Resume", resumeGame);
-        grpAlphabet.createItem("Restart Song", () -> FlxG.resetState());
+        grpAlphabet.createItem("Restart Song", () -> {
+            FlxTransitionableState.skipNextTransIn = false;
+            FlxG.resetState();
+        });
         grpAlphabet.createItem("Exit To Menu", () -> FlxG.switchState(new MainMenuState()));
         // ^^^ -------------------------
 

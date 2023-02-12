@@ -1,5 +1,6 @@
 package states;
 
+import cutscenes.*;
 import flixel.text.FlxText;
 import core.song.Ranking;
 import objects.ui.StrumLine.Receptor;
@@ -23,6 +24,7 @@ import states.menus.*;
 import flixel.system.FlxSound;
 import states.MusicBeat.MusicBeatState;
 import core.song.SongFormat.SongData;
+import flixel.addons.transition.FlxTransitionableState;
 
 class PlayState extends MusicBeatState {
 	public static var current:PlayState;
@@ -34,6 +36,9 @@ class PlayState extends MusicBeatState {
 	public static var changeableSkin:String = "default";
 
 	public static var paused:Bool = false;
+	public static var isStoryMode:Bool = false;
+
+	public var playCutscenes:Bool = true;
 
 	public var vocals:FlxSound;
 
@@ -45,6 +50,9 @@ class PlayState extends MusicBeatState {
 
 	public var camFollow:FlxObject;
 	public static var prevCamFollow:FlxObject;
+
+ 	public var cutscene:String = null;
+	public var endCutscene:String = null;
 
 	public var stage:Stage;
 
@@ -292,26 +300,69 @@ class PlayState extends MusicBeatState {
 				loadedSplashes.push(note.splashSkin);
 			}
 		}
-
-		// Start the song's cutscene if it exists
-		// or the countdown if it doesn't exist
-		startCutscene();
 	}
 
 	override public function createPost() {
 		super.createPost();
+
+		// Start the song's cutscene if it exists
+		// or the countdown if it doesn't exist
+		startCutscene();
+
 		scripts.call("onCreatePost", []);
 	}
 
 	public function startCutscene() {
-		startCountdown();
+		if(!playCutscenes)
+			startCountdown();
+		else {
+			var videoCutscene = Paths.video('${PlayState.SONG.song.toLowerCase()}-cutscene');
+			persistentUpdate = false;
+			if (cutscene != null) {
+				openSubState(new ScriptedCutscene(cutscene, () -> {
+					startCountdown();
+				}));
+			} 
+			else if (FileSystem.exists(videoCutscene)) {
+				FlxTransitionableState.skipNextTransIn = true;
+				inCutscene = true;
+				openSubState(new VideoCutscene(videoCutscene, () -> {
+					startCountdown();
+				}));
+				persistentDraw = false;
+			} 
+			else
+				startCountdown();
+		}
+
 		scripts.call("onStartCutscene", []);
+		scripts.call("onCutsceneStart", []);
 	}
 
 	public function startEndCutscene() {
-		finishSong();
+		if(!playCutscenes)
+			endSong();
+		else {
+			var videoCutscene = Paths.video('${PlayState.SONG.song.toLowerCase()}-endcutscene');
+			persistentUpdate = false;
+			if (endCutscene != null) {
+				openSubState(new ScriptedCutscene(endCutscene, () -> {
+					endSong();
+				}));
+			} 
+			else if (FileSystem.exists(videoCutscene)) {
+				FlxTransitionableState.skipNextTransIn = true;
+				inCutscene = true;
+				openSubState(new VideoCutscene(videoCutscene, () -> {
+					endSong();
+				}));
+				persistentDraw = false;
+			} 
+			else
+				endSong();
+		}
+
 		scripts.call("onStartEndCutscene", []);
-		scripts.call("onEndCutscene", []);
 	}
 
 	public function finishSong(?ignoreNoteOffset:Bool = false) {
@@ -321,10 +372,10 @@ class PlayState extends MusicBeatState {
 		vocals.pause();
 
 		if(SettingsAPI.noteOffset <= 0 || ignoreNoteOffset) {
-			endSong();
+			startEndCutscene();
 		} else {
 			finishTimer = new FlxTimer().start(SettingsAPI.noteOffset / 1000, (tmr:FlxTimer) -> {
-				endSong();
+				startEndCutscene();
 			});
 		}
 		scripts.call("onFinishSong", []);
@@ -332,7 +383,10 @@ class PlayState extends MusicBeatState {
 	}
 
 	public function endSong() {
+		inCutscene = false;
 		endingSong = true;
+
+		FlxTransitionableState.skipNextTransIn = false;
 
 		var event = scripts.event("onEndSong", new CancellableEvent());
 		event = scripts.event("onSongEnd", event);
@@ -422,6 +476,8 @@ class PlayState extends MusicBeatState {
 	}
 
 	public function startCountdown() {
+		inCutscene = false;
+
 		var event = scripts.event("onStartCountdown", new CancellableEvent());
 		event = scripts.event("onCountdownStart", event);
 
@@ -666,7 +722,7 @@ class PlayState extends MusicBeatState {
 		FlxG.sound.music.pause();
 		FlxG.sound.music.volume = 1;
 		FlxG.sound.music.time = vocals.time = Conductor.position = 0;
-		FlxG.sound.music.onComplete = startEndCutscene;
+		FlxG.sound.music.onComplete = finishSong.bind();
 		FlxG.sound.music.play();
 		vocals.play();
 

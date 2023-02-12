@@ -110,6 +110,7 @@ class Paths {
     public static function getPath(path:String) return './assets/$path';
 
     public static function font(path:String) return getPath('fonts/$path');
+    public static function video(path:String) return getPath('videos/$path.mp4');
 
     public static function image(path:String, ?pathOnly:Bool = false):Dynamic {
         var p:String = getPath('images/$path.png');
