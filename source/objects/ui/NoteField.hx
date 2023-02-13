@@ -176,8 +176,10 @@ class NoteField extends NoteGroup {
 						game.health -= event.healthLoss;
 						game.songScore -= event.score;
 
-						if(!note.isSustainNote)
+						if(!note.isSustainNote) {
+							game.combo = 0;
 							game.songMisses++;
+						}
 
 						game.accuracyPressedNotes++;
 						game.updateScoreText();

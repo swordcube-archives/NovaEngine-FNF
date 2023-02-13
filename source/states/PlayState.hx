@@ -1,5 +1,6 @@
 package states;
 
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import cutscenes.*;
 import flixel.text.FlxText;
 import core.song.Ranking;
@@ -95,8 +96,15 @@ class PlayState extends MusicBeatState {
 
 	public var camBumpingInterval:Int = 4;
 
+	public var iconBumping:Bool = true;
+	public var iconZooming:Bool = true;
+	public var iconZoomingSpeed:Float = 0.5;
+
 	public var camBumping:Bool = true;
+	public var camBumpingMult:Float = 1;
+
 	public var camZooming:Bool = true;
+	public var camZoomingSpeed:Float = 0.05;
 
 	public var inCutscene:Bool = false;
 	public var startingSong:Bool = true;
@@ -146,6 +154,9 @@ class PlayState extends MusicBeatState {
 	public var goods:Int = 0;
 	public var bads:Int = 0;
 	public var shits:Int = 0;
+	public var combo:Int = 0;
+
+	public var comboGroup:FlxTypedSpriteGroup<FNFSprite>;
 
 	public var scripts:ScriptGroup;
 	public var scrollSpeed:Float = 3.4;
@@ -214,6 +225,7 @@ class PlayState extends MusicBeatState {
 			prevCamFollow = null;
 		}
 		add(camFollow);
+		add(comboGroup = new FlxTypedSpriteGroup<FNFSprite>(FlxG.width * 0.55, (FlxG.height * 0.5) - 60));
 
 		// ^^^ -- END OF PRELOADING ----------------------------------------------------
 
@@ -281,7 +293,7 @@ class PlayState extends MusicBeatState {
 		for(obj in [cpuStrums, playerStrums, notes, grpNoteSplashes, healthBarBG, healthBar, iconP1, iconP2, scoreTxt])
 			obj.cameras = [camHUD];
 
-		// Preload countdown & note splashes
+		// Preload countdown
 		countdownImages = [
 			3 => null,
 			2 => Paths.image('UI/$assetModifier/countdown/ready'),
@@ -294,7 +306,19 @@ class PlayState extends MusicBeatState {
 			1 => Paths.sound('game/countdown/$assetModifier/intro1'),
 			0 => Paths.sound('game/countdown/$assetModifier/introGo')
 		];
+
+		// Preload ratings & combo
+		var ratingImages:Array<String> = ["sick", "good", "bad", "shit"];
+		for(item in ratingImages)
+			FlxG.bitmap.add(Paths.image(NovaTools.returnSkinAsset('ratings/$item', assetModifier, changeableSkin, "game")));
+
+		var comboImages:Array<String> = ["combo"];
+		for(i in 0...10) comboImages.push('num${Std.string(i)}');
 		
+		for(item in comboImages)
+			FlxG.bitmap.add(Paths.image(NovaTools.returnSkinAsset('combo/$item', assetModifier, changeableSkin, "game")));
+		
+		// Preload note splashes
 		var loadedSplashes:Array<String> = [];
 		for(note in notes.members) {
 			if(!loadedSplashes.contains(note.splashSkin)) {
@@ -416,6 +440,73 @@ class PlayState extends MusicBeatState {
 		NovaTools.playMenuMusic("freakyMenu");
 	}
 
+	public function popUpScore(event:NoteHitEvent, rating:String, combo:Int) {
+		var rating:FNFSprite = comboGroup.recycle(FNFSprite).loadGraphic(Paths.image(event.ratingSprites+'/$rating'));
+		comboGroup.remove(rating, true);
+		rating.setPosition(-40, -60);
+		rating.antialiasing = event.ratingAntialiasing;
+		rating.scale.set(event.ratingScale, event.ratingScale);
+		rating.updateHitbox();
+		rating.alpha = 1;
+
+		rating.acceleration.y = 550;
+		rating.velocity.y = -FlxG.random.int(140, 175);
+		rating.velocity.x = -FlxG.random.int(0, 10);
+
+		var comboSpr:FNFSprite = comboGroup.recycle(FNFSprite).loadGraphic(Paths.image(event.comboSprites+'/combo'));
+		comboGroup.remove(comboSpr, true);
+		comboSpr.setPosition(0, 0);
+		comboSpr.acceleration.y = 600;
+		comboSpr.velocity.y = -150;
+		comboSpr.velocity.x = FlxG.random.int(1, 10);
+		comboSpr.antialiasing = event.ratingAntialiasing;
+		comboSpr.scale.set(event.ratingScale, event.ratingScale);
+		comboSpr.updateHitbox();
+		comboSpr.alpha = 1;
+
+		var separatedScore:String = Std.string(combo).addZeros(3);
+		if (combo == 0 || combo >= 10) {
+			comboGroup.add(comboSpr);
+			for (i in 0...separatedScore.length) {
+				var numScore:FNFSprite = comboGroup.recycle(FNFSprite).loadGraphic(Paths.image(event.comboSprites+'/num${separatedScore.charAt(i)}'));
+				comboGroup.remove(numScore, true);
+				numScore.setPosition((43 * i) - 90, 80);
+				numScore.antialiasing = event.comboAntialiasing;
+				numScore.scale.set(event.comboScale, event.comboScale);
+				numScore.updateHitbox();
+				numScore.alpha = 1;
+	
+				numScore.acceleration.y = FlxG.random.int(200, 300);
+				numScore.velocity.y = -FlxG.random.int(140, 160);
+				numScore.velocity.x = FlxG.random.float(-5, 5);
+
+				comboGroup.add(numScore);
+	
+				FlxTween.tween(numScore, {alpha: 0}, 0.2, {
+					onComplete: function(tween:FlxTween) {
+						numScore.kill();
+					},
+					startDelay: Conductor.crochet * 0.002
+				});
+			}
+		}
+		comboGroup.add(rating);
+
+		FlxTween.tween(rating, {alpha: 0}, 0.2, {
+			onComplete: function(tween:FlxTween) {
+				rating.kill();
+			},
+			startDelay: Conductor.crochet * 0.001
+		});
+
+		FlxTween.tween(comboSpr, {alpha: 0}, 0.2, {
+			onComplete: function(tween:FlxTween) {
+				comboSpr.kill();
+			},
+			startDelay: Conductor.crochet * 0.001
+		});
+	}
+
 	public function goodNoteHit(note:Note) {
 		vocals.volume = 1;
 		note.wasGoodHit = true;
@@ -455,6 +546,7 @@ class PlayState extends MusicBeatState {
 					case "shit": shits++;
 				}
 
+				popUpScore(event, judgeData.name, combo++);
 				updateScoreText();
 			}
 		}
@@ -600,19 +692,19 @@ class PlayState extends MusicBeatState {
 		iconP1.health = healthBar.percent / 100;
 		iconP2.health = 1 - (healthBar.percent / 100);
 
-		var iconLerp:Float = 0.5;
-		iconP1.scale.set(MathUtil.lerp(iconP1.scale.x, iconP1.initialScale, iconLerp), MathUtil.lerp(iconP1.scale.y, iconP1.initialScale, iconLerp));
-		iconP1.updateHitbox();
+		if(iconZooming) {
+			iconP1.scale.set(MathUtil.lerp(iconP1.scale.x, iconP1.initialScale, iconZoomingSpeed), MathUtil.lerp(iconP1.scale.y, iconP1.initialScale, iconZoomingSpeed));
+			iconP1.updateHitbox();
 
-		iconP2.scale.set(MathUtil.lerp(iconP2.scale.x, iconP2.initialScale, iconLerp), MathUtil.lerp(iconP2.scale.y, iconP2.initialScale, iconLerp));
-		iconP2.updateHitbox();
+			iconP2.scale.set(MathUtil.lerp(iconP2.scale.x, iconP2.initialScale, iconZoomingSpeed), MathUtil.lerp(iconP2.scale.y, iconP2.initialScale, iconZoomingSpeed));
+			iconP2.updateHitbox();
+		}
 		
 		positionIcons();
 
 		if(camZooming) {
-			var camLerp:Float = 0.05;
-			camGame.zoom = MathUtil.lerp(camGame.zoom, defaultCamZoom, camLerp);
-			camHUD.zoom = MathUtil.lerp(camHUD.zoom, camHUD.initialZoom, camLerp);
+			camGame.zoom = MathUtil.lerp(camGame.zoom, defaultCamZoom, camZoomingSpeed);
+			camHUD.zoom = MathUtil.lerp(camHUD.zoom, camHUD.initialZoom, camZoomingSpeed);
 		}
 
 		if(controls.PAUSE) {
@@ -667,15 +759,17 @@ class PlayState extends MusicBeatState {
 		super.beatHit(curBeat);
 		
 		if(camBumping && camBumpingInterval > 0 && curBeat % camBumpingInterval == 0 && camGame.zoom < 1.35) {
-			camGame.zoom += 0.015;
-			camHUD.zoom += 0.03;
+			camGame.zoom += 0.015 * camBumpingMult;
+			camHUD.zoom += 0.03 * camBumpingMult;
 		}
 
-		iconP1.scale.add(0.3, 0.3);
-		iconP1.updateHitbox();
+		if(iconBumping) {
+			iconP1.scale.add(0.3, 0.3);
+			iconP1.updateHitbox();
 
-		iconP2.scale.add(0.3, 0.3);
-		iconP2.updateHitbox();
+			iconP2.scale.add(0.3, 0.3);
+			iconP2.updateHitbox();
+		}
 
 		positionIcons();
 

@@ -1,5 +1,6 @@
 package core.dependency.scripting.events;
 
+import states.PlayState;
 import core.song.Ranking;
 import objects.*;
 import objects.ui.*;
@@ -22,6 +23,22 @@ class NoteHitEvent extends CancellableEvent {
      * Defaults are `sick`, `good`, `bad`, and `shit`.
      */
     public var rating:String = "sick";
+
+    /**
+	 * The path to the sprites used for note ratings.
+	 */
+    public var ratingSprites:String = 'game/${PlayState.assetModifier}/${PlayState.changeableSkin}/ratings';
+
+     /**
+      * The path to the sprites used for note combo.
+      */
+    public var comboSprites:String = 'game/${PlayState.assetModifier}/${PlayState.changeableSkin}/combo';
+ 
+    public var ratingAntialiasing:Bool = true;
+    public var comboAntialiasing:Bool = true;
+
+    public var ratingScale:Float = 0.7;
+    public var comboScale:Float = 0.5;
 
     /**
      * The accuracy you gained when hitting this note.

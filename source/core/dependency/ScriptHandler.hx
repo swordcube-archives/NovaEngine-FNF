@@ -80,6 +80,7 @@ class ScriptHandler {
             "Paths" => Paths,
 
             // Classes [Nova]
+            "ModUtil" => core.modding.ModUtil,
             "engine" => {
                 name: "Nova Engine",
                 version: Main.engineVersion

@@ -1,0 +1,12 @@
+{
+    "name": "Testing Mod",
+    "description": "it's the remix lois",
+    "contributors": [
+        {
+            "name": "swordcube",
+            "role": "Creator"
+        }
+    ],
+    "api_version": "1.0.0",
+    "mod_version": "1.0.0"
+}

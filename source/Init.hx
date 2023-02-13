@@ -4,6 +4,7 @@ import openfl.events.KeyboardEvent;
 import core.Controls;
 import flixel.FlxState;
 import openfl.ui.Keyboard;
+import core.modding.ModUtil;
 
 class Init extends FlxState {
     override function create() {
@@ -12,6 +13,7 @@ class Init extends FlxState {
         SettingsAPI.init();
         Conductor.init();
         ScriptHandler.init();
+        ModUtil.init();
 
         FlxG.fixedTimestep = false;
 
@@ -32,6 +34,9 @@ class Init extends FlxState {
             }
         });
 
+        ModUtil.switchToMod("test", () -> {
+            trace("penis balls");
+        });
         FlxG.switchState(new states.menus.TitleState());
     }
 }
