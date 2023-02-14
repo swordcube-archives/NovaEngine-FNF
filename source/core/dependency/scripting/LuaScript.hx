@@ -167,33 +167,37 @@ class LuaScript extends ScriptModule {
 			"parent": parent
 		};
 		specialVars[0] = script;
+		try {
+			Lua.settop(luaState, 0);
+			Lua.getglobal(luaState, name); // Finds the function from the script.
 
-		Lua.settop(luaState, 0);
-		Lua.getglobal(luaState, name); // Finds the function from the script.
+			if (!Lua.isfunction(luaState, -1))
+				return null;
 
-		if (!Lua.isfunction(luaState, -1))
-			return null;
+			// Pushes the parameters of the script.
+			var nparams:Int = 0;
+			if (params != null && params.length > 0) {
+				nparams = params.length;
+				for (val in params)
+					toLua(val);
+			}
 
-		// Pushes the parameters of the script.
-		var nparams:Int = 0;
-		if (params != null && params.length > 0) {
-			nparams = params.length;
-			for (val in params)
-				toLua(val);
+			// Calls the function of the script. If it does not return 0, will trace what went wrong.
+			if (Lua.pcall(luaState, nparams, 1, 0) != 0) {
+				Logs.trace('Error occured while running function ($name): ${Lua.tostring(luaState, -1)}', ERROR);
+				return null;
+			}
+
+			// Grabs and returns the result of the function.
+			var v = fromLua(Lua.gettop(luaState));
+			Lua.settop(luaState, 0);
+			currentLua = lastLua;
+			return v;
+		} catch(e) {
+			Logs.trace('Error occured trying to run lua function ($name): $e', ERROR);
 		}
-
-		// Calls the function of the script. If it does not return 0, will trace what went wrong.
-		if (Lua.pcall(luaState, nparams, 1, 0) != 0) {
-			// this.error('${state.tostring(-1)}');
-			Logs.trace('Error occured while running function ($name): ${Lua.tostring(luaState, -1)}', ERROR);
-			return null;
-		}
-
-		// Grabs and returns the result of the function.
-		var v = fromLua(Lua.gettop(luaState));
-		Lua.settop(luaState, 0);
 		currentLua = lastLua;
-		return v;
+		return null;
 	}
 
 	// These functions are here because Callable seems like it wants an int return and whines when you do a non static function.

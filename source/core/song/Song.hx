@@ -19,6 +19,10 @@ class Song {
 		assetModifier: "base"
 	};
 
+	public static inline function loadFromJson(song:String, ?diff:String = "normal") {
+		return loadChart(song, diff);
+	}
+
     public static function loadChart(song:String, ?diff:String = "normal"):SongData {
 		var data:SongData = try {
             var path:String = Paths.songJson(song, diff, true);

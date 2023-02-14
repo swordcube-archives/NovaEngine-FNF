@@ -75,6 +75,8 @@ typedef YoshiCharacterAnimation = {
 }
 
 class Character extends FNFSprite implements MusicHandler {
+	public static var DEFAULT_CHARACTER:String = "bf";
+
 	/**
 	 * The name of the currently loaded character.
 	 */
@@ -108,6 +110,12 @@ class Character extends FNFSprite implements MusicHandler {
 	 * Controls if the character can dance or not.
 	 */
 	public var canDance:Bool = true;
+
+	/**
+	 * Whether or not the character will automatically dance to the beat of the song.
+	 * Turn off if you want to manually manage dancing in a script.
+	 */
+	public var danceOnBeat:Bool = true;
 
 	/**
 	 * Controls if the character acts like Boyfriend (Like only going back to idle when you release a note)
@@ -192,6 +200,9 @@ class Character extends FNFSprite implements MusicHandler {
 	}
 
 	public function loadCharacter(name:String) {
+		if(!charExists(name) && charExists(DEFAULT_CHARACTER))
+			return loadCharacter(DEFAULT_CHARACTER);
+
 		curCharacter = name;
 
 		// Loading the character's script
@@ -530,7 +541,7 @@ class Character extends FNFSprite implements MusicHandler {
 	public function beatHit(beat:Int) {
 		if(!alive) return;
 		script.call("onBeatHit", [beat]);
-        if(lastAnimContext != SING) dance();
+        if(lastAnimContext != SING && danceOnBeat) dance();
 		script.call("onBeatHitPost", [beat]);
 	}
 

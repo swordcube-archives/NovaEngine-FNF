@@ -20,5 +20,11 @@ class StoryMenuState extends MusicBeatState {
 			CoolUtil.playMenuSFX(CANCEL);
 			FlxG.switchState(new MainMenuState());
 		}
+
+		if(controls.SWITCH_MOD) {
+			persistentUpdate = false;
+			persistentDraw = true;
+			openSubState(new ModSwitcher());
+		}
 	}
 }

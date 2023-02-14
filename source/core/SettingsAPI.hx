@@ -44,14 +44,18 @@ class SettingsAPI {
 		}
 	}
 
+    public static inline function flush() {save();}
+
     /**
 	 * Saves all of your settings.
 	 */
 	public static function save() {
+        var fieldsToIgnore:Array<String> = ["controls", "__save"];
+
         // Go through each variable
 		for (field in Type.getClassFields(SettingsAPI)) {
             // Make sure the variable isn't actually a function in disguise 👻
-			if (Type.typeof(Reflect.field(SettingsAPI, field)) != TFunction) {
+			if (Type.typeof(Reflect.field(SettingsAPI, field)) != TFunction && !fieldsToIgnore.contains(field)) {
                 // Set the variable's value in save data to the value from this class
                 Reflect.setField(__save.data, field, Reflect.field(SettingsAPI, field));
             }

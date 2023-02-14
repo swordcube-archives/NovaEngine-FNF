@@ -28,6 +28,8 @@ class Controls {
         "PAUSE" => [ENTER, NONE],
         "BACK" => [BACKSPACE, ESCAPE],
 
+        "SWITCH_MOD" => [TAB, NONE],
+
         // Game controls
         "NOTE_LEFT" => [A, LEFT],
         "NOTE_DOWN" => [S, DOWN],
@@ -130,6 +132,9 @@ class Controls {
 
     public var BACK(get, never):Bool;
     private function get_BACK() return __checkKeys(controlsList["BACK"], JUST_PRESSED);
+
+    public var SWITCH_MOD(get, never):Bool;
+    private function get_SWITCH_MOD() return __checkKeys(controlsList["SWITCH_MOD"], JUST_PRESSED);
 
     // -- HELPER VARIABLES & FUNCTIONS ------------------------------------------------
 

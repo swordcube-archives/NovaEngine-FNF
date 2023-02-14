@@ -1,0 +1,24 @@
+<songs>
+    <song name="Tutorial"          difficulties="easy,normal,hard" character="gf"                bgColor="#9271FD"/>
+    <song name="Bopeebo"           difficulties="easy,normal,hard" character="dad"               bgColor="#9271FD"/>
+    <song name="Fresh"             difficulties="easy,normal,hard" character="dad"               bgColor="#9271FD"/>
+    <song name="Dad battle"        difficulties="easy,normal,hard" character="dad"               bgColor="#9271FD"/>
+    <song name="Spookeez"          difficulties="easy,normal,hard" character="spooky"            bgColor="#223344"/>
+    <song name="South"             difficulties="easy,normal,hard" character="spooky"            bgColor="#223344"/>
+    <song name="Monster"           difficulties="easy,normal,hard" character="monster"           bgColor="#223344"/>
+    <song name="Pico"              difficulties="easy,normal,hard" character="pico"              bgColor="#941653"/>
+    <song name="Philly Nice"       difficulties="easy,normal,hard" character="pico"              bgColor="#941653"/>
+    <song name="blammed"           difficulties="easy,normal,hard" character="pico"              bgColor="#941653"/>
+    <song name="Satin Panties"     difficulties="easy,normal,hard" character="mom"               bgColor="#FC96D7"/>
+    <song name="High"              difficulties="easy,normal,hard" character="mom"               bgColor="#FC96D7"/>
+    <song name="M.I.L.F"           difficulties="easy,normal,hard" character="mom"               bgColor="#FC96D7"/>
+    <song name="Cocoa"             difficulties="easy,normal,hard" character="parents-christmas" bgColor="#A0D1FF"/>
+    <song name="Eggnog"            difficulties="easy,normal,hard" character="parents-christmas" bgColor="#A0D1FF"/>
+    <song name="Winter Horrorland" difficulties="easy,normal,hard" character="monster"           bgColor="#A0D1FF"/>
+    <song name="Senpai"            difficulties="easy,normal,hard" character="senpai"            bgColor="#FF78BF"/>
+    <song name="Roses"             difficulties="easy,normal,hard" character="senpai-angry"      bgColor="#FF78BF"/>
+    <song name="Thorns"            difficulties="easy,normal,hard" character="spirit"            bgColor="#FF78BF"/>
+    <song name="Ugh"               difficulties="easy,normal,hard" character="tankman"           bgColor="#F6B604"/>
+    <song name="Guns"              difficulties="easy,normal,hard" character="tankman"           bgColor="#F6B604"/>
+    <song name="Stress"            difficulties="easy,normal,hard" character="tankman"           bgColor="#F6B604"/>
+</songs>

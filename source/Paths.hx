@@ -79,7 +79,7 @@ class Paths {
 
     // Useful functions
     public static function getFolderContents(path:String, ?returnFullPath:Bool = false, ?directoryFilter:DirectoryFilter = DIRS_AND_FILES):Array<String> {
-        path = getPath(path);
+        path = './assets/$path';
         if(!FileSystem.exists(path)) return [];
 
         var coolList:Array<String> = [];
@@ -102,6 +102,29 @@ class Paths {
             }
 
             coolList.push(returnFullPath ? fullPath : item);
+        }
+
+        path = './mods/${ModUtil.currentMod}/$path';
+        if(FileSystem.exists(path)) {
+            for(item in FileSystem.readDirectory(path)) {
+                var fullPath:String = '$path/$item';
+                if(!FileSystem.exists(fullPath))
+                    continue;
+
+                switch(directoryFilter) {
+                    case FILES_ONLY:
+                        if(FileSystem.isDirectory(fullPath))
+                            continue;
+
+                    case DIRS_ONLY:
+                        if(!FileSystem.isDirectory(fullPath))
+                            continue;
+
+                    default: // fuck you
+                }
+
+                coolList.push(returnFullPath ? fullPath : item);
+            }
         }
 
         return coolList;

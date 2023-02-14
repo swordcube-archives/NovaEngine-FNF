@@ -93,7 +93,10 @@ class PauseSubState extends MusicBeatSubstate {
         // VVV - ADD PAUSE OPTIONS HERE!
         grpAlphabet.createItem("Resume", resumeGame);
         grpAlphabet.createItem("Restart Song", () -> FlxG.resetState());
-        grpAlphabet.createItem("Exit To Menu", () -> FlxG.switchState(new MainMenuState()));
+        grpAlphabet.createItem("Exit To Menu", () -> {
+            // gotta fix for story mode eventually
+            FlxG.switchState(new FreeplayState());
+        });
         // ^^^ -------------------------
 
         changeSelection();

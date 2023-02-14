@@ -18,6 +18,7 @@ class Init extends FlxState {
         FlxG.fixedTimestep = false;
 
         FlxG.signals.preStateCreate.add((state:FlxState) -> {
+            ModUtil.refreshMetadatas();
             CoolUtil.clearCache();
             
             Controls.load();
@@ -26,6 +27,7 @@ class Init extends FlxState {
             
             FlxSprite.defaultAntialiasing = SettingsAPI.antialiasing;
         });
+        FlxG.keys.preventDefaultKeys = [TAB];
 
         FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, (e:KeyboardEvent) -> {
             switch(e.keyCode) {

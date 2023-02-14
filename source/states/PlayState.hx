@@ -37,6 +37,7 @@ class PlayState extends MusicBeatState {
 
 	public static var paused:Bool = false;
 	public static var isStoryMode:Bool = false;
+	public static var campaignScore:Int = 0;
 
 	public var playCutscenes:Bool = isStoryMode;
 
@@ -67,6 +68,8 @@ class PlayState extends MusicBeatState {
 	private function set_bf(newChar:Character):Character {
 		return boyfriend = newChar;
 	}
+
+	public var gfSpeed:Int = 1;
 
 	public var cpuStrums:StrumLine;
 	public var playerStrums:StrumLine;
@@ -211,6 +214,8 @@ class PlayState extends MusicBeatState {
 		add(stage = new Stage(SONG.stage));
 
 		add(gf = new Character(stage.gfPos.x, stage.gfPos.y, SONG.gfVersion));
+		gf.danceOnBeat = false;
+
 		add(stage.gfLayer);
 
 		add(dad = new Character(stage.dadPos.x, stage.dadPos.y, SONG.player2));
@@ -770,6 +775,9 @@ class PlayState extends MusicBeatState {
 			iconP2.scale.add(0.3, 0.3);
 			iconP2.updateHitbox();
 		}
+
+		if(gf.lastAnimContext != SING && gfSpeed > 0 && curBeat % gfSpeed == 0)
+			gf.dance();
 
 		positionIcons();
 

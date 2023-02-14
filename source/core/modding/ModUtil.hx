@@ -3,6 +3,8 @@ package core.modding;
 import core.modding.Metadata;
 
 class ModUtil {
+    public static var metadatas:Array<Metadata> = [];
+
     public static var fallbackMetadata:Metadata = null;
     public static final fallbackMod:String = "Friday Night Funkin'";
 
@@ -25,8 +27,10 @@ class ModUtil {
     }
 
     public static function switchToMod(modName:String, ?callback:Void->Void) {
-        var metadataJsonPath:String = './mods/$modName/pack.json';
         var metadata:Metadata = fallbackMetadata;
+
+        #if MOD_SUPPORT
+        var metadataJsonPath:String = './mods/$modName/pack.json';
 
         // If the mod we selected is "Friday Night Funkin'", then try to load metadata from assets
         var defaultMetadataJsonPath:String = './assets/pack.json';
@@ -36,11 +40,29 @@ class ModUtil {
         // Try to load metadata from the mods folder
         if(FileSystem.exists(metadataJsonPath))
             metadata = Json.parse(File.getContent(metadataJsonPath));
+        #end
         
         currentMetadata = metadata;
-
         currentMod = modName;
+
         if(callback != null)
             callback();
+    }
+
+    public static function refreshMetadatas() {
+        metadatas = [Paths.json("pack")];
+
+        #if MOD_SUPPORT
+        var folderList = FileSystem.readDirectory("./mods");
+
+        for(folder in folderList) {
+            var folderPath:String = './mods/$folder';
+            var packJsonPath:String = '$folderPath/pack.json';
+            if(!FileSystem.isDirectory(folderPath) || !FileSystem.exists(packJsonPath))
+                continue;
+            
+            metadatas.push(Json.parse(File.getContent(packJsonPath)));
+        }
+        #end
     }
 }

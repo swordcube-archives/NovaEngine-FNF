@@ -182,6 +182,12 @@ class TitleState extends MusicBeatState {
 			}
 			if(!skippedIntro) skipIntro();
 		}
+
+		if(controls.SWITCH_MOD) {
+			persistentUpdate = false;
+			persistentDraw = true;
+			openSubState(new ModSwitcher());
+		}
 	}
 
 	override public function beatHit(curBeat:Int) {

@@ -82,8 +82,8 @@ class ChartParser {
                 note.kill();
                 note.destroy();
                 noteArray.remove(note);
+                oldNote = note;
             }
-            oldNote = note;
         }
         oldNote = null;
 

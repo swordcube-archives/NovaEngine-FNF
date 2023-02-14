@@ -47,13 +47,8 @@ class MainMenuState extends MusicBeatState {
 		add(menuItems = new MainMenuGroup());
 
 		// VVV -- ADD MENU ITEMS HERE!!! --------------------------------------
-		menuItems.createItem("story mode", () -> {
-			FlxG.switchState(new StoryMenuState());
-		});
-		menuItems.createItem("freeplay", () -> {
-            PlayState.SONG = Song.loadChart("bopeebo", "hard");
-			FlxG.switchState(new PlayState());
-		});
+		menuItems.createItem("story mode", () -> FlxG.switchState(new StoryMenuState()));
+		menuItems.createItem("freeplay", () -> FlxG.switchState(new FreeplayState()));
 		menuItems.createItem("options", () -> {
 			FlxG.switchState(new MusicBeatState());
 		});
@@ -108,6 +103,12 @@ class MainMenuState extends MusicBeatState {
 		if(controls.BACK) {
 			CoolUtil.playMenuSFX(CANCEL);
 			FlxG.switchState(new TitleState());
+		}
+
+		if(controls.SWITCH_MOD) {
+			persistentUpdate = false;
+			persistentDraw = true;
+			openSubState(new ModSwitcher());
 		}
 
         if(controls.ACCEPT) selectItem();

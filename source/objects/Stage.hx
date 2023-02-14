@@ -33,7 +33,6 @@ class Stage extends StageLayer {
 
     public function load(?stage:String = "stage") {
         var game = PlayState.current;
-
         curStage = stage;
 
         if(script != null) {
@@ -48,7 +47,13 @@ class Stage extends StageLayer {
             }
         }
 
-        script = ScriptHandler.loadModule(Paths.script('data/stages/$curStage'));
+        var scriptPath:String = Paths.script('data/stages/$curStage');
+        if(!FileSystem.exists(scriptPath)) {
+            curStage = "stage";
+            scriptPath = Paths.script('data/stages/$curStage');
+        }
+
+        script = ScriptHandler.loadModule(scriptPath);
         script.setParent(game);
         script.set("stage", this);
         script.set("stageImage", (path:String) -> {

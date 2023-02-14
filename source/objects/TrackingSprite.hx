@@ -36,6 +36,8 @@ enum abstract TrackingMode(Int) to Int from Int {
      */
     public var trackingMode:TrackingMode = RIGHT;
 
+    public var copyAlpha:Bool = true;
+
     override function update(elapsed:Float):Void {
         // tracking modes
         if (tracked != null) {
@@ -45,6 +47,7 @@ enum abstract TrackingMode(Int) to Int from Int {
                 case UP: setPosition(tracked.x + (tracked.width * 0.5) + trackingOffset.x, tracked.y - height + trackingOffset.y);
                 case DOWN: setPosition(tracked.x + (tracked.width * 0.5) + trackingOffset.x, tracked.y + tracked.height + trackingOffset.y);
             }
+            if(copyAlpha && tracked is flixel.FlxSprite) alpha = cast(tracked, flixel.FlxSprite).alpha;
         }
 
         super.update(elapsed);
