@@ -106,9 +106,10 @@ class ModSwitcher extends MusicBeatSubstate {
             FlxG.sound.music.fadeOut(0.25, 0, function(_) {
                 FlxG.sound.music.stop();
             });
-            ModUtil.switchToMod(mods[curSelected]);
-            FlxG.resetState();
-            close();
+            ModUtil.switchToMod(mods[curSelected], () -> {
+                FlxG.resetState();
+                close();
+            });
         }
     }
 

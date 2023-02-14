@@ -36,9 +36,11 @@ class Init extends FlxState {
             }
         });
 
-        ModUtil.switchToMod("test", () -> {
-            trace("penis balls");
-        });
+        var mod:String = ModUtil.currentMod;
+        if(FlxG.save.data.currentMod != null)
+            mod = FlxG.save.data.currentMod;
+
+        ModUtil.switchToMod(mod);
         FlxG.switchState(new states.menus.TitleState());
     }
 }

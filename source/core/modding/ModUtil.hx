@@ -45,6 +45,9 @@ class ModUtil {
         currentMetadata = metadata;
         currentMod = modName;
 
+        FlxG.save.data.currentMod = modName;
+        FlxG.save.flush();
+
         if(callback != null)
             callback();
     }

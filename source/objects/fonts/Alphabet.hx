@@ -187,6 +187,7 @@ class AlphabetChar extends FNFSprite {
                 scale.set(size, size);
                 updateHitbox();
 
+                rotOffset.set(0, 0);
                 offset.subtract(offsets.x, offsets.y); 
 
                 if(!animation.exists("idle")) {
@@ -232,6 +233,7 @@ class AlphabetChar extends FNFSprite {
                 scale.set(size, size);
                 updateHitbox();
 
+                rotOffset.set(0, 0);
                 offset.subtract(offsets.x, offsets.y);
         }
     }
