@@ -1,6 +1,12 @@
 package core;
 
 import flixel.util.FlxSave;
+import core.modding.ModUtil;
+
+typedef ModdedOption = {
+    var name:String;
+    var value:Dynamic;
+}
 
 class SettingsAPI {
     // VVV -- ADD/EDIT SETTINGS HERE!!!! -----------------------------------------
@@ -32,6 +38,7 @@ class SettingsAPI {
 	 * Loads all of your saved settings.
 	 */
 	public static function load() {
+        // -- HARDCODED SETTINGS --
         // Go through each variable
 		for (field in Type.getClassFields(SettingsAPI)) {
             // Make sure the variable isn't actually a function in disguise 👻
@@ -42,6 +49,25 @@ class SettingsAPI {
                 Reflect.setField(SettingsAPI, field, (savedProp != null ? savedProp : defaultValue));
             }
 		}
+
+        // -- MODDED SETTINGS --
+        var optionsJson:Dynamic = Paths.json("data/customOptions");
+        optionsJson.setFieldDefault("options", new Array<ModdedOption>());
+
+        var doFlush:Bool = false;
+
+        var optionsList:Array<ModdedOption> = optionsJson.options;
+        
+        for(option in optionsList) {
+            var optionName:String = ModUtil.currentMod+":"+option.name;
+
+            if(Reflect.field(__save.data, optionName) == null) {
+                Reflect.setField(__save.data, optionName, option.value);
+                doFlush = true;
+            }
+        }
+
+        if(doFlush) save();
 	}
 
     public static inline function flush() {save();}

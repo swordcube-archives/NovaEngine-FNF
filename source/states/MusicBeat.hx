@@ -42,7 +42,7 @@ class MusicBeatState extends FlxUIState implements MusicHandler {
         this.scriptParameters = scriptParameters;
     }
 
-    public function call(name:String, ?args:Array<Dynamic>, ?defaultReturn:Dynamic = null):Dynamic {
+    public function call(name:String, args:Array<Dynamic>, ?defaultReturn:Dynamic = null):Dynamic {
 		if (script == null) return defaultReturn;
 		return script.call(name, args);
 	}

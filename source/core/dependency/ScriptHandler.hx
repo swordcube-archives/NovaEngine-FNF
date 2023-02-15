@@ -102,6 +102,7 @@ class ScriptHandler {
             // Variables
             "platform" => CoolUtil.getPlatform(), // Shortcut to "CoolUtil.getPlatform()".
             "window" => lime.app.Application.current.window,
+            "mod" => core.modding.ModUtil.currentMod, // Shortcut to "ModUtil.currentMod".
         ];
 
         compilerFlags = [

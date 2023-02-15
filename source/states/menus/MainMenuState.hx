@@ -49,9 +49,7 @@ class MainMenuState extends MusicBeatState {
 		// VVV -- ADD MENU ITEMS HERE!!! --------------------------------------
 		menuItems.createItem("story mode", () -> FlxG.switchState(new StoryMenuState()));
 		menuItems.createItem("freeplay", () -> FlxG.switchState(new FreeplayState()));
-		menuItems.createItem("options", () -> {
-			FlxG.switchState(new MusicBeatState());
-		});
+		menuItems.createItem("options", () -> FlxG.switchState(new OptionsMenuState()));
 		// ^^^ ----------------------------------------------------------------
 
 		for (i => member in menuItems.members) {
