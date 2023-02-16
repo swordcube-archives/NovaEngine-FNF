@@ -15,6 +15,8 @@ class SettingsAPI {
 	public static var centeredNotefield:Bool = false;
 
     public static var antialiasing:Bool = true;
+    public static var fpsCap:Int = 240;
+    public static var vsync:Bool = false;
     public static var noteOffset:Float = 0;
 
     // ^^^ -----------------------------------------------------------------------

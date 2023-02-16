@@ -10,4 +10,6 @@ class Option extends FlxSpriteGroup {
         super();
         add(alphabet = new Alphabet(0, 0, Bold, text));
     }
+
+    public function select() {}
 }

@@ -262,11 +262,16 @@ class PlayState extends MusicBeatState {
 
 		add(cpuStrums = new StrumLine(0, strumY, SettingsAPI.downscroll, true, changeableSkin, SONG.keyCount));
 		cpuStrums.screenCenter(X);
-		cpuStrums.x -= receptorSpacing;
 
 		add(playerStrums = new StrumLine(0, strumY, SettingsAPI.downscroll, false, changeableSkin, SONG.keyCount));
 		playerStrums.screenCenter(X);
-		playerStrums.x += receptorSpacing;
+
+		if(SettingsAPI.centeredNotefield) {
+			cpuStrums.x -= 999999;
+		} else {
+			cpuStrums.x -= receptorSpacing;
+			playerStrums.x += receptorSpacing;
+		}
 
 		add(notes = new NoteField());
 		add(grpNoteSplashes = new FlxTypedGroup<NoteSplash>());
@@ -623,6 +628,9 @@ class PlayState extends MusicBeatState {
 				if(m != null && m is MusicHandler)
 					cast(m, MusicHandler).beatHit((tmr.loops - tmr.loopsLeft) - 5);
 			}
+			
+			if(gf.lastAnimContext != SING && gfSpeed > 0 && curBeat % gfSpeed == 0)
+				gf.dance();
 
 			if(event.image != null && !event.cancelled) {
 				var sprite = new FNFSprite().loadGraphic(event.image);
@@ -791,14 +799,9 @@ class PlayState extends MusicBeatState {
 
 		super.stepHit(curStep);
 
-		var resyncMS:Float = 20;
-
 		@:privateAccess
-		if (Math.abs(FlxG.sound.music.time - Conductor.position) > resyncMS
-			|| (vocals._sound != null && Math.abs(vocals.time - Conductor.position) > resyncMS))
-		{
+		if (!Conductor.isAudioSynced(FlxG.sound.music) || (vocals._sound != null && !Conductor.isAudioSynced(vocals)))
 			resyncVocals();
-		}
 
 		scripts.call("onStepHit", [curStep]);
 		for(script in noteTypeScripts)

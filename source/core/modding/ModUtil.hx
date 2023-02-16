@@ -44,6 +44,7 @@ class ModUtil {
         
         currentMetadata = metadata;
         currentMod = modName;
+        ScriptHandler.preset.set("mod", currentMod);
 
         FlxG.save.data.currentMod = modName;
         FlxG.save.flush();

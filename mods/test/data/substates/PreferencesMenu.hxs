@@ -1,0 +1,3 @@
+function onAddOptionsPost() {
+    options["Gameplay"].push(new Checkbox("coolswag", mod+":ModdedOptionTest"));
+}

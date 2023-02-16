@@ -13,6 +13,25 @@ class Main extends Sprite {
 		fullscreen: false
 	};
 
+	public static function setFPSCap(framerate:Int) {
+		var refreshRate = lime.app.Application.current.window.displayMode.refreshRate;
+
+		if(SettingsAPI.vsync) {
+			if(refreshRate > 0)
+				framerate = refreshRate;
+			else
+				framerate = 60;
+		}
+
+		if(framerate > FlxG.drawFramerate) {
+			FlxG.updateFramerate = framerate;
+			FlxG.drawFramerate = framerate;
+		} else {
+			FlxG.drawFramerate = framerate;
+			FlxG.updateFramerate = framerate;
+		}
+	}
+
 	public static var engineName:String = "Nova Engine";
 	public static var engineVersion(get, never):String;
 	private static function get_engineVersion():String {

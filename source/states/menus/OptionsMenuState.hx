@@ -1,5 +1,6 @@
 package states.menus;
 
+import core.dependency.scripting.events.CancellableEvent;
 import flixel.math.FlxMath;
 import flixel.effects.FlxFlicker;
 import flixel.util.FlxColor;
@@ -9,7 +10,14 @@ import states.MusicBeat.MusicBeatState;
 import flixel.util.FlxSignal.FlxTypedSignal;
 import states.menus.options.*;
 
+typedef StateData = {
+    var state:Class<flixel.FlxState>;
+    var ?args:Array<Dynamic>;
+}
+
 class OptionsMenuState extends MusicBeatState {
+	public static var stateData:StateData;
+	
 	public var bg:FNFSprite;
 	public var pages:PageGroup;
 
@@ -29,25 +37,21 @@ class OptionsMenuState extends MusicBeatState {
 		bg.scale.set(1.2, 1.2);
 		bg.updateHitbox();
 		bg.screenCenter();
-		bg.scrollFactor.set();
 		bg.color = 0xFFC456D3;
 
 		add(pages = new PageGroup());
 
-		call("onAddPages", []);
+		var event = script.event("onAddPages", new CancellableEvent());
 
-		// VVV -- ADD PAGES HERE!!! -------------------------------------------
-		pages.createItem("Preferences", () -> openSubState(new PreferencesMenu()));
-		pages.createItem("Appearance", () -> {
-			trace("GOING TO APPEARANCE PAGE");
-		});
-		pages.createItem("Controls", () -> {
-			trace("GOING TO CONTROLS PAGE");
-		});
-		pages.createItem("Exit", () -> FlxG.switchState(new MainMenuState()));
-		// ^^^ ----------------------------------------------------------------
+		if(!event.cancelled) {
+			// VVV -- ADD PAGES HERE!!! -------------------------------------------
+			pages.createItem("Preferences", () -> openMenu(new PreferencesMenu()));
+			pages.createItem("Controls", () -> openMenu(new ControlsMenu()));
+			pages.createItem("Exit", () -> exit());
+			// ^^^ ----------------------------------------------------------------
+		}
 
-		call("onAddPagesPost", []);
+		script.event("onAddPagesPost", event);
 
 		for (i => member in pages.members) {
 			member.screenCenter();
@@ -58,6 +62,25 @@ class OptionsMenuState extends MusicBeatState {
 		changeSelection(0, true);
 	}
 
+	public function openMenu(substate:flixel.FlxSubState) {
+		persistentUpdate = false;
+		persistentDraw = false;
+		openSubState(substate);
+	}
+
+	public function selectPage() {
+		pages.members[curSelected].select();
+	}
+
+	public function exit() {
+        CoolUtil.playMenuSFX(CANCEL);
+        if(stateData != null) {
+            FlxG.switchState(Type.createInstance(stateData.state, stateData.args != null ? stateData.args : []));
+            stateData = null;
+        } else
+            FlxG.switchState(new MainMenuState());
+    }
+
 	override public function update(elapsed:Float) {
 		super.update(elapsed);
 
@@ -66,11 +89,12 @@ class OptionsMenuState extends MusicBeatState {
 		changeSelection((controls.UI_DOWN_P ? 1 : 0) + (controls.UI_UP_P ? -1 : 0));
 
 		if(controls.BACK) {
-			CoolUtil.playMenuSFX(CANCEL);
-			FlxG.switchState(new MainMenuState());
+			persistentUpdate = false;
+			persistentDraw = true;
+			exit();
 		}
 
-		if(controls.ACCEPT) pages.members[curSelected].select();
+		if(controls.ACCEPT) selectPage();
 	}
 
 	public function changeSelection(change:Int, force:Bool = false) {
@@ -81,6 +105,7 @@ class OptionsMenuState extends MusicBeatState {
 		pages.forEach((page:PageItem) -> {
 			page.alpha = (curSelected == page.ID) ? 1 : 0.6;
 		});
+		CoolUtil.playMenuSFX(SCROLL);
 	}
 }
 
@@ -97,6 +122,7 @@ class PageGroup extends FlxTypedGroup<PageItem> {
 class PageItem extends Alphabet {
     public var onSelect = new FlxTypedSignal<Void->Void>();
     public function select() {
+		CoolUtil.playMenuSFX(CONFIRM);
 		FlxFlicker.flicker(this, 0.7, 0.1, true, true, (flicker:FlxFlicker) -> onSelect.dispatch());
 	}
 }

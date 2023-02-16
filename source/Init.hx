@@ -1,5 +1,6 @@
 package;
 
+import lime.app.Application;
 import openfl.events.KeyboardEvent;
 import core.Controls;
 import flixel.FlxState;
@@ -35,6 +36,11 @@ class Init extends FlxState {
                 case Keyboard.F11: FlxG.fullscreen = !FlxG.fullscreen;
             }
         });
+
+        Application.current.onExit.add((exitCode:Int) -> {
+            SettingsAPI.save();
+        });
+        Main.setFPSCap(SettingsAPI.fpsCap);
 
         var mod:String = ModUtil.currentMod;
         if(FlxG.save.data.currentMod != null)
