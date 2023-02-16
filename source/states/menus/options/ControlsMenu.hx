@@ -5,6 +5,8 @@ import states.MusicBeat.MusicBeatSubstate;
 class ControlsMenu extends MusicBeatSubstate {
     public var bg:FNFSprite;
 
+	public var categories:Array<String> = ["Notes", "UI", "Engine"];
+
     override function create() {
         super.create();
 
