@@ -49,7 +49,7 @@ class List extends Option {
         super.update(elapsed);
 
         arrows.alpha = valueTxt.alpha = alphabet.alpha;
-        arrows.setPosition(alphabet.x + (alphabet.width + 100), alphabet.y);
+        arrows.setPosition(alphabet.x + (alphabet.width + 40), alphabet.y);
         valueTxt.setPosition(arrows.x + ((arrows.width - valueTxt.width) * 0.5), arrows.y);
     }
 }

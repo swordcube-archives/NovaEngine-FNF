@@ -11,6 +11,8 @@ class ModUtil {
     public static var currentMod:String = fallbackMod;
     public static var currentMetadata:Metadata = null;
 
+    public static var metadataMap:Map<String, Metadata> = [];
+
     public static function init() {
         fallbackMetadata = currentMetadata = {
             name: "???",
@@ -54,7 +56,9 @@ class ModUtil {
     }
 
     public static function refreshMetadatas() {
-        metadatas = [Paths.json("pack")];
+        var funkinMetadata = Paths.json("pack", fallbackMod);
+        metadataMap.set("Friday Night Funkin'", funkinMetadata);
+        metadatas = [funkinMetadata];
 
         #if MOD_SUPPORT
         var folderList = FileSystem.readDirectory("./mods");
@@ -65,7 +69,9 @@ class ModUtil {
             if(!FileSystem.isDirectory(folderPath) || !FileSystem.exists(packJsonPath))
                 continue;
             
-            metadatas.push(Json.parse(File.getContent(packJsonPath)));
+            var jsonData:Metadata = Json.parse(File.getContent(packJsonPath));
+            metadataMap.set(folder, jsonData);
+            metadatas.push(jsonData);
         }
         #end
     }

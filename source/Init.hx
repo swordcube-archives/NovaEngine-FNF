@@ -41,6 +41,8 @@ class Init extends FlxState {
             SettingsAPI.save();
         });
         Main.setFPSCap(SettingsAPI.fpsCap);
+        FlxG.autoPause = SettingsAPI.autoPause;
+        Main.fpsOverlay.visible = SettingsAPI.fpsCounter;
 
         var mod:String = ModUtil.currentMod;
         if(FlxG.save.data.currentMod != null)

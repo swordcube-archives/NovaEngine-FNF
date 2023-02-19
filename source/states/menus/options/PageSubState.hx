@@ -77,6 +77,9 @@ class PageSubState extends MusicBeatSubstate {
 		add(tabIndicatorTxt = new FlxText(tabIndicatorBox.x + 10, tabIndicatorBox.y + 8, 0, tabSwitchingStatus, 12));
 		tabIndicatorTxt.setFormat(Paths.font("vcr.ttf"), 20, 0xFFFFFFFF, RIGHT, OUTLINE, 0xFF000000);
 		tabIndicatorTxt.borderSize = 2;
+
+		for(obj in [bg, tabStrip, tabName, tabArrows, tabIndicatorBox, tabIndicatorTxt])
+			obj.scrollFactor.set();
     }
 
 	override function switchTo(state:flixel.FlxState) {
@@ -91,6 +94,10 @@ class PageSubState extends MusicBeatSubstate {
 
 	override function createPost() {
 		changeTab(0, true);
+		if(tabs.length < 2) {
+			for(obj in [tabStrip, tabName, tabArrows, tabIndicatorBox, tabIndicatorTxt])
+				obj.visible = false;
+		}
 		super.createPost();
 	}
 
@@ -101,7 +108,7 @@ class PageSubState extends MusicBeatSubstate {
 
 		if(!runDefaultCode) return;
 
-		if(FlxG.keys.justPressed.TAB) {
+		if(FlxG.keys.justPressed.TAB && tabs.length > 1) {
 			changingTab = !changingTab;
 			tabIndicatorTxt.text = tabSwitchingStatus;
 			changeSelection(0, true);
@@ -122,8 +129,7 @@ class PageSubState extends MusicBeatSubstate {
 			holdTimer += elapsed;
 
 			var justPressed:Bool = (controls.UI_LEFT_P || controls.UI_RIGHT_P);
-			if(justPressed)
-				CoolUtil.playMenuSFX(SCROLL);
+			var playSelectSound:Bool = true;
 
 			if(justPressed || holdTimer > 0.5) {
 				switch(grpOptions.members[curSelected].getClassName().split(".").last()) {
@@ -132,6 +138,7 @@ class PageSubState extends MusicBeatSubstate {
 						var increment:Float = (controls.UI_LEFT) ? -option.increment : option.increment;
 						option.value = FlxMath.roundDecimal(FlxMath.bound(option.value + increment, option.minimum, option.maximum), option.decimals);
 						option.update(0);
+						playSelectSound = option.playSelectSound;
 
 						if(option.callback != null)
 							option.callback(option.value);
@@ -148,6 +155,9 @@ class PageSubState extends MusicBeatSubstate {
 							option.callback(option.value);
 				}
 			}
+
+			if(justPressed && playSelectSound)
+				CoolUtil.playMenuSFX(SCROLL);
 		} else
 			holdTimer = 0;
 
@@ -186,6 +196,7 @@ class PageSubState extends MusicBeatSubstate {
 			option.alphabet.ID = i;
 			option.alphabet.targetY = i;
 			option.alphabet.setPosition(0, i * 30);
+			option.scrollFactor.set();
 		}
 
 		curSelected = 0;

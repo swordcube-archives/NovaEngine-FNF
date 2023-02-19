@@ -103,6 +103,22 @@ class FreeplayState extends MusicBeatState {
 
 		add(scoreText);
 
+        var smallBannerBG = new FlxSprite(0, FlxG.height).makeGraphic(FlxG.width, 1, 0xFF000000);
+        smallBannerBG.alpha = 0.6;
+        smallBannerBG.scrollFactor.set();
+
+        var smallBannerText = new FlxText(5, FlxG.height, 0, "Press TAB to switch mods / Press SHIFT to change gameplay modifiers", 17);
+        smallBannerText.setFormat(Paths.font("vcr.ttf"), 17, FlxColor.WHITE, RIGHT);
+        smallBannerText.y -= smallBannerText.height + 5;
+        smallBannerText.scrollFactor.set();
+
+        smallBannerBG.scale.y = smallBannerText.height + 5;
+        smallBannerBG.updateHitbox();
+        smallBannerBG.y -= smallBannerBG.height;
+
+        add(smallBannerBG);
+        add(smallBannerText);
+
         changeSelection();
         positionHighscore();
     }
@@ -145,6 +161,12 @@ class FreeplayState extends MusicBeatState {
         super.update(elapsed);
 
         if(!runDefaultCode) return;
+
+        if(FlxG.keys.justPressed.SHIFT) {
+            persistentUpdate = false;
+			persistentDraw = true;
+			openSubState(new GameplayModifiers());
+        }
 
         if(controls.ACCEPT) {
             threadActive = false;

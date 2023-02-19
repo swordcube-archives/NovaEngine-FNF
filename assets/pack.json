@@ -1,10 +1,22 @@
 {
-    "name": "Testing Mod",
-    "description": "it's the remix lois",
+    "name": "Friday Night Funkin'",
+    "description": "The vanilla game from weeks 1 to 7",
     "contributors": [
         {
-            "name": "swordcube",
-            "role": "Creator"
+            "name": "ninjamuffin99",
+            "role": "Creator / Programmer"
+        },
+        {
+            "name": "kawaisprite",
+            "role": "Composer"
+        },
+        {
+            "name": "evilsk8er",
+            "role": "Artist"
+        },
+        {
+            "name": "PhantomArcade",
+            "role": "Animator"
         }
     ],
     "api_version": "1.0.0",

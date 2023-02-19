@@ -1,5 +1,6 @@
 package states.menus.options.visual;
 
+import flixel.effects.FlxFlicker;
 import objects.ui.Checkbox as CheckboxSprite;
 
 class Checkbox extends Option {
@@ -39,6 +40,9 @@ class Checkbox extends Option {
         
         @:privateAccess
         checkbox.value = (isModded) ? Reflect.field(SettingsAPI.__save.data, saveData) : Reflect.field(SettingsAPI, saveData);
+
+        CoolUtil.playMenuSFX(CONFIRM);
+        FlxFlicker.flicker(alphabet, 0.7, 0.1, true, true);
 
         if(callback != null)
             callback(checkbox.value);

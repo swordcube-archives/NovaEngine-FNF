@@ -11,9 +11,12 @@ class Number extends Option {
         } else
             Reflect.setField(SettingsAPI, saveData, v);
 
-        valueTxt.text = Std.string(v);
+        valueTxt.text = Std.string(v) + textSuffix;
         return value = v;
     }
+
+    public var playSelectSound:Bool;
+    public var textSuffix:String;
 
     public var arrows:Alphabet;
     public var valueTxt:Alphabet;
@@ -24,8 +27,13 @@ class Number extends Option {
     public var decimals:Int;
     public var callback:Float->Void;
 
-    public function new(text:String, description:String, saveData:String, minimum:Float, maximum:Float, increment:Float, decimals:Int, ?callback:Float->Void) {
+    public function new(text:String, description:String, saveData:String, ?textSuffix:String, minimum:Float, maximum:Float, increment:Float, decimals:Int, ?callback:Float->Void, ?playSelectSound:Bool = true) {
         super(text, description, saveData);
+
+        if(textSuffix == null) textSuffix = "";
+        this.textSuffix = textSuffix;
+        this.playSelectSound = playSelectSound;
+
         this.minimum = minimum;
         this.maximum = maximum;
         this.increment = increment;
@@ -55,7 +63,7 @@ class Number extends Option {
         super.update(elapsed);
 
         arrows.alpha = valueTxt.alpha = alphabet.alpha;
-        arrows.setPosition(alphabet.x + (alphabet.width + 100), alphabet.y);
+        arrows.setPosition(alphabet.x + (alphabet.width + 40), alphabet.y);
         valueTxt.setPosition(arrows.x + ((arrows.width - valueTxt.width) * 0.5), arrows.y);
     }
 }

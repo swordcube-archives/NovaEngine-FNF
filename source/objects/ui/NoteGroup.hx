@@ -51,7 +51,7 @@ class NoteGroup extends FlxTypedGroup<Note> {
         __currentlyLooping = true;
         while(i < length) {
             __loopSprite = members[i];
-            if (__loopSprite == null || !__loopSprite.exists || !__loopSprite.visible) {
+            if ((__loopSprite.strumLine != null && !__loopSprite.strumLine.visible) || __loopSprite == null || !__loopSprite.exists || !__loopSprite.visible) {
                 i++;
                 continue;
             }

@@ -23,7 +23,7 @@ class NoteMissEvent extends CancellableEvent {
     /**
      * The amount of health you gain from missing this note.
      */
-    public var healthLoss:Float = 0.0475;
+    public var healthLoss:Float = 0.0475 * SettingsAPI.healthLossMultiplier;
 
     /**
      * The characters that missed the note.

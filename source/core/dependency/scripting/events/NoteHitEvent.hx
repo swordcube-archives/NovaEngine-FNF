@@ -78,7 +78,7 @@ class NoteHitEvent extends CancellableEvent {
     /**
      * The amount of health you gain from hitting this note.
      */
-    public var healthGain:Float = 0.023;
+    public var healthGain:Float = 0.023 * SettingsAPI.healthGainMultiplier;
 
     /**
      * The characters that pressed the note.

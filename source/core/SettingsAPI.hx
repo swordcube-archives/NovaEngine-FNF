@@ -11,13 +11,31 @@ typedef ModdedOption = {
 class SettingsAPI {
     // VVV -- ADD/EDIT SETTINGS HERE!!!! -----------------------------------------
 
+    // gameplay tab
 	public static var downscroll:Bool = false;
 	public static var centeredNotefield:Bool = false;
+    public static var ghostTapping:Bool = true;
+    public static var disableResetButton:Bool = true;
+    public static var hitsoundVolume:Int = 0; // Ranges from 0% to 100%
+    public static var noteOffset:Float = 0; // In milliseconds
 
+    // appearance tab
+    public static var fpsCounter:Bool = true;
+    public static var noteSplashes:Bool = true;
     public static var antialiasing:Bool = true;
+    public static var opaqueSustains:Bool = false;
+    public static var judgementCamera:String = "World";
+
+    // misc tab
+    public static var autoPause:Bool = true;
     public static var fpsCap:Int = 240;
     public static var vsync:Bool = false;
-    public static var noteOffset:Float = 0;
+
+    // gameplay modifiers - accessed via pressed shift in freeplay
+    public static var playbackRate:Float = 1;
+    public static var healthGainMultiplier:Float = 1;
+    public static var healthLossMultiplier:Float = 1;
+    public static var autoplay:Bool = false;
 
     // ^^^ -----------------------------------------------------------------------
 

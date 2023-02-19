@@ -1,5 +1,6 @@
 package states.menus;
 
+import core.modding.ModUtil;
 import flixel.text.FlxText;
 import flixel.FlxObject;
 import flixel.util.FlxTimer;
@@ -59,7 +60,11 @@ class MainMenuState extends MusicBeatState {
 			member.y -= (160 * (menuItems.length - 1.5)) * 0.5;
 		}
 
-		var engineText = new FlxText(5, FlxG.height, 0, '${Main.engineName} v${Main.engineVersion}');
+		var engineString:String = (
+			'${Main.engineName} v${Main.engineVersion}\n'+
+			'${ModUtil.metadataMap.get(ModUtil.currentMod).name} - Press TAB to switch mods'
+		);
+		var engineText = new FlxText(5, FlxG.height, 0, engineString);
 		engineText.setFormat(Paths.font("vcr.ttf"), 16, 0xFFFFFFFF, LEFT, OUTLINE, 0xFF000000);
 		engineText.scrollFactor.set();
 		engineText.y -= engineText.height;

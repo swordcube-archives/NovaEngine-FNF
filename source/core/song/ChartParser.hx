@@ -61,7 +61,7 @@ class ChartParser {
                     susNote.isSustainNote = true;
                     susNote.isSustainTail = i >= susLength - 1;
                     susNote.flipY = susNote.strumLine.downscroll;
-                    susNote.alpha = 0.6;
+                    susNote.alpha = (SettingsAPI.opaqueSustains) ? 1 : 0.6;
                     susNote.parentNote = swagNote;
                     susNote.stepCrochet = Conductor.stepCrochet;
                     susNote.noteType = daNoteType;
