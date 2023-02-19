@@ -11,16 +11,19 @@ class HScript extends ScriptModule {
     public var interp:Interp;
 
     private function __errorHandler(error:Error) {
+        #if !docs
         var fn = '$fileName:${error.line}: ';
         var err = error.toString();
         if (err.startsWith(fn)) err = err.substr(fn.length);
 
         Logs.trace('Error occured on script: $fileName at Line ${error.line} - $err', ERROR);
+        #end
     }
 
     public function new(path:String, fileName:String = "hscript") {
         super(path, fileName);
 
+        #if !docs
         var expr:Expr = null;
         try {
             if(!FileSystem.exists(path))
@@ -49,6 +52,7 @@ class HScript extends ScriptModule {
             interp.variables.set(name, value);
 
         interp.execute(expr);
+        #end
     }
 
     /**
@@ -88,8 +92,10 @@ class HScript extends ScriptModule {
     override public function trace(v:Dynamic) {
         if(interp == null) return Logs.trace(v, TRACE);
 
+        #if !docs
         var pos = interp.posInfos();
         Logs.trace('$fileName - Line ${pos.lineNumber}: $v', TRACE);
+        #end
     }
 
     override public function destroy() {
@@ -98,7 +104,9 @@ class HScript extends ScriptModule {
     }
 
     override public function setParent(parent:Dynamic) {
+        #if !docs
         if(interp == null) return;
         this.parent = interp.scriptObject = parent;
+        #end
     }
 }

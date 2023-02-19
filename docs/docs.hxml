@@ -1,5 +1,6 @@
 -D openfl=git
 -D flixel-leather=git
+-D hxCodec=2.5.1
 
 --define docs
 
@@ -7,8 +8,6 @@
 -L openfl
 -L flixel-leather
 -L hscript-improved
--L tjson
--L polymod
 -L hxCodec
 
 --macro lime._internal.macros.DefineMacro.run()

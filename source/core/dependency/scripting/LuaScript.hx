@@ -1,6 +1,7 @@
 package core.dependency.scripting;
 
 import core.dependency.scripting.lua.LuaUtil;
+#if linc_luajit
 import haxe.DynamicAccess;
 import cpp.Callable;
 import llua.Lua;
@@ -8,6 +9,7 @@ import llua.LuaL;
 import llua.State;
 import llua.Convert;
 import llua.Macro.*;
+#end
 import lime.app.Application;
 import core.dependency.ScriptHandler;
 
@@ -17,9 +19,12 @@ import core.dependency.ScriptHandler;
  */
 class LuaScript extends ScriptModule {
 	static var currentLua:LuaScript;
-	static var workaroundCallable:Callable<llua.State.StatePointer->Int> = Callable.fromStaticFunction(instanceWorkAround);
 
+	#if linc_luajit
+	static var workaroundCallable:Callable<llua.State.StatePointer->Int> = Callable.fromStaticFunction(instanceWorkAround);
 	var luaState:State;
+	#end
+	
 	var script:Dynamic = {parent: null};
 
 	/**
@@ -30,6 +35,7 @@ class LuaScript extends ScriptModule {
 	public function new(path:String, fileName:String = "hscript") {
 		super(path, fileName);
 
+		#if linc_luajit
 		luaState = LuaL.newstate();
 		LuaL.openlibs(luaState);
 		Lua.register_hxtrace_func(Callable.fromStaticFunction(luaTrace));
@@ -95,9 +101,11 @@ class LuaScript extends ScriptModule {
 		set("parent", parent);
 
 		execute();
+		#end
     }
 
     public function execute() {
+		#if linc_luajit
 		var lastLua:LuaScript = currentLua;
 		currentLua = this;
 
@@ -123,6 +131,7 @@ class LuaScript extends ScriptModule {
             #end
 		}
 		currentLua = lastLua;
+		#end
     }
 
 	override public function trace(v:Dynamic) {
@@ -130,19 +139,24 @@ class LuaScript extends ScriptModule {
 	}
 
 	static inline function luaTrace(s:String):Int {
+		#if linc_luajit
 		Logs.trace('${currentLua.fileName}: Lua Value: $s - Haxe Value: ${currentLua.fromLua(-2)}', TRACE);
+		#end
 		return 0;
 	}
 
 	override public function set(name:String, newValue:Dynamic) {
+		#if linc_luajit
 		var lastLua:LuaScript = currentLua;
 		currentLua = this;
 		toLua(newValue);
 		Lua.setglobal(luaState, name);
 		currentLua = lastLua;
+		#end
 	}
 
 	override public function setParent(parent:Dynamic) {
+		#if linc_luajit
 		var lastLua:LuaScript = currentLua;
 		currentLua = this;
 		script = {
@@ -155,9 +169,11 @@ class LuaScript extends ScriptModule {
 		
 		specialVars[0] = script;
 		currentLua = lastLua;
+		#end
 	}
 
 	override public function call(name:String, params:Array<Dynamic>):Dynamic {
+		#if linc_luajit
 		var lastLua:LuaScript = currentLua;
 		currentLua = this;
 		script = {
@@ -197,9 +213,11 @@ class LuaScript extends ScriptModule {
 			Logs.trace('Error occured trying to run lua function ($name): $e', ERROR);
 		}
 		currentLua = lastLua;
+		#end
 		return null;
 	}
 
+	#if linc_luajit
 	// These functions are here because Callable seems like it wants an int return and whines when you do a non static function.
 	static function callIndex(state:StatePointer):Int {
 		return staticToFunc(currentLua.luaState, 0);
@@ -578,10 +596,13 @@ class LuaScript extends ScriptModule {
 			Logs.trace('Error occured on Lua script ($fileName) trying to import a class/enum: Unable to find class/enum from path "$path".', ERROR);
 		}
 	}
+	#end
 
 	override function destroy() {
+		#if linc_luajit
 		Lua.close(luaState);
 		luaState = null;
+		#end
 		super.destroy();
 	}
 }
