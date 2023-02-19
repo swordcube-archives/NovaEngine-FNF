@@ -24,17 +24,19 @@ class ScriptedCutscene extends Cutscene {
     }
 
     public function startVideo(path:String, ?callback:Void->Void) {
+        #if VIDEO_CUTSCENES
         var sprite = new VideoSprite();
         sprite.cameras = [game.camOther];
         sprite.finishCallback = () -> {
             sprite.kill();
             sprite.destroy();
             game.remove(sprite, true);
-
-            if(callback != null)
-                callback();
+            close();
         }
         sprite.play(path, false);
         game.add(sprite);
+        #else
+        close();
+        #end
     }
 }

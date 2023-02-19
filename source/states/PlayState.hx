@@ -367,6 +367,7 @@ class PlayState extends MusicBeatState {
 					startCountdown();
 				}));
 			}
+			#if VIDEO_CUTSCENES
 			else if (FileSystem.exists(videoCutscene)) {
 				inCutscene = true;
 
@@ -382,6 +383,7 @@ class PlayState extends MusicBeatState {
 				sprite.play(videoCutscene, false);
 				add(sprite);
 			}
+			#end
 			else
 				startCountdown();
 		}
@@ -400,7 +402,8 @@ class PlayState extends MusicBeatState {
 				openSubState(new ScriptedCutscene(endCutscene, () -> {
 					endSong();
 				}));
-			} 
+			}
+			#if VIDEO_CUTSCENES
 			else if (FileSystem.exists(videoCutscene)) {
 				inCutscene = true;
 
@@ -415,7 +418,8 @@ class PlayState extends MusicBeatState {
 				}
 				sprite.play(videoCutscene, false);
 				add(sprite);
-			} 
+			}
+			#end
 			else
 				endSong();
 		}
