@@ -2,37 +2,31 @@ package states.menus.options.visual;
 
 import objects.fonts.Alphabet;
 
-class Number extends Option {
-    public var value(default, set):Float;
-    private function set_value(v:Float) {
+class List extends Option {
+    public var value(default, set):String;
+    private function set_value(v:String) {
         if(isModded) {
             @:privateAccess
             Reflect.setField(SettingsAPI.__save.data, saveData, v);
         } else
             Reflect.setField(SettingsAPI, saveData, v);
 
-        valueTxt.text = Std.string(v);
+        valueTxt.text = v;
         return value = v;
     }
 
     public var arrows:Alphabet;
     public var valueTxt:Alphabet;
 
-    public var minimum:Float;
-    public var maximum:Float;
-    public var increment:Float;
-    public var decimals:Int;
-    public var callback:Float->Void;
+    public var values:Array<String> = [];
+    public var callback:String->Void;
 
-    public function new(text:String, description:String, saveData:String, minimum:Float, maximum:Float, increment:Float, decimals:Int, ?callback:Float->Void) {
+    public function new(text:String, description:String, saveData:String, values:Array<String>, ?callback:String->Void) {
         super(text, description, saveData);
-        this.minimum = minimum;
-        this.maximum = maximum;
-        this.increment = increment;
-        this.decimals = decimals;
+        this.values = values;
         this.callback = callback;
 
-        var value:Float = 0;
+        var value:String = "???";
         if(Reflect.field(SettingsAPI, saveData) != null)
             value = Reflect.field(SettingsAPI, saveData);
 
@@ -44,7 +38,7 @@ class Number extends Option {
         }
 
         add(arrows = new Alphabet(0, 0, Default, "<        >"));
-        add(valueTxt = new Alphabet(0, 0, Default, "0"));
+        add(valueTxt = new Alphabet(0, 0, Default, "???"));
 
         arrows.color = valueTxt.color = 0xFF000000;
 

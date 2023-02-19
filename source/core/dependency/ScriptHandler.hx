@@ -78,6 +78,7 @@ class ScriptHandler {
             "CoolUtil" => CoolUtil,
             "Controls" => Controls,
             "Paths" => Paths,
+            "PlayState" => states.PlayState,
 
             // Classes [Nova]
             "ModUtil" => core.modding.ModUtil,
@@ -204,16 +205,38 @@ class ScriptModule extends FlxBasic {
  * A group of `ScriptModule`, used primarily in `PlayState`.
  */
 class ScriptGroup extends FlxBasic {
+    public var additionalDefaultVariables:Map<String, Dynamic> = [];
     private var __scripts:Array<ScriptModule> = [];
     public var parent:Dynamic;
 
+    public function new() {
+        additionalDefaultVariables["importScript"] = importScript;
+        super();
+    }
+
+    public function importScript(path:String) {
+        var script = ScriptHandler.loadModule(Paths.script(path));
+        add(script);
+        return script;
+    }
+
     public function add(script:ScriptModule) {
-        script.setParent(parent);
+        __configureNewScript(script);
         __scripts.push(script);
     }
 
     public function remove(script:ScriptModule) {
         __scripts.remove(script);
+    }
+
+    public function insert(pos:Int, script:ScriptModule) {
+        __configureNewScript(script);
+        __scripts.insert(pos, script);
+    }
+
+    private function __configureNewScript(script:ScriptModule) {
+        if (parent != null) script.setParent(parent);
+        for(k=>e in additionalDefaultVariables) script.set(k, e);
     }
 
     public function setParent(parent:Dynamic, ?force:Bool = false) {

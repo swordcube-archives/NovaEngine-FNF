@@ -190,11 +190,14 @@ class NoteField extends NoteGroup {
 								for(char in event.characters) {
 									char.holdTimer = 0;
 									var altShit:String = char.animation.exists(singAnim+"-alt") ? "-alt" : "";
+									char.holdTimer = 0;
 									char.playAnim(singAnim+altShit, true);
 								}
 							} else {
-								var altShit:String = game.boyfriend.animation.exists(singAnim+"-alt") ? "-alt" : "";
-								game.boyfriend.playAnim(singAnim+altShit, true);
+								var char:Character = (note.mustPress) ? game.boyfriend : game.dad;
+								var altShit:String = char.animation.exists(singAnim+"-alt") ? "-alt" : "";
+								char.holdTimer = 0;
+								char.playAnim(singAnim+altShit, true);
 							}
 						}
 

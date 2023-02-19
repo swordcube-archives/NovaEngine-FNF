@@ -95,7 +95,7 @@ class Character extends FNFSprite implements MusicHandler {
 	/**
 	 * The color used for the left or right sides of the health bar.
 	 */
-	public var healthBarColor:FlxColor = FlxColor.BLACK;
+	public var healthBarColor:Null<FlxColor> ;
 
 	public var idleSuffix:String = "";
 
@@ -423,8 +423,6 @@ class Character extends FNFSprite implements MusicHandler {
                 healthBarColor = FlxColor.fromRGB(rgb[0], rgb[1], rgb[2]);
             }
         }
-        else
-            healthBarColor = FlxColor.WHITE;
 
 		// Dance Steps moment
 		danceSteps = data.has.danceSteps ? data.att.danceSteps.split(",") : ["idle"];

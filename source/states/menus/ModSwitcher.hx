@@ -59,7 +59,7 @@ class ModSwitcher extends MusicBeatSubstate {
                 #if docs
                 var metadata:Dynamic = null;
                 #else
-                var metadata:Metadata = ModUtil.metadatas[i-1];
+                var metadata:Metadata = ModUtil.metadatas[i];
                 #end
                 if(metadata == null)
                     throw "Mod config is null";

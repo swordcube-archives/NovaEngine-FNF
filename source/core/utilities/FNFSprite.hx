@@ -19,8 +19,8 @@ class FNFSprite extends FlxSprite {
     public var lastAnimContext:AnimationContext = NORMAL;
     public var animOffsets:Map<String, FlxPoint> = [];
 
-    public function addOffset(name:String, ?x:Float = 0, ?y:Float = 0, ?adjustToScale:Bool = true) {
-        animOffsets.set(name, FlxPoint.get(x * (adjustToScale ? scale.x : 1), y * (adjustToScale ? scale.y : 1)));
+    public function addOffset(name:String, ?x:Float = 0, ?y:Float = 0, ?adjustToScale:Bool = false) {
+        animOffsets.set(name, FlxPoint.get(x / (adjustToScale ? scale.x : 1), y / (adjustToScale ? scale.y : 1)));
     }
 
     public function addAnim(name:String, prefix:String, ?fps:Int = 24, ?loop:Bool = false, ?offsets:FlxPoint) {
@@ -40,9 +40,9 @@ class FNFSprite extends FlxSprite {
         lastAnimContext = context;
         if(animOffsets.exists(name)) {
             var daOffset:FlxPoint = animOffsets.get(name);
-            rotOffset.set(daOffset.x, daOffset.y);
+            offset.set(daOffset.x, daOffset.y);
         } else
-            rotOffset.set(0, 0);
+            offset.set(0, 0);
     }
 
 	override public function loadGraphic(Graphic:FlxGraphicAsset, Animated:Bool = false, Width:Int = 0, Height:Int = 0, Unique:Bool = false, ?Key:String) {

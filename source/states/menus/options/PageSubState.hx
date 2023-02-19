@@ -38,6 +38,7 @@ class PageSubState extends MusicBeatSubstate {
 		script.set("Checkbox", Checkbox);
 		script.set("Number", Number);
 		script.set("Custom", Custom);
+		script.set("List", List);
 		script.set("Option", Option);
 	}
 	
@@ -130,6 +131,17 @@ class PageSubState extends MusicBeatSubstate {
 						var option:Number = cast grpOptions.members[curSelected];
 						var increment:Float = (controls.UI_LEFT) ? -option.increment : option.increment;
 						option.value = FlxMath.roundDecimal(FlxMath.bound(option.value + increment, option.minimum, option.maximum), option.decimals);
+						option.update(0);
+
+						if(option.callback != null)
+							option.callback(option.value);
+
+					case "List":
+						var option:List = cast grpOptions.members[curSelected];
+						var increment:Float = (controls.UI_LEFT) ? -1 : 1;
+						var index:Int = Std.int(FlxMath.bound(option.values.indexOf(option.value) + increment, 0, option.values.length - 1));
+
+						option.value = option.values[index];
 						option.update(0);
 
 						if(option.callback != null)

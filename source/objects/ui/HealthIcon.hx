@@ -91,9 +91,6 @@ class HealthIcon extends TrackingSprite {
         initialScale = jsonData.scale;
         scale.set(initialScale, initialScale);
         updateHitbox();
-
-        initialWidth = width;
-        initialHeight = height;
         
         if(jsonData.animations.length <= 0)
 		    loadGraphic(Paths.image('game/icons/$char'), true, Std.int(width / jsonData.icons), jsonData.iconHeight);
@@ -130,6 +127,9 @@ class HealthIcon extends TrackingSprite {
             }
             playAnim(iconAmount > 1 ? bitch[Std.int(iconAmount * 0.5)].animName : bitch[0].animName);
         }
+
+        initialWidth = width;
+        initialHeight = height;
         
         return this;
     }

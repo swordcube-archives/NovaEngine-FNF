@@ -3,19 +3,11 @@ package states.menus.options.visual;
 import objects.ui.Checkbox as CheckboxSprite;
 
 class Checkbox extends Option {
-    public var saveData:String;
     public var callback:Bool->Void;
-
-    /**
-     * Whether or not this option was softcoded via a mod.
-     */
-    public var isModded:Bool = false;
-
     public var checkbox:CheckboxSprite;
     
-    public function new(text:String, saveData:String, ?callback:Bool->Void) {
-        super(text);
-        this.saveData = saveData;
+    public function new(text:String, description:String, saveData:String, ?callback:Bool->Void) {
+        super(text, description, saveData);
         this.callback = callback;
 
         alphabet.x += 120;

@@ -283,7 +283,10 @@ class PlayState extends MusicBeatState {
 		healthBarBG.trackingOffset.set(-4, -4);
 
 		add(healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this, 'health', 0, maxHealth));
-		healthBar.createFilledBar(0xFFFF0000, 0xFF66FF33);
+		healthBar.createFilledBar(
+			(dad != null && dad.healthBarColor != null) ? dad.healthBarColor : 0xFFFF0000, 
+			(boyfriend != null && boyfriend.healthBarColor != null) ? boyfriend.healthBarColor : 0xFF66FF33
+		);
 
 		add(healthBarBG);
 
@@ -567,11 +570,13 @@ class PlayState extends MusicBeatState {
 				for(char in event.characters) {
 					char.holdTimer = 0;
 					var altShit:String = char.animation.exists(singAnim+"-alt") ? "-alt" : "";
+					char.holdTimer = 0;
 					char.playAnim(singAnim+altShit, true);
 				}
 			} else {
 				var char:Character = (note.mustPress) ? boyfriend : dad;
 				var altShit:String = char.animation.exists(singAnim+"-alt") ? "-alt" : "";
+				char.holdTimer = 0;
 				char.playAnim(singAnim+altShit, true);
 			}
 		}

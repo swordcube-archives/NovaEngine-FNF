@@ -7,8 +7,8 @@ package states.menus.options.visual;
 class Custom extends Option {
     public var callback:Void->Void;
 
-    public function new(text:String, callback:Void->Void) {
-        super(text);
+    public function new(text:String, description:String, callback:Void->Void) {
+        super(text, description, "");
         this.callback = callback;
     }
 
