@@ -9,7 +9,6 @@ import objects.ui.StrumLine;
 import flixel.math.FlxMath;
 import flixel.math.FlxAngle;
 import states.PlayState;
-import flixel.group.FlxGroup.FlxTypedGroup;
 
 class NoteField extends NoteGroup {
 	private var game = PlayState.current;

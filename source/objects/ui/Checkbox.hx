@@ -23,6 +23,6 @@ class Checkbox extends TrackingSprite {
 			case 'static': offset.set();
 		}
 
-		return state;
+		return value = state;
 	}
 }

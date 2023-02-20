@@ -106,6 +106,11 @@ class PreferencesMenu extends PageSubState {
                     "autoPause",
                     (value:Bool) -> FlxG.autoPause = value
                 ),
+                new Checkbox(
+                    "Funny Volume Beep",
+                    "make the volume beeping go funny pitch",
+                    "funnyVolumeBeep"
+                ),
                 new Number(
                     "FPS Cap", 
                     "Adjust how high your FPS can go.",

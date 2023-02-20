@@ -27,6 +27,7 @@ class SettingsAPI {
     public static var judgementCamera:String = "World";
 
     // misc tab
+    public static var funnyVolumeBeep:Bool = false;
     public static var autoPause:Bool = true;
     public static var fpsCap:Int = 240;
     public static var vsync:Bool = false;
@@ -49,7 +50,8 @@ class SettingsAPI {
      */
     public static function init() {
         __save = new FlxSave();
-        __save.bind("preferences", "NovaEngine");
+        __save.bind("preferences", CoolUtil.getSavePath());
+        __save.flush();
 
         controls = new Controls();
     }

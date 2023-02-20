@@ -78,38 +78,20 @@ class Paths {
     }
 
     // Useful functions
-    public static function getFolderContents(path:String, ?returnFullPath:Bool = false, ?directoryFilter:DirectoryFilter = DIRS_AND_FILES):Array<String> {
-        path = './assets/$path';
-        if(!FileSystem.exists(path)) return [];
-
+    public static function getFolderContents(folderPath:String, ?returnFullPath:Bool = false, ?directoryFilter:DirectoryFilter = DIRS_AND_FILES):Array<String> {
         var coolList:Array<String> = [];
 
-        for(item in FileSystem.readDirectory(path)) {
-            var fullPath:String = '$path/$item';
-            if(!FileSystem.exists(fullPath))
-                continue;
+        var pathsToCheck:Array<String> = [
+            './assets/$folderPath',
+            './mods/${ModUtil.currentMod}/$folderPath'
+        ];
 
-            switch(directoryFilter) {
-                case FILES_ONLY:
-                    if(FileSystem.isDirectory(fullPath))
-                        continue;
+        for(path in pathsToCheck) {
+            if(!FileSystem.exists(path)) continue;
 
-                case DIRS_ONLY:
-                    if(!FileSystem.isDirectory(fullPath))
-                        continue;
-
-                default: // fuck you
-            }
-
-            coolList.push(returnFullPath ? fullPath : item);
-        }
-
-        path = './mods/${ModUtil.currentMod}/$path';
-        if(FileSystem.exists(path)) {
             for(item in FileSystem.readDirectory(path)) {
                 var fullPath:String = '$path/$item';
-                if(!FileSystem.exists(fullPath))
-                    continue;
+                if(!FileSystem.exists(fullPath)) continue;
 
                 switch(directoryFilter) {
                     case FILES_ONLY:

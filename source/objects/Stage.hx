@@ -77,8 +77,10 @@ class Stage extends StageLayer {
                     continue;
             }
         });
-        if(!firstLoad)
+        if(!firstLoad) {
+            script.load();
             script.call("onCreate", []);
+        }        
         firstLoad = false;
         game.scripts.add(script);
         return this;

@@ -24,6 +24,8 @@ class ModSwitcher extends MusicBeatSubstate {
 
     override function create() {
         super.create();
+
+        ModUtil.refreshMetadatas();
         
         bg = new FlxSprite(0, 0).makeGraphic(1, 1, 0xFF000000);
         bg.scale.set(FlxG.width, FlxG.height);

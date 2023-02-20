@@ -27,6 +27,7 @@ class Controls {
         "ACCEPT" => [ENTER, SPACE],
         "PAUSE" => [ENTER, NONE],
         "BACK" => [BACKSPACE, ESCAPE],
+        "RESET" => [R, NONE],
 
         "SWITCH_MOD" => [TAB, NONE],
 
@@ -45,9 +46,10 @@ class Controls {
     /**
      * Initializes the save data for your controls.
      */
-     public static function init() {
+    public static function init() {
         __save = new FlxSave();
-        __save.bind("controls", "NovaEngine");
+        __save.bind("controls", CoolUtil.getSavePath());
+        __save.flush();
     }
 
     /**
@@ -135,6 +137,9 @@ class Controls {
 
     public var SWITCH_MOD(get, never):Bool;
     private function get_SWITCH_MOD() return __checkKeys(controlsList["SWITCH_MOD"], JUST_PRESSED);
+
+    public var RESET(get, never):Bool;
+    private function get_RESET() return __checkKeys(controlsList["RESET"], JUST_PRESSED);
 
     // -- HELPER VARIABLES & FUNCTIONS ------------------------------------------------
 

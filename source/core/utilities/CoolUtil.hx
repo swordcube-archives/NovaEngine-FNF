@@ -1,5 +1,6 @@
 package core.utilities;
 
+import flixel.util.FlxSave;
 import openfl.media.Sound;
 import flixel.input.keyboard.FlxKey;
 import core.utilities.IniParser;
@@ -207,6 +208,18 @@ class CoolUtil {
 		if(section.exists("BPM"))
 			Conductor.bpm = Std.parseFloat(section["BPM"]);
     }
+
+	/**
+	 * Quick function to fix save files for Flixel 5
+	 * if you are making a source code mod, you are gonna wanna change "swordcube" to something else
+	 * so Base Nova saves won't conflict with yours
+	 */
+	public static function getSavePath(folder:String = 'swordcube'):String {
+		@:privateAccess
+		return #if (flixel < "5.0.0") folder #else FlxG.stage.application.meta.get('company')
+			+ '/'
+			+ FlxSave.validate(FlxG.stage.application.meta.get('file')) #end;
+	}
 
     public inline static function switchAnimFrames(anim1:FlxAnimation, anim2:FlxAnimation) {
 		if (anim1 == null || anim2 == null) return;

@@ -4,14 +4,6 @@ import core.dependency.scripting.events.CancellableEvent;
 import core.dependency.scripting.*;
 import flixel.FlxBasic;
 import haxe.io.Path;
-import hscript.Expr;
-import hscript.Parser;
-import flixel.util.FlxColor;
-import flixel.text.FlxText.FlxTextBorderStyle;
-import flixel.text.FlxText.FlxTextAlign;
-import flixel.FlxCamera.FlxCameraFollowStyle;
-import openfl.display.BlendMode;
-import flixel.input.keyboard.FlxKey;
 
 /**
  * The class that allows you to load scripts for things like stages, characters, modcharts, etc.
@@ -19,7 +11,6 @@ import flixel.input.keyboard.FlxKey;
 class ScriptHandler {
     public static var preset:Map<String, Dynamic>;
     public static var compilerFlags:Map<String, Dynamic>;
-    public static var parser:Parser;
 
     public static function init() {
         preset = [
@@ -55,7 +46,7 @@ class ScriptHandler {
             "FlxTrail" => flixel.addons.effects.FlxTrail,
             "FlxBackdrop" => flixel.addons.display.FlxBackdrop,
 
-            // VVV -- these are classes because tables are shitting themselves --
+            // VVV -- these are classes because lua tables are shitting themselves --
 
             "FlxColor" => core.dependency.scripting.helperClasses.FlxColorHelper,
             "FlxKey" => core.dependency.scripting.helperClasses.FlxKeyHelper,
@@ -72,9 +63,20 @@ class ScriptHandler {
             "FlxPoint" => flixel.math.FlxPoint.FlxBasePoint,
 
             // Classes [Funkin]
+            "Character" => objects.Character,
+            "Boyfriend" => objects.Character, // compatibility
+            "Alphabet" => objects.fonts.Alphabet,
+            "StrumLine" => objects.ui.StrumLine,
+            "StrumNote" => objects.ui.StrumLine.Receptor,
+            "Receptor" => objects.ui.StrumLine.Receptor,
+            "HealthIcon" => objects.ui.HealthIcon,
+            "Stage" => objects.Stage,
+            "Note" => objects.ui.Note,
             "MusicBeatState" => states.MusicBeat.MusicBeatState,
             "MusicBeatSubstate" => states.MusicBeat.MusicBeatSubstate,
             "MusicBeatSubState" => states.MusicBeat.MusicBeatSubstate,
+            "GameOverSubstate" => states.substates.GameOverSubstate,
+            "GameOverSubState" => states.substates.GameOverSubstate,
             "CoolUtil" => CoolUtil,
             "Controls" => Controls,
             "Paths" => Paths,
@@ -82,10 +84,6 @@ class ScriptHandler {
 
             // Classes [Nova]
             "ModUtil" => core.modding.ModUtil,
-            "engine" => {
-                name: "Nova Engine",
-                version: Main.engineVersion
-            },
             "FNFSprite" => FNFSprite,
             "IniParser" => IniParser,
             "SettingsAPI" => SettingsAPI,
@@ -101,6 +99,10 @@ class ScriptHandler {
             "FlxFixedShader" => shaders.FlxFixedShader,
 
             // Variables
+            "engine" => {
+                name: "Nova Engine",
+                version: Main.engineVersion
+            },
             "platform" => CoolUtil.getPlatform(), // Shortcut to "CoolUtil.getPlatform()".
             "window" => lime.app.Application.current.window,
             "mod" => core.modding.ModUtil.currentMod, // Shortcut to "ModUtil.currentMod".
@@ -116,12 +118,6 @@ class ScriptHandler {
             "release" => #if !debug true #else false #end,
             "final" => #if final true #else false #end,
         ];
-
-        parser = new Parser();
-        parser.allowJSON = true;
-        parser.allowTypes = true;
-        parser.allowMetadata = true;
-        parser.preprocesorValues = compilerFlags;
     }
 
     public static function loadModule(path:String):ScriptModule {
@@ -172,6 +168,11 @@ class ScriptModule extends FlxBasic {
     public function set(val:String, value:Dynamic) {}
 
     /**
+     * Runs the script.
+     */
+    public function load() {}
+
+    /**
      * Calls a function from this script and returns whatever the function returns (Can be `null`!).
      * @param funcName The name of the function to call.
      * @param parameters The parameters/arguments to give the function when calling it.
@@ -214,6 +215,14 @@ class ScriptGroup extends FlxBasic {
         super();
     }
 
+    /**
+     * Runs all of the scripts in this group.
+     */
+    public function load() {
+        for(script in __scripts)
+            script.load();
+    }
+
     public function importScript(path:String) {
         var script = ScriptHandler.loadModule(Paths.script(path));
         add(script);
@@ -221,8 +230,8 @@ class ScriptGroup extends FlxBasic {
     }
 
     public function add(script:ScriptModule) {
-        __configureNewScript(script);
         __scripts.push(script);
+        __configureNewScript(script);
     }
 
     public function remove(script:ScriptModule) {
@@ -230,8 +239,8 @@ class ScriptGroup extends FlxBasic {
     }
 
     public function insert(pos:Int, script:ScriptModule) {
-        __configureNewScript(script);
         __scripts.insert(pos, script);
+        __configureNewScript(script);
     }
 
     private function __configureNewScript(script:ScriptModule) {

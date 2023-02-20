@@ -1,0 +1,63 @@
+var lastNoteDad = {
+    strumTime: Math.NEGATIVE_INFINITY,
+    noteData: -1
+};
+
+var lastNote = {
+    strumTime: Math.NEGATIVE_INFINITY,
+    noteData: -1
+};
+
+function onCreatePost() {
+    doGhostAnim("idle", dad, 0xFF000000, 0.001);
+    doGhostAnim("idle", boyfriend, 0xFF000000, 0.001);
+}
+
+function onOpponentHit(event:NoteHitEvent) {
+    var note:Note = event.note;
+    var doDouble:Bool = (note.strumTime - lastNoteDad.strumTime) <= 2 && note.noteData != lastNoteDad.noteData;
+
+    if(!note.isSustainNote && doDouble) {
+        var character:Character = dad;
+        var color:Array<Int> = character.healthBarColorArray;
+        var adjustedColor:FlxColor = FlxColor.fromRGB(color[0] + 50, color[1] + 50, color[2] + 50);
+        doGhostAnim("sing"+note.directionName.toUpperCase(), character, adjustedColor, 0.8);
+    }
+
+    lastNoteDad.strumTime = note.strumTime;
+    lastNoteDad.noteData = note.noteData;
+}
+
+function onPlayerHit(event:NoteHitEvent) {
+    var note:Note = event.note;
+    var doDouble:Bool = (note.strumTime - lastNote.strumTime) <= 2 && note.noteData != lastNote.noteData;
+
+    if(!note.isSustainNote && doDouble) {
+        var character:Character = boyfriend;
+        var color:Array<Int> = character.healthBarColorArray;
+        var adjustedColor:FlxColor = FlxColor.fromRGB(color[0] + 50, color[1] + 50, color[2] + 50);
+        doGhostAnim("sing"+note.directionName.toUpperCase(), character, adjustedColor, 0.8);
+    }
+
+    lastNote.strumTime = note.strumTime;
+    lastNote.noteData = note.noteData;
+}
+
+function doGhostAnim(singAnim, character, color, initialAlpha) {
+    var trail = new Character(character.x, character.y, character.curCharacter, character.isPlayer);
+    trail.playAnim(singAnim, true);
+    trail.color = color;
+    trail.blend = BlendMode.HARDLIGHT;
+    trail.alpha = initialAlpha;
+    trail.idleAfterSinging = false;
+    trail.danceOnBeat = false;
+    insert(members.indexOf(character), trail);
+
+    FlxTween.tween(trail, {alpha: 0}, 0.75, {
+        onComplete: function(twn:FlxTween) {
+            remove(trail, true);
+            trail.kill();
+            trail.destroy();
+        }
+    });
+}

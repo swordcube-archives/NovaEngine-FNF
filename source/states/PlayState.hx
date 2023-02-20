@@ -1,5 +1,6 @@
 package states;
 
+import states.substates.GameOverSubstate;
 import core.modding.ModUtil;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import cutscenes.*;
@@ -175,6 +176,26 @@ class PlayState extends MusicBeatState {
 		assetModifier = "base";
 		changeableSkin = "default";
 	}
+
+	/**
+	 * Instantly causes a game over.
+	 */
+	public function gameOver() {
+		if(startTimer != null)
+			startTimer.active = false;
+
+		FlxG.sound.music.stop();
+		vocals.stop();
+
+		endingSong = true;
+		persistentUpdate = false;
+		persistentDraw = false;
+
+		openSubState(new GameOverSubstate(
+			boyfriend != null ? boyfriend.getScreenPosition().x : 700, 
+			boyfriend != null ? boyfriend.getScreenPosition().y : 360
+		));
+	}
 	
 	override public function create() {
 		super.create();
@@ -228,6 +249,8 @@ class PlayState extends MusicBeatState {
 		add(boyfriend = new Character(stage.bfPos.x, stage.bfPos.y, SONG.player1, true));
 		add(stage.bfLayer);
 
+		GameOverSubstate.resetVariables();
+
 		camFollow = new FlxObject(0, 0, 1, 1);
 		if(prevCamFollow != null) {
 			camFollow = prevCamFollow;
@@ -253,6 +276,7 @@ class PlayState extends MusicBeatState {
 			scripts.add(ScriptHandler.loadModule(path));
 		}
 
+		scripts.load();
 		scripts.call("onCreate", []);
 		camGame.zoom = defaultCamZoom;
 
@@ -278,7 +302,7 @@ class PlayState extends MusicBeatState {
 
 		add(notes = new NoteField());
 		add(grpNoteSplashes = new FlxTypedGroup<NoteSplash>());
-
+ 
 		add(comboGroup = new FlxTypedSpriteGroup<FNFSprite>(FlxG.width * 0.55, (FlxG.height * 0.5) - 60));
 
 		if(SettingsAPI.judgementCamera.toLowerCase() == "hud")
@@ -752,9 +776,13 @@ class PlayState extends MusicBeatState {
 			script.call("onUpdate", [elapsed]);
 
 		timeTxt.text = FlxStringUtil.formatTime(FlxG.sound.music.time / 1000)+" / "+FlxStringUtil.formatTime(FlxG.sound.music.length / 1000);
+		if(playerStrums.autoplay)
+			timeTxt.text += " [AUTO]";
 
 		iconP1.health = healthBar.percent / 100;
 		iconP2.health = 1 - (healthBar.percent / 100);
+
+		if(health <= 0 || (controls.RESET && !SettingsAPI.disableResetButton)) gameOver();
 
 		if(iconZooming) {
 			iconP1.scale.set(MathUtil.lerp(iconP1.scale.x, iconP1.initialScale, iconZoomingSpeed), MathUtil.lerp(iconP1.scale.y, iconP1.initialScale, iconZoomingSpeed));

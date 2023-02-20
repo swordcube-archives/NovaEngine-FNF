@@ -3,12 +3,14 @@ package core.dependency.scripting;
 import core.dependency.ScriptHandler;
 import hscript.Expr;
 import hscript.Interp;
+import hscript.Parser;
 
 /**
  * The class used for handling HScript functionality.
  */
 class HScript extends ScriptModule {
     public var interp:Interp;
+    public var expr:Expr;
 
     private function __errorHandler(error:Error) {
         #if !docs
@@ -24,21 +26,21 @@ class HScript extends ScriptModule {
         super(path, fileName);
 
         #if !docs
-        var expr:Expr = null;
+        var parser:Parser = new Parser();
+        parser.allowJSON = parser.allowTypes = parser.allowMetadata = true;
+        parser.preprocesorValues = ScriptHandler.compilerFlags;
+
         try {
             if(!FileSystem.exists(path))
                 throw 'Script doesn\'t exist at path: $path';
             
-            expr = ScriptHandler.parser.parseString(File.getContent(path));
+            expr = parser.parseString(File.getContent(path));
         } 
         catch(e) {
             expr = null;
             Logs.trace('Error occured while loading script at path: $path - $e', ERROR);
         }
         
-        // If the script failed to load, just treat it as a dummy script!
-        if(expr == null) return;
-
         interp = new Interp();
         interp.errorHandler = __errorHandler;
 
@@ -50,9 +52,16 @@ class HScript extends ScriptModule {
 
         for(name => value in ScriptHandler.preset)
             interp.variables.set(name, value);
-
-        interp.execute(expr);
         #end
+    }
+
+    /**
+     * Runs the script.
+     */
+    override public function load() {
+        // If the script failed to load, just treat it as a dummy script!
+        if(expr == null) return;
+        interp.execute(expr);
     }
 
     /**

@@ -61,6 +61,7 @@ class MusicBeatState extends FlxUIState implements MusicHandler {
 
         script = ScriptHandler.loadModule(Paths.script('data/states/$scriptName'));
         script.setParent(this);
+        script.load();
         call("new", []);
         call("onCreate", scriptParameters);
     }
@@ -207,6 +208,7 @@ class MusicBeatSubstate extends FlxUISubState implements MusicHandler {
 
         script = ScriptHandler.loadModule(Paths.script('data/substates/$scriptName'));
         script.setParent(this);
+        script.load();
         call("new", []);
         call("onCreate", scriptParameters);
     }

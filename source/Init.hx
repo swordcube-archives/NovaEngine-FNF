@@ -40,6 +40,8 @@ class Init extends FlxState {
         Application.current.onExit.add((exitCode:Int) -> {
             SettingsAPI.save();
         });
+        SettingsAPI.load();
+        
         Main.setFPSCap(SettingsAPI.fpsCap);
         FlxG.autoPause = SettingsAPI.autoPause;
         Main.fpsOverlay.visible = SettingsAPI.fpsCounter;

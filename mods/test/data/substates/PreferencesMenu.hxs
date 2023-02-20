@@ -1,3 +1,7 @@
 function onGenerateOptions() {
-    options["Gameplay"].push(new Checkbox("coolswag", mod+":ModdedOptionTest"));
+    options["Gameplay"].push(new Checkbox(
+        "coolswag", 
+        "fart ass",
+        mod+":ModdedOptionTest"
+    ));
 }

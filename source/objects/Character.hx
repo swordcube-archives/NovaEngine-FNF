@@ -95,7 +95,12 @@ class Character extends FNFSprite implements MusicHandler {
 	/**
 	 * The color used for the left or right sides of the health bar.
 	 */
-	public var healthBarColor:Null<FlxColor> ;
+	public var healthBarColor:Null<FlxColor>;
+
+	/**
+	 * `healthBarColor` but split up into the rgb of the color in an array.
+	 */
+	public var healthBarColorArray:Array<Int> = [0, 0, 0];
 
 	public var idleSuffix:String = "";
 
@@ -131,6 +136,8 @@ class Character extends FNFSprite implements MusicHandler {
 
 	public var animTimer:Float = 0;
 	public var holdTimer:Float = 0.0;
+
+	public var idleAfterSinging:Bool = true;
 
 	public var specialAnim:Bool = false;
 	public var debugMode:Bool = false;
@@ -212,6 +219,7 @@ class Character extends FNFSprite implements MusicHandler {
 		}
 		script = ScriptHandler.loadModule(Paths.script('data/characters/$curCharacter/script'));
 		script.set("character", this);
+		script.load();
         script.call("onCreate", []);
 
 		// Player offset shit, don't worry bout it
@@ -283,6 +291,7 @@ class Character extends FNFSprite implements MusicHandler {
 
 		var rgb:Array<Int> = data.healthbar_colors;
 		healthBarColor = FlxColor.fromRGB(rgb[0], rgb[1], rgb[2]);
+		healthBarColorArray = rgb;
 
 		// Dance Steps moment
 		danceSteps = (animation.exists("danceLeft") && animation.exists("danceRight")) ? ["danceLeft", "danceRight"] : ["idle"];
@@ -334,6 +343,7 @@ class Character extends FNFSprite implements MusicHandler {
 		scrollFactor.set(1, 1);
 
 		healthBarColor = FlxColor.fromString(data.healthbarColor);
+		healthBarColorArray = [healthBarColor.red, healthBarColor.green, healthBarColor.blue];
 
 		// Dance Steps moment
 		danceSteps = (data.danceSteps != null && data.danceSteps.length > 1) ? data.danceSteps : ["idle"];
@@ -423,7 +433,8 @@ class Character extends FNFSprite implements MusicHandler {
                 healthBarColor = FlxColor.fromRGB(rgb[0], rgb[1], rgb[2]);
             }
         }
-
+		healthBarColorArray = [healthBarColor.red, healthBarColor.green, healthBarColor.blue];
+		
 		// Dance Steps moment
 		danceSteps = data.has.danceSteps ? data.att.danceSteps.split(",") : ["idle"];
 		for (i in 0...danceSteps.length)
@@ -500,10 +511,10 @@ class Character extends FNFSprite implements MusicHandler {
 				dance();
 			}
 
-			if (animation.curAnim != null && animation.name.startsWith('sing'))
+			if (animation.curAnim != null && animation.name.startsWith('sing') && idleAfterSinging)
 				holdTimer += elapsed * FlxG.sound.music.pitch;
 
-			if (lastAnimContext == SING && holdTimer >= Conductor.stepCrochet * singDuration * 0.0011) {
+			if (lastAnimContext == SING && holdTimer >= Conductor.stepCrochet * singDuration * 0.0011 && idleAfterSinging) {
 				dance();
 				holdTimer = 0;
 			}

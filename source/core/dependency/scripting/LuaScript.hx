@@ -99,12 +99,10 @@ class LuaScript extends ScriptModule {
             set(name, value);
 
 		set("parent", parent);
-
-		execute();
 		#end
     }
 
-    public function execute() {
+    override public function load() {
 		#if linc_luajit
 		var lastLua:LuaScript = currentLua;
 		currentLua = this;

@@ -46,7 +46,10 @@ class Main extends Sprite {
 
 	public function new() {
 		super();
+
+		// no one line shit because null object reference!!
+		fpsOverlay = new FPSOverlay(10, 3);
 		addChild(new FlxGame(gameSettings.width, gameSettings.height, Init, gameSettings.framerate, gameSettings.framerate, gameSettings.skipSplash, gameSettings.fullscreen));
-		addChild(fpsOverlay = new FPSOverlay(10, 3));
+		addChild(fpsOverlay);
 	}
 }
