@@ -37,6 +37,7 @@ class ScriptHandler {
             "FlxSound" => flixel.system.FlxSound,
             "FlxSort" => flixel.util.FlxSort,
             "FlxStringUtil" => flixel.util.FlxStringUtil,
+            "FlxMath" => flixel.math.FlxMath,
             "FlxState" => flixel.FlxState,
             "FlxSubState" => flixel.FlxSubState,
             "FlxText" => flixel.text.FlxText,
@@ -63,6 +64,7 @@ class ScriptHandler {
             "FlxPoint" => flixel.math.FlxPoint.FlxBasePoint,
 
             // Classes [Funkin]
+            "Conductor" => core.song.Conductor,
             "Character" => objects.Character,
             "Boyfriend" => objects.Character, // compatibility
             "Alphabet" => objects.fonts.Alphabet,

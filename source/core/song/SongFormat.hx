@@ -23,7 +23,7 @@ typedef SectionNote = Array<Dynamic>;
 
 typedef SectionData = {
 	var sectionNotes:Array<SectionNote>;
-	var sectionBeats:Float; // psych engine
+	@:optional var sectionBeats:Float; // psych engine
 	var lengthInSteps:Int;
 	var mustHitSection:Bool;
 	var bpm:Float;

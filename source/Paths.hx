@@ -82,8 +82,13 @@ class Paths {
         var coolList:Array<String> = [];
 
         var pathsToCheck:Array<String> = [
+            // source assets
+            '../../../../assets/$folderPath',
+            '../../../../mods/${ModUtil.currentMod}/$folderPath',
+
+            // export folder
             './assets/$folderPath',
-            './mods/${ModUtil.currentMod}/$folderPath'
+            './mods/${ModUtil.currentMod}/$folderPath',
         ];
 
         for(path in pathsToCheck) {
@@ -105,7 +110,9 @@ class Paths {
                     default: // fuck you
                 }
 
-                coolList.push(returnFullPath ? fullPath : item);
+                var penis:String = (returnFullPath) ? fullPath : item;
+                if(!coolList.contains(penis))
+                    coolList.push(penis);
             }
         }
 
@@ -116,9 +123,19 @@ class Paths {
     public static function getPath(path:String, ?mod:Null<String>) {
         if(mod == null) mod = ModUtil.currentMod;
 
-        var pathFromMod:String = './mods/$mod/$path';
-        if(FileSystem.exists(pathFromMod))
-            return pathFromMod;
+        var pathsToCheck:Array<String> = [
+            // source assets
+            '../../../../assets/$path',
+            '../../../../mods/$path',
+
+            // export folder
+            './mods/$mod/$path'
+        ];
+
+        for(path in pathsToCheck) {
+            if(FileSystem.exists(path))
+                return path;
+        }
         
         return './assets/$path';
     }

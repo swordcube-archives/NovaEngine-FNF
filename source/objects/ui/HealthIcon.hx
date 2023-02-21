@@ -74,6 +74,7 @@ class HealthIcon extends TrackingSprite {
         }
         loadGraphic(Paths.image('game/icons/$char')); // have to load stupidly first to get the icon size
 
+        jsonData = {};
         var jsonPath:String = Paths.json('images/game/icons/$char', true);
         try {
             if(FileSystem.exists(jsonPath))
@@ -87,10 +88,6 @@ class HealthIcon extends TrackingSprite {
         jsonData.setFieldDefault("scale", 1.0);
         jsonData.setFieldDefault("animations", new Array<IconAnimation>());
         jsonData.setFieldDefault("positionOffset", {x: 0, y: 0});
-
-        initialScale = jsonData.scale;
-        scale.set(initialScale, initialScale);
-        updateHitbox();
         
         if(jsonData.animations.length <= 0)
 		    loadGraphic(Paths.image('game/icons/$char'), true, Std.int(width / jsonData.icons), jsonData.iconHeight);
@@ -127,6 +124,10 @@ class HealthIcon extends TrackingSprite {
             }
             playAnim(iconAmount > 1 ? bitch[Std.int(iconAmount * 0.5)].animName : bitch[0].animName);
         }
+
+        initialScale = jsonData.scale;
+        scale.set(initialScale, initialScale);
+        updateHitbox();
 
         initialWidth = width;
         initialHeight = height;

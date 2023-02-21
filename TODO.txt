@@ -1,0 +1,6 @@
+-- EASY TASKS --
+Controls Menu [DONE]
+Discord RPC
+
+-- HARD TASKS --
+Chart Editor

@@ -1,5 +1,6 @@
 package states;
 
+import states.editors.ChartingState;
 import states.substates.GameOverSubstate;
 import core.modding.ModUtil;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
@@ -814,6 +815,11 @@ class PlayState extends MusicBeatState {
 		}
 
 		if(health <= 0 || (controls.RESET && !SettingsAPI.disableResetButton)) gameOver();
+		if(controls.CHARTER) {
+			FlxG.sound.music.stop();
+			vocals.stop();
+			FlxG.switchState(new ChartingState());
+		}
 
 		if(iconZooming) {
 			iconP1.scale.set(MathUtil.lerp(iconP1.scale.x, iconP1.initialScale, iconZoomingSpeed), MathUtil.lerp(iconP1.scale.y, iconP1.initialScale, iconZoomingSpeed));
