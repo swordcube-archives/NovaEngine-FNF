@@ -1,0 +1,292 @@
+import flixel.addons.display.FlxGridOverlay;
+import flixel.util.FlxStringUtil;
+import flixel.FlxObject;
+import core.utilities.MathUtil;
+
+var SONG:SongData;
+
+var bg:FlxSprite;
+var gridBG:FlxSprite;
+var gridBGTop:FlxSprite;
+var gridBGBottom:FlxSprite;
+
+var camFollow:FlxObject;
+var dummyNote:FlxSprite;
+var strumLine:FlxSprite;
+
+var ROWS:Int = 16;
+var COLUMNS:Int = 8;
+var GRID_SIZE:Int = 40;
+
+var curSection:Int = 0;
+var musicList:Array<FlxSound> = [];
+
+var bpmTxt:FlxText;
+
+var iconP2:HealthIcon;
+var iconP1:HealthIcon;
+
+var curRenderedNotes:FlxGroup;
+var curRenderedSustains:FlxGroup;
+
+function yToTime(y:Float) {
+	return FlxMath.remapToRange(y, gridBG.y, gridBG.y + gridBG.height, 0, 16 * Conductor.stepCrochet);
+}
+
+function timeToY(time:Float) {
+	return FlxMath.remapToRange(time, 0, 16 * Conductor.stepCrochet, gridBG.y, gridBG.y + gridBG.height);
+}
+
+function sectionStartTime(?section) {
+	if(section == null)
+		section = curSection;
+	
+	var coolPos:Float = 0;
+	var goodBPM:Float = Conductor.bpm;
+	
+	for(i in 0...section) {
+        if(SONG.curRenderedNotes[i].changeBPM)
+            goodBPM = SONG.curRenderedNotes[i].bpm;
+		
+		coolPos += 4 * (1000 * (60 / goodBPM));
+    }
+	
+	return coolPos;
+}
+
+function onCreate() {
+    SONG = PlayState.SONG;
+
+    FlxG.sound.playMusic(Paths.songInst(SONG.song, PlayState.storyDifficulty), 1, false);
+    FlxG.sound.music.stop();
+    FlxG.sound.music.time = 0;
+
+    Conductor.position = 0;
+
+    add(bg = new FlxSprite().loadGraphic(Paths.image("menus/base/menuBGDesat")));
+    bg.screenCenter();
+    bg.scrollFactor.set();
+    bg.alpha = 0.2;
+
+    add(gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * COLUMNS, GRID_SIZE * ROWS));
+    gridBG.screenCenter(FlxAxes.X);
+
+    add(gridBGTop = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * COLUMNS, GRID_SIZE * ROWS));
+    gridBGTop.screenCenter(FlxAxes.X);
+    gridBGTop.y -= gridBG.height;
+
+    add(gridBGBottom = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * COLUMNS, GRID_SIZE * ROWS));
+    gridBGBottom.screenCenter(FlxAxes.X);
+    gridBGBottom.y += gridBG.height;
+
+    add(curRenderedNotes = new FlxGroup());
+    add(curRenderedSustains = new FlxGroup());
+
+    for(dupeGrid in [gridBGTop, gridBGBottom])
+        dupeGrid.alpha = 0.6;
+
+    add(dummyNote = new FlxSprite(gridBG.x, gridBG.y).makeGraphic(GRID_SIZE, GRID_SIZE, 0xFFFFFFFF));
+    add(strumLine = new FlxSprite(gridBG.x, gridBG.y).makeGraphic(gridBG.width, 5, 0xFFFFFFFF));
+
+    add(iconP2 = new HealthIcon(0, 20, SONG.player2));
+    add(iconP1 = new HealthIcon(0, 20, SONG.player1));
+
+    for(icon in [iconP2, iconP1]) {
+        icon.scrollFactor.set();
+        icon.scale.set(icon.initialScale * 0.5, icon.initialScale * 0.5);
+        icon.updateHitbox();
+        icon.screenCenter(FlxAxes.X);
+    }
+
+    var iconSpacing:Float = gridBG.width * 0.5;
+    iconP2.x -= iconSpacing - iconP2.width;
+    iconP1.x += iconSpacing - iconP1.width;
+
+    add(bpmTxt = new FlxText(gridBG.x + (gridBG.width + 10), 10, 0, "The story\nof cock ball", 16));
+    bpmTxt.scrollFactor.set();
+
+    add(camFollow = new FlxObject(FlxG.width * 0.5, 250, 1, 1));
+    FlxG.camera.follow(camFollow, null, 1);
+
+    musicList = [FlxG.sound.music];
+    musicList[0].onComplete = () -> {
+        for(music in musicList) {
+            music.pause();
+            music.time = 0;
+            music.play();
+        }
+        curSection = 0;
+        changeSection();
+        Conductor.position = 0;
+        Conductor.update();
+    }
+
+    updateGrid();
+}
+
+function changeSection(?change:Int) {
+    if(change == null) change = 0;
+    curSection = FlxMath.wrap(curSection + change, 0, SONG.curRenderedNotes.length - 1);
+    updateGrid();
+}
+
+function updateGrid() {
+    for(list in [curRenderedNotes, curRenderedSustains]) {
+        for(item in list) {
+            item.kill();
+            item.destroy();
+        }
+        list.clear();
+    }
+
+    if (SONG.curRenderedNotes[curSection].changeBPM && SONG.curRenderedNotes[curSection].bpm > 0)
+        Conductor.bpm = SONG.curRenderedNotes[curSection].bpm;
+    else {
+        // get last bpm
+        var daBPM:Float = SONG.bpm;
+        for (i in 0...curSection) {
+            if (SONG.curRenderedNotes[i].changeBPM)
+                daBPM = SONG.curRenderedNotes[i].bpm;
+        }
+
+        Conductor.bpm = daBPM;
+    }
+
+    for(note in SONG.notes[curSection].sectionNotes) {
+        
+    }
+}
+
+function onUpdate(elapsed:Float) {
+    var iconLerp:Float = 0.15;
+
+    var P2Scale:Float = (SONG.curRenderedNotes[curSection].mustHitSection) ? iconP2.initialScale * 0.4 : iconP2.initialScale * 0.5;
+    var P2Alpha:Float = (SONG.curRenderedNotes[curSection].mustHitSection) ? 0.6 : 1;
+    iconP2.scale.set(MathUtil.lerp(iconP2.scale.x, P2Scale, iconLerp), MathUtil.lerp(iconP2.scale.y, P2Scale, iconLerp));
+    iconP2.alpha = MathUtil.lerp(iconP2.alpha, P2Alpha, iconLerp);
+
+    var P1Scale:Float = (SONG.curRenderedNotes[curSection].mustHitSection) ? iconP1.initialScale * 0.5 : iconP1.initialScale * 0.4;
+    var P1Alpha:Float = (SONG.curRenderedNotes[curSection].mustHitSection) ? 1 : 0.6;
+    iconP1.scale.set(MathUtil.lerp(iconP1.scale.x, P1Scale, iconLerp), MathUtil.lerp(iconP1.scale.y, P1Scale, iconLerp));
+    iconP1.alpha = MathUtil.lerp(iconP1.alpha, P1Alpha, iconLerp);
+
+    if(FlxG.keys.justPressed.SPACE) {
+        if(musicList[0].playing) {
+            for(music in musicList) {
+                music.pause();
+                music.time = Conductor.position;
+            }
+        } else {
+            for(music in musicList) {
+                music.time = Conductor.position;
+                music.play();
+            }
+        }
+    } else if(controls.ACCEPT) {
+        persistentUpdate = false;
+        persistentDraw = true;
+        PlayState.SONG = SONG;
+
+        for(obj in [gridBG, curRenderedNotes, curRenderedSustains, dummyNote, strumLine]) {
+            obj.kill();
+            obj.destroy();
+            remove(obj, true);
+        }
+
+        FlxG.switchState(new PlayState());
+        return;
+    }
+
+    if(FlxG.mouse.wheel != 0) {
+        Conductor.position -= (FlxG.mouse.wheel * Conductor.stepCrochet * 0.4);
+        if(Conductor.position < 0)
+            Conductor.position = 0;
+
+        if(Conductor.position >= FlxG.sound.music.length) {
+            Conductor.position = 0;
+            curSection = 0;
+            changeSection();
+            Conductor.update();
+        }
+
+        for(music in musicList) {
+            music.pause();
+            music.time = Conductor.position;
+        }
+    }
+
+    if(musicList[0].playing)
+        Conductor.position += elapsed * 1000;
+
+    if(Conductor.position < sectionStartTime()) {
+        changeSection(-1);
+        for(music in musicList) {
+            music.pause();
+            music.time = Conductor.position;
+        }
+    }
+
+    if(Conductor.position > sectionStartTime() + (4 * (1000 * (60 / Conductor.bpm)))) {
+        changeSection(1);
+        Conductor.position = sectionStartTime();
+        var playing = musicList[0].playing;
+        for(music in musicList) {
+            music.pause();
+            music.time = Conductor.position;
+            if(playing)
+                music.play();
+        }
+    }
+
+    if(FlxG.keys.justPressed.A || FlxG.keys.justPressed.LEFT) {
+        changeSection(-1);
+        Conductor.position = sectionStartTime();
+        for(music in musicList) {
+            music.pause();
+            music.time = Conductor.position;
+        }
+    }
+
+    if(musicList[0].playing && !Conductor.isAudioSynced(musicList[0])) {
+        for(music in musicList) {
+            music.pause();
+            music.time = Conductor.position;
+            music.play();
+        }
+    }
+
+    Conductor.update();
+
+    var mousePos = [
+        Math.floor(FlxG.mouse.x / GRID_SIZE) * GRID_SIZE,
+        Math.floor(FlxG.mouse.y / GRID_SIZE) * GRID_SIZE
+    ];
+    var dummyVisible:Bool = (
+        mousePos[0] >= gridBG.x &&
+        mousePos[0] <= (gridBG.x + gridBG.width) - GRID_SIZE &&
+        mousePos[1] >= gridBG.y &&
+        mousePos[1] <= (gridBG.y + gridBG.height) - GRID_SIZE
+    );
+
+    if(dummyVisible) {
+        dummyNote.setPosition(
+            mousePos[0],
+            mousePos[1]
+        );
+    }
+
+    strumLine.y = timeToY(Conductor.position - sectionStartTime());
+    camFollow.y = strumLine.y + 250;
+    FlxG.camera.snapToTarget();
+
+    bpmTxt.text = (FlxStringUtil.formatTime(Conductor.position / 1000)
+        + " / "
+        + FlxStringUtil.formatTime(FlxG.sound.music.length / 1000)
+        + "\nBeat: "
+        + curBeat
+        + "\nStep: "
+        + curStep
+        + "\nSection: "
+        + curSection
+    );
+}

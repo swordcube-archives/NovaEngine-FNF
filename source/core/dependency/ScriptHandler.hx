@@ -46,6 +46,8 @@ class ScriptHandler {
             "FlxEase" => flixel.tweens.FlxEase,
             "FlxTrail" => flixel.addons.effects.FlxTrail,
             "FlxBackdrop" => flixel.addons.display.FlxBackdrop,
+            "FlxTypedGroup" => flixel.group.FlxGroup.FlxTypedGroup,
+            "FlxGroup" => flixel.group.FlxGroup,
 
             // VVV -- these are classes because lua tables are shitting themselves --
 
