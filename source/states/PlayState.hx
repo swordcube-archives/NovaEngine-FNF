@@ -89,6 +89,8 @@ class PlayState extends MusicBeatState {
 	public var iconP2:HealthIcon;
 	public var scoreTxt:FlxText;
 
+	public var autoplayTxt:FlxText;
+
 	public var health(default, set):Float = 1;
 	private function set_health(value:Float):Float {
 		return health = FlxMath.bound(value, 0, maxHealth);
@@ -221,6 +223,7 @@ class PlayState extends MusicBeatState {
 		if(SONG.splashSkin == null)
 			SONG.splashSkin = "noteSplashes";
 
+		var instPath:String = Paths.songInst(SONG.song, storyDifficulty, true);
 		FlxG.sound.playMusic(Paths.songInst(SONG.song, storyDifficulty), 0, false);
 		FlxG.sound.list.add(vocals = new FlxSound());
 
@@ -285,7 +288,7 @@ class PlayState extends MusicBeatState {
 		camGame.snapToTarget();
 
 		var receptorSpacing:Float = FlxG.width / 4;
-		var strumY:Float = SettingsAPI.downscroll ? FlxG.height - 160 : 50;
+		var strumY:Float = (SettingsAPI.downscroll) ? FlxG.height - 160 : 50;
 
 		add(cpuStrums = new StrumLine(0, strumY, SettingsAPI.downscroll, true, changeableSkin, SONG.keyCount));
 		cpuStrums.screenCenter(X);
@@ -299,6 +302,13 @@ class PlayState extends MusicBeatState {
 			cpuStrums.x -= receptorSpacing;
 			playerStrums.x += receptorSpacing;
 		}
+
+		var autoplayTxtSpacing:Float = (SettingsAPI.downscroll) ? -50 : 125;
+		add(autoplayTxt = new FlxText(0, strumY + autoplayTxtSpacing, 0, "[AUTOPLAY]", 30));
+		autoplayTxt.visible = playerStrums.autoplay;
+		autoplayTxt.setFormat(Paths.font("vcr.ttf"), 30, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		autoplayTxt.borderSize = 2;
+		autoplayTxt.screenCenter(X);
 
 		add(notes = new NoteField());
 		add(grpNoteSplashes = new FlxTypedGroup<NoteSplash>());
@@ -324,27 +334,6 @@ class PlayState extends MusicBeatState {
 
 		add(healthBarBG);
 
-		timeBarBG = new TrackingSprite(0, FlxG.height * (SettingsAPI.downscroll ? 0.945 : 0.025)).loadGraphic(Paths.image("UI/base/timeBar"));
-		timeBarBG.screenCenter(X);
-		timeBarBG.trackingOffset.set(-4, -4);
-
-		add(timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4, LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8), Std.int(timeBarBG.height - 8), FlxG.sound.music, 'time', 0, FlxG.sound.music.length));
-		timeBar.createGradientBar([0xFF2C183B, 0xFF5C1C57], [0xFFB062F0, 0xFFE44DD7], 1, 90);
-
-		add(timeBarBG);
-
-		add(timeTxt = new FlxText(0, timeBar.y - 8, 0, "0:00 / 0:00", 22));
-		timeTxt.setFormat(Paths.font("vcr.ttf"), 22, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		timeTxt.borderSize = 2;
-		timeTxt.screenCenter(X);
-
-		timeBarBG.trackingMode = healthBarBG.trackingMode = LEFT;
-		healthBarBG.tracked = healthBar;
-		timeBarBG.tracked = timeBar;
-
-		for(obj in [timeBarBG, timeBar, timeTxt])
-			obj.alpha = 0;
-
 		add(iconP1 = new HealthIcon(0, healthBar.y, (boyfriend != null) ? boyfriend.healthIcon : SONG.player1));
 		iconP1.flipX = true;
 
@@ -355,7 +344,31 @@ class PlayState extends MusicBeatState {
 		scoreTxt.borderSize = 2;
 		updateScoreText();
 
-		for(obj in [cpuStrums, playerStrums, notes, grpNoteSplashes, healthBarBG, healthBar, timeBarBG, timeBar, timeTxt, iconP1, iconP2, scoreTxt])
+		timeBarBG = new TrackingSprite(0, FlxG.height * (SettingsAPI.downscroll ? 0.945 : 0.025)).loadGraphic(Paths.image("UI/base/timeBar"));
+		timeBarBG.screenCenter(X);
+		timeBarBG.trackingOffset.set(-4, -4);
+
+		add(timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4, LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8), Std.int(timeBarBG.height - 8)));
+		timeBar.createGradientBar([0xFF2C183B, 0xFF5C1C57], [0xFFB062F0, 0xFFE44DD7], 1, 90);
+
+		timeBar.setParent(Conductor, "position");
+		timeBar.setRange(0, (FileSystem.exists(instPath)) ? FlxG.sound.music.length : 1);
+
+		add(timeBarBG);
+
+		add(timeTxt = new FlxText(0, timeBar.y - 8, 0, "0:00 / 0:00", 22));
+		timeTxt.setFormat(Paths.font("vcr.ttf"), 22, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		timeTxt.borderSize = 2;
+		timeTxt.screenCenter(X);
+
+		for(obj in [timeBarBG, timeBar, timeTxt])
+			obj.alpha = 0;
+
+		timeBarBG.trackingMode = healthBarBG.trackingMode = LEFT;
+		healthBarBG.tracked = healthBar;
+		timeBarBG.tracked = timeBar;
+
+		for(obj in [cpuStrums, playerStrums, notes, grpNoteSplashes, healthBarBG, healthBar, timeBarBG, timeBar, timeTxt, autoplayTxt, iconP1, iconP2, scoreTxt])
 			obj.cameras = [camHUD];
 
 		// Preload countdown
@@ -514,7 +527,11 @@ class PlayState extends MusicBeatState {
 
 		if(event.cancelled) return;
 
-		FlxG.switchState(new MainMenuState());
+		if(isStoryMode)
+			FlxG.switchState(new StoryMenuState());
+		else
+			FlxG.switchState(new FreeplayState());
+
 		NovaTools.playMenuMusic("freakyMenu");
 	}
 
@@ -597,7 +614,7 @@ class PlayState extends MusicBeatState {
 			["onBfHit", "onDadHit"],
 			["goodNoteHit", "opponentNoteHit"]
 		];
-			
+		
 		var event = scripts.event(funcName, new NoteHitEvent(note, judgeData, note.mustPress ? judgeData.score : 0, note.mustPress && judgeData.showSplash));
 		event = noteTypeScripts.get(note.noteType).event(funcName, event);
 
@@ -769,18 +786,32 @@ class PlayState extends MusicBeatState {
 		scoreTxt.x = Math.floor((FlxG.width - scoreTxt.width) * 0.5);
 	}
 
+	public var autoplaySine:Float = 0;
+
 	override public function update(elapsed:Float) {
 		super.update(elapsed);
 		scripts.call("onUpdate", [elapsed]);
 		for(script in noteTypeScripts)
 			script.call("onUpdate", [elapsed]);
 
+		@:privateAccess
+		if (!Conductor.isAudioSynced(FlxG.sound.music) || (vocals._sound != null && !Conductor.isAudioSynced(vocals)))
+			resyncVocals();
+
 		timeTxt.text = FlxStringUtil.formatTime(FlxG.sound.music.time / 1000)+" / "+FlxStringUtil.formatTime(FlxG.sound.music.length / 1000);
 		if(playerStrums.autoplay)
 			timeTxt.text += " [AUTO]";
 
+		// doin this so the text doesn't look weird when centered & antialiased
+		timeTxt.x = Math.floor((FlxG.width - timeTxt.width) * 0.5);
+
 		iconP1.health = healthBar.percent / 100;
 		iconP2.health = 1 - (healthBar.percent / 100);
+
+		if(autoplayTxt.visible) {
+			autoplaySine += 180 * elapsed;
+			autoplayTxt.alpha = 1 - Math.sin((Math.PI * autoplaySine) / 180);
+		}
 
 		if(health <= 0 || (controls.RESET && !SettingsAPI.disableResetButton)) gameOver();
 
@@ -877,10 +908,6 @@ class PlayState extends MusicBeatState {
 		if(FlxG.sound.music.time >= FlxG.sound.music.length || endingSong) return;
 
 		super.stepHit(curStep);
-
-		@:privateAccess
-		if (!Conductor.isAudioSynced(FlxG.sound.music) || (vocals._sound != null && !Conductor.isAudioSynced(vocals)))
-			resyncVocals();
 
 		scripts.call("onStepHit", [curStep]);
 		for(script in noteTypeScripts)

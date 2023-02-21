@@ -90,6 +90,7 @@ class NoteHitEvent extends CancellableEvent {
         super();
         this.note = note;
         this.judgeData = judgeData;
+        this.healthGain += judgeData.health;
         this.rating = judgeData.name;
         this.accuracy = judgeData.accuracy;
         this.score = score;

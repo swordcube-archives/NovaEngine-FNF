@@ -34,10 +34,10 @@ class OptionsMenuState extends MusicBeatState {
 			NovaTools.playMenuMusic("freakyMenu");
 
 		add(bg = new FNFSprite().loadGraphic(Paths.image("menus/base/menuBGDesat")));
-		bg.scale.set(1.2, 1.2);
+		bg.scale.set(1.1, 1.1);
 		bg.updateHitbox();
 		bg.screenCenter();
-		bg.color = 0xFFC456D3;
+		bg.color = 0xFFea71fd;
 
 		add(pages = new PageGroup());
 

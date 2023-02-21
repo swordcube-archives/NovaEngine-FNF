@@ -39,7 +39,7 @@ class StrumLine extends FlxTypedSpriteGroup<Receptor> {
             receptor.ID = noteData;
             receptor.alpha = 0;
             FlxTween.tween(receptor, {alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * noteData)});
-            receptor.isCPU = autoplay;
+            receptor.parent = this;
             add(receptor);
         }
     }
@@ -49,7 +49,7 @@ class Receptor extends FNFSprite {
     public var keyCount:Int = 4;
     public var noteData:Int = 0;
 
-    public var isCPU:Bool = false;
+    public var parent:StrumLine;
 
     public var scrollSpeed:Null<Float> = null;
 
@@ -85,10 +85,10 @@ class Receptor extends FNFSprite {
     override function update(elapsed:Float) {
         super.update(elapsed);
 
-        if(isCPU && cpuAnimTimer > 0)
+        if(parent != null && parent.autoplay && cpuAnimTimer > 0)
             cpuAnimTimer -= elapsed;
         
-        if(isCPU && animation.name == "confirm" && cpuAnimTimer <= 0)
+        if(parent != null && parent.autoplay && animation.name == "confirm" && cpuAnimTimer <= 0)
             playAnim("static");
     }
 
@@ -97,7 +97,7 @@ class Receptor extends FNFSprite {
     override function playAnim(name:String, force:Bool = false, context:AnimationContext = NORMAL, frame:Int = 0) {
         super.playAnim(name, force, context, frame);
 
-        if(isCPU && name == "confirm")
+        if(parent != null && parent.autoplay && name == "confirm")
             cpuAnimTimer = (Conductor.stepCrochet / 500) * 0.5;
 
         centerOrigin();

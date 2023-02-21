@@ -18,27 +18,25 @@ class Controls {
     static var __save:FlxSave;
 
     static var __defaultControls:Map<String, KeyList> = [
-        // UI controls
-        "UI_UP" => [W, UP],
-        "UI_DOWN" => [S, DOWN],
-        "UI_LEFT" => [A, LEFT],
-        "UI_RIGHT" => [D, RIGHT],
-
-        "ACCEPT" => [ENTER, SPACE],
-        "PAUSE" => [ENTER, NONE],
-        "BACK" => [BACKSPACE, ESCAPE],
-        "RESET" => [R, NONE],
-
-        "SWITCH_MOD" => [TAB, NONE],
-
         // Game controls
         "NOTE_LEFT" => [A, LEFT],
         "NOTE_DOWN" => [S, DOWN],
         "NOTE_UP" => [W, UP],
         "NOTE_RIGHT" => [D, RIGHT],
 
-        // Debug controls
-        "CHARTER" => [SEVEN, NUMPADSEVEN]
+        // UI controls
+        "UI_UP" => [W, UP],
+        "UI_DOWN" => [S, DOWN],
+        "UI_LEFT" => [A, LEFT],
+        "UI_RIGHT" => [D, RIGHT],
+        "ACCEPT" => [ENTER, SPACE],
+        "PAUSE" => [ENTER, NONE],
+        "BACK" => [BACKSPACE, ESCAPE],
+        "RESET" => [R, NONE],
+
+        // Engine controls
+        "CHARTER" => [SEVEN, NUMPADSEVEN],
+        "SWITCH_MOD" => [TAB, NONE]
     ];
 
     public static var controlsList:Map<String, KeyList> = [];

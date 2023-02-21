@@ -7,13 +7,15 @@ class Judgement {
     public var score:Int;
     public var timing:Float;
     public var accuracy:Float;
+    public var health:Float;
     public var showSplash:Bool;
 
-    public function new(name:String, score:Int, timing:Float, accuracy:Float, showSplash:Bool) {
+    public function new(name:String, score:Int, timing:Float, accuracy:Float, health:Float, showSplash:Bool) {
         this.name = name;
         this.score = score;
         this.timing = timing;
         this.accuracy = accuracy;
+        this.health = health;
         this.showSplash = showSplash;
     }
 
@@ -40,10 +42,10 @@ class Rank {
 
 class Ranking {
     public static var judgements:Array<Judgement> = [
-        new Judgement("sick", 350, 45,  1,   true),
-        new Judgement("good", 200, 75,  0.7, false),
-        new Judgement("bad",  100, 90,  0.3, false),
-        new Judgement("shit", 50,  135, 0,   false)
+        new Judgement("sick", 350, 45,  1,   0,      true),
+        new Judgement("good", 200, 75,  0.7, 0,      false),
+        new Judgement("bad",  100, 90,  0.3, 0,      false),
+        new Judgement("shit", 50,  135, 0,   -0.175, false)
     ];
 
     public static var ranks:Array<Rank> = [

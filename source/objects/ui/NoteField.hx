@@ -35,13 +35,30 @@ class NoteField extends NoteGroup {
 		return FlxSort.byValues(FlxSort.ASCENDING, a.strumTime, b.strumTime);
 	}
 
-	public function onKeyPress(event:KeyboardEvent) {
-		var binds:Array<FlxKey> = [S,D,K,L];
+	public var keyBinds:Array<Array<FlxKey>> = [
+		Controls.controlsList["NOTE_LEFT"],
+		Controls.controlsList["NOTE_DOWN"],
+		Controls.controlsList["NOTE_UP"],
+		Controls.controlsList["NOTE_RIGHT"],
+	];
 
-		fillUpPressedKeys(binds.length);
-		var data:FlxKey = binds.indexOf(event.keyCode);
+	public function keyFromEvent(eventKey:Int) {
+		for (i => list in keyBinds) {
+			for(key in list)
+				if(key == eventKey) return i;
+		}
+		return -1;
+	}
+
+	public function onKeyPress(event:KeyboardEvent) {
+		fillUpPressedKeys(keyBinds.length);
+		var data:Int = keyFromEvent(event.keyCode);
 
 		if(PlayState.paused || data == -1 || __pressedKeys[data] || game.playerStrums.autoplay) return;
+
+		var event = game.scripts.event("onKeyPress", new InputSystemEvent(data));
+		if(event.cancelled) return;
+
 		__pressedKeys[data] = true;
 
 		var receptor:Receptor = game.playerStrums.members[data];
@@ -77,19 +94,25 @@ class NoteField extends NoteGroup {
                 }
             }
         }
+
+		game.scripts.event("onKeyPressPost", event);
 	}
 
 	public function onKeyRelease(event:KeyboardEvent) {
-		var binds:Array<FlxKey> = [S,D,K,L];
-
-		fillUpPressedKeys(binds.length);
-		var data:FlxKey = binds.indexOf(event.keyCode);
+		fillUpPressedKeys(keyBinds.length);
+		var data:Int = keyFromEvent(event.keyCode);
 
 		if(PlayState.paused || data == -1 || game.playerStrums.autoplay) return;
+
+		var event = game.scripts.event("onKeyRelease", new InputSystemEvent(data));
+		if(event.cancelled) return;
+
 		__pressedKeys[data] = false;
 
 		var receptor:Receptor = game.playerStrums.members[data];
 		receptor.playAnim("static");
+
+		game.scripts.event("onKeyReleasePost", event);
 	}
 
 	override public function update(elapsed:Float) {

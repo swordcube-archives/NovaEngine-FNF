@@ -88,8 +88,9 @@ class HScript extends ScriptModule {
      * @param funcName The name of the function to call.
      * @param parameters The parameters/arguments to give the function when calling it.
      */
-     override public function call(funcName:String, parameters:Array<Dynamic>):Dynamic {
+     override public function call(funcName:String, ?parameters:Array<Dynamic>):Dynamic {
         if(interp == null) return null;
+        if(parameters == null) parameters = [];
 
         var func:Dynamic = interp.variables.get(funcName);
         if(func != null && Reflect.isFunction(func))

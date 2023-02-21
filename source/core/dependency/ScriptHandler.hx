@@ -177,7 +177,7 @@ class ScriptModule extends FlxBasic {
      * @param funcName The name of the function to call.
      * @param parameters The parameters/arguments to give the function when calling it.
      */
-    public function call(funcName:String, parameters:Array<Dynamic>):Dynamic {return null;}
+    public function call(funcName:String, ?parameters:Array<Dynamic>):Dynamic {return null;}
 
     /**
      * Calls a function from this script with an event that can be cancelled.

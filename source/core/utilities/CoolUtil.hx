@@ -256,7 +256,6 @@ class CoolUtil {
 			case RIGHT:				"→";
 			case ESCAPE:			"ESC";
 			case BACKSPACE:			"[←]";
-			case SPACE:             "[_]";
 			case NUMPADZERO:		"#0";
 			case NUMPADONE:			"#1";
 			case NUMPADTWO:			"#2";
@@ -270,6 +269,12 @@ class CoolUtil {
 			case NUMPADPLUS:		"#+";
 			case NUMPADMINUS:		"#-";
 			case NUMPADPERIOD:		"#.";
+			case NUMPADMULTIPLY:	"#*";
+			case GRAVEACCENT:		"`";
+			case LBRACKET:			"[";
+			case RBRACKET:			"]";
+			case PRINTSCREEN:		"PrtScrn";
+			case QUOTE:				"'";
 			case ZERO:				"0";
 			case ONE:				"1";
 			case TWO:				"2";
@@ -280,8 +285,13 @@ class CoolUtil {
 			case SEVEN:				"7";
 			case EIGHT:				"8";
 			case NINE:				"9";
+			case COMMA:				",";
 			case PERIOD:			".";
 			case SEMICOLON:         ";";
+			case BACKSLASH:			"\\";
+			case SLASH:				"/";
+			case PAGEUP:			"PgUp";
+			case PAGEDOWN:			"PgDown";
 			default:				key.toString();
 		}
 	}

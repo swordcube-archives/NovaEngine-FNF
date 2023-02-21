@@ -6,13 +6,15 @@ class PreferencesMenu extends PageSubState {
 	override function create() {
 		super.create();
 
+        if(!runDefaultCode) return;
+
         FlxG.sound.play(Paths.sound("game/hitsound"), 0);
 
-		script.call("onPreGenerateTabs", []);
+		call("onPreGenerateTabs", []);
 		tabs = ["Gameplay", "Appearance", "Tools", "Miscellaneous"];
-		script.call("onGenerateTabs", []);
+		call("onGenerateTabs", []);
 
-		script.call("onPreGenerateOptions", []);
+		call("onPreGenerateOptions", []);
 		options = [
 			"Gameplay" => [
 				new Checkbox(
@@ -130,6 +132,6 @@ class PreferencesMenu extends PageSubState {
                 )
             ]
 		];
-		script.call("onGenerateOptions", []);
+		call("onGenerateOptions", []);
 	}
 }

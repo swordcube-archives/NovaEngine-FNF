@@ -170,8 +170,9 @@ class LuaScript extends ScriptModule {
 		#end
 	}
 
-	override public function call(name:String, params:Array<Dynamic>):Dynamic {
+	override public function call(name:String, ?params:Array<Dynamic>):Dynamic {
 		#if linc_luajit
+		if(params == null) params = [];
 		var lastLua:LuaScript = currentLua;
 		currentLua = this;
 		script = {

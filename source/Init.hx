@@ -39,6 +39,7 @@ class Init extends FlxState {
 
         Application.current.onExit.add((exitCode:Int) -> {
             SettingsAPI.save();
+            Controls.save();
         });
         SettingsAPI.load();
         
