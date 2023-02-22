@@ -2,6 +2,7 @@ import flixel.addons.display.FlxGridOverlay;
 import flixel.util.FlxStringUtil;
 import flixel.FlxObject;
 import core.utilities.MathUtil;
+import flixel.addons.ui.FlxUITabMenu;
 
 // TODO: ADDING + DELETING NOTES, AND MODIFIED SONG & SECTION DATA
 
@@ -59,21 +60,16 @@ function timeToY(time:Float) {
 	return FlxMath.remapToRange(time, 0, 16 * Conductor.stepCrochet, gridBG.y, gridBG.y + gridBG.height);
 }
 
-function sectionStartTime(?section) {
-	if(section == null)
-		section = selectedSection;
-	
-	var coolPos:Float = 0;
-	var goodBPM:Float = Conductor.bpm;
-	
-	for(i in 0...section) {
-        if(SONG.notes[i].changeBPM)
-            goodBPM = SONG.notes[i].bpm;
-		
-		coolPos += 4 * (1000 * (60 / goodBPM));
+function sectionStartTime() {
+    var daBPM:Float = SONG.bpm;
+    var daPos:Float = 0;
+    for (i in 0...selectedSection) {
+        if (SONG.notes[i].changeBPM)
+            daBPM = SONG.notes[i].bpm;
+        
+        daPos += 4 * (1000 * 60 / daBPM);
     }
-	
-	return coolPos;
+    return daPos;
 }
 
 function onCreate() {
@@ -170,6 +166,9 @@ function onCreate() {
         strumNotes.add(receptor);
     }
 
+    Conductor.changeBPM(SONG);
+    Conductor.mapBPMChanges(SONG);
+
     updateGrid();
 }
 
@@ -199,6 +198,10 @@ function initNote(dataShit:Array<Dynamic>, section:Int) {
     var sustainLength:Float = dataShit[2];
     var noteType:Dynamic = dataShit[3];
 
+    var adjustedNoteData:Int = noteData;
+    if(SONG.notes[section].mustHitSection)
+        adjustedNoteData = Std.int((adjustedNoteData + SONG.keyCount) % (SONG.keyCount * 2));
+
     var note = new Note(-9999, -9999, PlayState.changeableSkin, SONG.keyCount, noteData % SONG.keyCount);
     note.strumTime = strumTime - SettingsAPI.noteOffset;
     note.curSection = section;
@@ -210,11 +213,10 @@ function initNote(dataShit:Array<Dynamic>, section:Int) {
     note.x = gridBG.x + Math.floor(noteData * GRID_SIZE);
     note.y = timeToY((strumTime - sectionStartTime()));
     note.alpha = 0.4;
+    note.noteData = adjustedNoteData;
 
-    if(SONG.notes[section].mustHitSection) {
-        note.rawNoteData = Std.int((noteData + SONG.keyCount) % (SONG.keyCount * 2));
+    if(SONG.notes[section].mustHitSection)
         note.x = gridBG.x + Math.floor((noteData + SONG.keyCount) % (SONG.keyCount * 2) * GRID_SIZE);
-    }
 
     return note;
 }
@@ -228,7 +230,7 @@ function updateGrid() {
         list.clear();
     }
 
-    if (SONG.notes[selectedSection].changeBPM && SONG.notes[selectedSection].bpm > 0)
+    if (SONG.notes[selectedSection].changeBPM)
         Conductor.bpm = SONG.notes[selectedSection].bpm;
     else {
         // get last bpm
@@ -389,6 +391,7 @@ function onUpdate(elapsed:Float) {
 
     if(Conductor.position < sectionStartTime()) {
         changeSection(-1);
+        Conductor.update();
         for(music in musicList) {
             music.pause();
             music.time = Conductor.position;
@@ -398,6 +401,7 @@ function onUpdate(elapsed:Float) {
     if(Conductor.position > sectionStartTime() + (4 * (1000 * (60 / Conductor.bpm)))) {
         changeSection(1);
         Conductor.position = sectionStartTime();
+        Conductor.update();
         var playing = musicList[0].playing;
         for(music in musicList) {
             music.pause();
@@ -413,6 +417,7 @@ function onUpdate(elapsed:Float) {
     if(left || right) {
         changeSection((right ? 1 : 0) + (left ? -1 : 0));
         Conductor.position = sectionStartTime();
+        Conductor.update();
         for(music in musicList) {
             music.pause();
             music.time = Conductor.position;
@@ -481,7 +486,7 @@ function onUpdate(elapsed:Float) {
         if(yToTime(note.y) + (Conductor.stepCrochet / 4) <= Conductor.position - sectionStartTime()) {
             if(musicList[0].playing && note.noteData >= 0 && note.alpha == 1) {
                 FlxG.sound.play(Paths.sound("game/hitsound"));
-                var receptor:Receptor = strumNotes.members[note.rawNoteData];
+                var receptor:Receptor = strumNotes.members[note.noteData];
                 receptor.playAnim("confirm", true);
                 receptor.cpuAnimTimer += (note.sustainLength / 1000);
             }
