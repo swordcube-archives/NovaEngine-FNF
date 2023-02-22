@@ -82,13 +82,11 @@ class Paths {
         var coolList:Array<String> = [];
 
         var pathsToCheck:Array<String> = [
-            // source assets
-            '../../../../assets/$folderPath',
             '../../../../mods/${ModUtil.currentMod}/$folderPath',
-
-            // export folder
-            './assets/$folderPath',
             './mods/${ModUtil.currentMod}/$folderPath',
+
+            '../../../../assets/$folderPath',
+            './assets/$folderPath'
         ];
 
         for(path in pathsToCheck) {
@@ -124,12 +122,10 @@ class Paths {
         if(mod == null) mod = ModUtil.currentMod;
 
         var pathsToCheck:Array<String> = [
-            // source assets
-            '../../../../assets/$path',
             '../../../../mods/$path',
+            './mods/$mod/$path',
 
-            // export folder
-            './mods/$mod/$path'
+            '../../../../assets/$path'
         ];
 
         for(path in pathsToCheck) {

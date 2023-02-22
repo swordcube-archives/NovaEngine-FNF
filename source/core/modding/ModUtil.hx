@@ -32,6 +32,7 @@ class ModUtil {
         var metadata:Metadata = fallbackMetadata;
 
         #if MOD_SUPPORT
+        var metadataJsonPathSource:String = '../../../../mods/$modName/pack.json';
         var metadataJsonPath:String = './mods/$modName/pack.json';
 
         // If the mod we selected is "Friday Night Funkin'", then try to load metadata from assets
@@ -40,6 +41,9 @@ class ModUtil {
             metadata = FileSystem.exists(defaultMetadataJsonPath) ? Json.parse(File.getContent(defaultMetadataJsonPath)) : fallbackMetadata;
 
         // Try to load metadata from the mods folder
+        if(FileSystem.exists(metadataJsonPathSource))
+            metadata = Json.parse(File.getContent(metadataJsonPathSource));
+
         if(FileSystem.exists(metadataJsonPath))
             metadata = Json.parse(File.getContent(metadataJsonPath));
         #end

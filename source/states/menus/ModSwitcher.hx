@@ -38,9 +38,16 @@ class ModSwitcher extends MusicBeatSubstate {
 
         // Loading the list of mods (only loads base game if mod support is disabled)
         #if MOD_SUPPORT
+        if(FileSystem.exists('../../../../mods')) {
+            for(modFolder in FileSystem.readDirectory('../../../../mods')) {
+                if (!mods.contains(modFolder) && FileSystem.isDirectory('../../../../mods/$modFolder') && FileSystem.exists('../../../../mods/$modFolder/pack.json'))
+                    mods.push(modFolder);
+            }
+        }
+
         if(FileSystem.exists('./mods')) {
             for(modFolder in FileSystem.readDirectory('./mods')) {
-                if (FileSystem.isDirectory('./mods/$modFolder') && !modFolder.startsWith(".") && FileSystem.exists('./mods/$modFolder/pack.json'))
+                if (!mods.contains(modFolder) && FileSystem.isDirectory('./mods/$modFolder') && FileSystem.exists('./mods/$modFolder/pack.json'))
                     mods.push(modFolder);
             }
         }

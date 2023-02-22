@@ -78,7 +78,7 @@ class ChartParser {
 
         var oldNote:Note = null;
         for(note in noteArray) {
-            if(oldNote != null && !note.isSustainNote && note.noteData == oldNote.noteData && note.strumTime <= oldNote.strumTime + 2) {
+            if(oldNote != null && !note.isSustainNote && note.noteData == oldNote.noteData && (note.strumTime - oldNote.strumTime) <= 5) {
                 note.kill();
                 note.destroy();
                 noteArray.remove(note);
