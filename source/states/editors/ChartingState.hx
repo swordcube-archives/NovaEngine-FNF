@@ -1,5 +1,12 @@
 package states.editors;
 
+import flixel.addons.ui.FlxUIDropDownMenu;
+import flixel.addons.ui.FlxUINumericStepper;
+import flixel.ui.FlxButton;
+import openfl.net.FileReference;
+import openfl.events.IOErrorEvent;
+import openfl.events.Event;
+import flixel.util.FlxTools;
 import flixel.addons.ui.FlxUIInputText;
 import flixel.addons.ui.FlxUI;
 import flixel.util.FlxColor;
@@ -22,6 +29,8 @@ import states.MusicBeat.MusicBeatState;
 // TODO: MODIFING SONG & SECTION DATA
 
 class ChartingState extends MusicBeatState {
+    public var __file:FileReference;
+
     public var SONG:SongData;
 
     public var bg:FlxSprite;
@@ -98,12 +107,6 @@ class ChartingState extends MusicBeatState {
 
         SONG = PlayState.SONG;
 
-        FlxG.sound.playMusic(Paths.songInst(SONG.song, PlayState.storyDifficulty), 1);
-        FlxG.sound.music.pause();
-        FlxG.sound.music.time = 0;
-
-        FlxG.sound.list.add(vocals = new FlxSound().loadEmbedded(Paths.songVoices(SONG.song, PlayState.storyDifficulty)));
-
         Conductor.position = 0;
 
         add(bg = new FlxSprite().loadGraphic(Paths.image("menus/base/menuBGDesat")));
@@ -145,16 +148,7 @@ class ChartingState extends MusicBeatState {
         add(iconP2 = new HealthIcon(0, 20, SONG.player2));
         add(iconP1 = new HealthIcon(0, 20, SONG.player1));
 
-        for(icon in [iconP2, iconP1]) {
-            icon.scrollFactor.set();
-            icon.scale.set(icon.initialScale * 0.5, icon.initialScale * 0.5);
-            icon.updateHitbox();
-            icon.screenCenter(X);
-        }
-
-        var iconSpacing:Float = gridBG.width * 0.5;
-        iconP2.x -= iconSpacing - iconP2.width;
-        iconP1.x += iconSpacing - iconP1.width;
+        updateIcons();
 
         var tabs = [
             {name: "Song", label: 'Song'},
@@ -177,19 +171,7 @@ class ChartingState extends MusicBeatState {
         add(camFollow = new FlxObject(FlxG.width * 0.5, 250, 1, 1));
         FlxG.camera.follow(camFollow, null, 1);
 
-        musicList = [FlxG.sound.music, vocals];
-        musicList[0].onComplete = () -> {
-            FlxG.sound.music.pause();
-            Conductor.position = 0;
-            if(vocals != null) {
-                vocals.pause();
-                vocals.time = 0;
-            }
-            selectedSection = 0;
-            changeSection();
-            updateGrid();
-            Conductor.update();
-        }
+        loadSong(SONG.song, PlayState.storyDifficulty);
 
         for(i in 0...(SONG.keyCount * 2)) {
             var receptor = new Receptor(gridBG.x + (GRID_SIZE * i), gridBG.y, "default", SONG.keyCount, i % SONG.keyCount);
@@ -215,6 +197,41 @@ class ChartingState extends MusicBeatState {
         updateGrid();
     }
 
+    public function updateIcons() {
+        for(icon in [iconP2, iconP1]) {
+            icon.scrollFactor.set();
+            icon.scale.set(icon.initialScale * 0.5, icon.initialScale * 0.5);
+            icon.updateHitbox();
+            icon.screenCenter(X);
+        }
+
+        var iconSpacing:Float = gridBG.width * 0.5;
+        iconP2.x -= iconSpacing - iconP2.width;
+        iconP1.x += iconSpacing - iconP1.width;
+    }
+
+    public function loadSong(name:String, ?difficulty:String = "normal") {
+        FlxG.sound.playMusic(Paths.songInst(SONG.song, difficulty), 1);
+        FlxG.sound.music.pause();
+        FlxG.sound.music.time = 0;
+
+        FlxG.sound.list.add(vocals = new FlxSound().loadEmbedded(Paths.songVoices(SONG.song, difficulty)));
+        
+        musicList = [FlxG.sound.music, vocals];
+        musicList[0].onComplete = () -> {
+            FlxG.sound.music.pause();
+            Conductor.position = 0;
+            if(vocals != null) {
+                vocals.pause();
+                vocals.time = 0;
+            }
+            selectedSection = 0;
+            changeSection();
+            updateGrid();
+            Conductor.update();
+        }
+    }
+
     public var inputBoxes:Array<FlxUIInputText> = [];
 
     public function initTab(tab:{name:String, label:String}) {
@@ -224,12 +241,67 @@ class ChartingState extends MusicBeatState {
         switch(tab.name) {
             case "Song":
                 var songName = new FlxUIInputText(10, 10, 70, SONG.song, 8);
+                songName.callback = (text:String, action:String) -> SONG.song = text;
                 inputBoxes.push(songName);
 
-                tabGroup.add(songName);
+                var needsVoices = FlxTools.makeCheckbox(10, 25, "Has voice track", SONG.needsVoices);
+                needsVoices.callback = () -> SONG.needsVoices = needsVoices.checked;
+
+                var muteInst = FlxTools.makeCheckbox(10, 200, "Mute Instrumental (Editor only)");
+                muteInst.callback = () -> musicList[0].volume = (muteInst.checked) ? 1 : 0;
+
+                var saveButton = new FlxButton(110, 8, "Save", () -> saveSong());
+                var reloadSong = new FlxButton(saveButton.x + saveButton.width + 10, saveButton.y, "Reload Audio", () -> loadSong(SONG.song, PlayState.storyDifficulty));
+                var reloadSongJson = new FlxButton(reloadSong.x, saveButton.y + 30, "Reload JSON", () -> {
+                    PlayState.SONG = Song.loadChart(SONG.song, PlayState.storyDifficulty);
+                    FlxG.resetState();
+                });
+                
+                var autosaveButton = new FlxButton(reloadSongJson.x, reloadSongJson.y + 30, "Load Autosave", loadAutosave);
+
+                var stepperSpeed = new FlxUINumericStepper(10, 80, 0.1, 1, 0.1, 10, 2);
+                stepperSpeed.value = SONG.speed;
+                stepperSpeed.callback = () -> SONG.speed = stepperSpeed.value;
+        
+                var stepperBPM = new FlxUINumericStepper(10, 65, 1, 100, 1, FlxMath.MAX_VALUE_INT, 3);
+                stepperBPM.value = Conductor.bpm;
+                stepperBPM.callback = () -> {
+                    SONG.bpm = stepperBPM.value;
+                    Conductor.mapBPMChanges(SONG);
+                    Conductor.changeBPM(SONG.bpm);
+                };
+
+                var characters:Array<String> = Paths.getFolderContents("data/characters", false, DIRS_ONLY);
+
+                var player1DropDown = new FlxUIDropDownMenu(10, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), (character:String) -> {
+                    SONG.player1 = characters[Std.parseInt(character)];
+                    iconP1.loadIcon(SONG.player1);
+                    updateIcons();
+                });
+                player1DropDown.selectedLabel = SONG.player1;
+        
+                var player2DropDown = new FlxUIDropDownMenu(140, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), (character:String) -> {
+                    SONG.player2 = characters[Std.parseInt(character)];
+                    iconP2.loadIcon(SONG.player2);
+                    updateIcons();
+                });
+                player2DropDown.selectedLabel = SONG.player2;
+
+                for(item in [songName, needsVoices, saveButton, reloadSong, reloadSongJson, autosaveButton, stepperSpeed, stepperBPM, player1DropDown, player2DropDown])
+                    tabGroup.add(item);
         }
 
         uiBox.addGroup(tabGroup);
+    }
+
+	public function loadAutosave() {
+        PlayState.SONG = Song.parseJSONshit(FlxG.save.data.autosave);
+        FlxG.resetState();
+    }
+
+    public function autosaveSong() {
+        FlxG.save.data.autosave = Json.stringify({song: SONG});
+        FlxG.save.flush();
     }
 
     public function changeSection(?change:Int) {
@@ -382,12 +454,21 @@ class ChartingState extends MusicBeatState {
         updateGrid();
     }
 
+    var autosaveTimer:Float = 0;
+    var autosaveInterval:Float = 5000;
+
     var colorSine:Float = 0;
 
     override function update(elapsed:Float) {
         super.update(elapsed);
 
         if(!runDefaultCode) return;
+
+        autosaveTimer += elapsed;
+        if(autosaveTimer >= autosaveInterval) {
+            autosaveSong();
+            autosaveTimer = 0;
+        }
 
         vocals.volume = (SONG.needsVoices) ? 1 : 0;
 
@@ -419,8 +500,9 @@ class ChartingState extends MusicBeatState {
             persistentUpdate = false;
             persistentDraw = true;
             PlayState.SONG = SONG;
+            autosaveSong();
 
-            for(obj in [gridBG, gridBGTop, gridBGBottom, curRenderedNotes, curRenderedSustains, dummyNote, strumLine]) {
+            for(obj in [gridBG, gridBGTop, gridBGBottom, gridSeperator, prevRenderedNotes, curRenderedNotes, nextRenderedNotes, prevRenderedSustains, curRenderedSustains, nextRenderedSustains, dummyNote, strumLine]) {
                 obj.kill();
                 obj.destroy();
                 remove(obj, true);
@@ -452,7 +534,7 @@ class ChartingState extends MusicBeatState {
         }
 
         if(musicList[0].playing)
-            Conductor.position += elapsed * 1000;
+            Conductor.position = musicList[0].time;
 
         if(Conductor.position >= FlxG.sound.music.length) {
             Conductor.position = 0;
@@ -588,5 +670,38 @@ class ChartingState extends MusicBeatState {
             + "\nSection: "
             + selectedSection
         );
+    }
+
+    public function saveSong() {
+        var data:String = Json.stringify({song: SONG});
+
+        if (data != null && data.length > 0) {
+            __file = new FileReference();
+            __file.addEventListener(Event.COMPLETE, onSaveComplete);
+            __file.addEventListener(Event.CANCEL, onSaveCancel);
+            __file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+            __file.save(data.trim(), SONG.song.toLowerCase() + ".json");
+        }
+    }
+
+	function onSaveComplete(_):Void {
+        __file.removeEventListener(Event.COMPLETE, onSaveComplete);
+        __file.removeEventListener(Event.CANCEL, onSaveCancel);
+        __file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+        __file = null;
+    }
+
+    function onSaveCancel(_):Void {
+        __file.removeEventListener(Event.COMPLETE, onSaveComplete);
+        __file.removeEventListener(Event.CANCEL, onSaveCancel);
+        __file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+        __file = null;
+    }
+
+    function onSaveError(_):Void {
+        __file.removeEventListener(Event.COMPLETE, onSaveComplete);
+        __file.removeEventListener(Event.CANCEL, onSaveCancel);
+        __file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+        __file = null;
     }
 }

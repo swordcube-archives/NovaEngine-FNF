@@ -76,16 +76,32 @@ class ChartParser {
             }
         }
 
-        var oldNote:Note = null;
+        // remove stacked notes so we don't have to make the
+        // input system handle it
+
+        var notesOnly:Array<Note> = [];
         for(note in noteArray) {
-            if(oldNote != null && !note.isSustainNote && note.noteData == oldNote.noteData && (note.strumTime - oldNote.strumTime) <= 5) {
+            if(note.isSustainNote) continue;
+            notesOnly.push(note);
+        }
+        notesOnly.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
+
+        var oldNote:Note = null;
+        for(note in notesOnly) {
+            if(oldNote != null && note.mustPress == oldNote.mustPress && note.noteData == oldNote.noteData && (note.strumTime - oldNote.strumTime) <= 5) {
+                for(sus in note.sustainNotes) {
+                    sus.kill();
+                    sus.destroy();
+                    noteArray.remove(sus);
+                }
                 note.kill();
                 note.destroy();
                 noteArray.remove(note);
-                oldNote = note;
             }
+            oldNote = note;
         }
         oldNote = null;
+        notesOnly = [];
 
         return noteArray;
     }
