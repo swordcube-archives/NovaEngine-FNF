@@ -8,6 +8,9 @@ import haxe.macro.Expr;
 class ScriptsMacro {
     public static function addAdditionalClasses() {
         Compiler.include("flixel");
+        Compiler.include("flixel.addons");
+        Compiler.include("flixel.addons.display");
+        Compiler.include("flixel.addons.ui");
         #if sys
         Compiler.include("sys");
         #end

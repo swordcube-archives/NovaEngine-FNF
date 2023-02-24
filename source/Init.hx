@@ -25,6 +25,10 @@ class Init extends FlxState {
             Controls.load();
             SettingsAPI.load();
             Conductor.reset();
+
+            FlxG.sound.muteKeys = Controls.controlsList["VOLUME_MUTE"];
+            FlxG.sound.volumeUpKeys = Controls.controlsList["VOLUME_UP"];
+            FlxG.sound.volumeDownKeys = Controls.controlsList["VOLUME_DOWN"];
             
             FlxSprite.defaultAntialiasing = SettingsAPI.antialiasing;
         });

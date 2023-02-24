@@ -34,6 +34,11 @@ class Controls {
         "BACK" => [BACKSPACE, ESCAPE],
         "RESET" => [R, NONE],
 
+        // Volume controls
+        "VOLUME_MUTE" => [ZERO, NUMPADZERO],
+        "VOLUME_UP" => [PLUS, NUMPADPLUS],
+        "VOLUME_DOWN" => [MINUS, NUMPADMINUS],
+
         // Engine controls
         "CHARTER" => [SEVEN, NUMPADSEVEN],
         "SWITCH_MOD" => [TAB, NONE]
@@ -118,6 +123,16 @@ class Controls {
 
     public var UI_RIGHT_R(get, never):Bool;
     private function get_UI_RIGHT_R() return __checkKeys(controlsList["UI_RIGHT"], JUST_RELEASED);
+
+    // volume controls
+    public var VOLUME_MUTE(get, never):Bool;
+    private function get_VOLUME_MUTE() return __checkKeys(controlsList["VOLUME_MUTE"], JUST_PRESSED);
+
+    public var VOLUME_UP(get, never):Bool;
+    private function get_VOLUME_UP() return __checkKeys(controlsList["VOLUME_UP"], JUST_PRESSED);
+
+    public var VOLUME_DOWN(get, never):Bool;
+    private function get_VOLUME_DOWN() return __checkKeys(controlsList["VOLUME_DOWN"], JUST_PRESSED);
 
     // debug menus
     public var CHARTER(get, never):Bool;

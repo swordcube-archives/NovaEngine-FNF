@@ -61,21 +61,31 @@ class ModUtil {
 
     public static function refreshMetadatas() {
         var funkinMetadata = Paths.json("pack", fallbackMod);
-        metadataMap.set("Friday Night Funkin'", funkinMetadata);
+        metadataMap = [fallbackMod => funkinMetadata];
         metadatas = [funkinMetadata];
 
         #if MOD_SUPPORT
-        var folderList = FileSystem.readDirectory("./mods");
+        var foldersToCheck:Array<String> = [
+            "../../../../mods",
+            "./mods"
+        ];
 
-        for(folder in folderList) {
-            var folderPath:String = './mods/$folder';
-            var packJsonPath:String = '$folderPath/pack.json';
-            if(!FileSystem.isDirectory(folderPath) || !FileSystem.exists(packJsonPath))
-                continue;
-            
-            var jsonData:Metadata = Json.parse(File.getContent(packJsonPath));
-            metadataMap.set(folder, jsonData);
-            metadatas.push(jsonData);
+        for(ogFolder in foldersToCheck) {
+            if(!FileSystem.exists(ogFolder)) continue;
+
+            var folderList = FileSystem.readDirectory(ogFolder);
+
+            for(folder in folderList) {
+                var folderPath:String = '$ogFolder/$folder';
+                var packJsonPath:String = '$folderPath/pack.json';
+
+                if(!FileSystem.isDirectory(folderPath) || !FileSystem.exists(packJsonPath) || metadataMap.exists(folder))
+                    continue;
+                
+                var jsonData:Metadata = Json.parse(File.getContent(packJsonPath));
+                metadataMap.set(folder, jsonData);
+                metadatas.push(jsonData);
+            }
         }
         #end
     }

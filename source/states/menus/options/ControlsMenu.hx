@@ -44,6 +44,11 @@ class ControlsMenu extends MusicBeatSubstate {
 			new Control("Pause",		"PAUSE"),
 			new Control("Back",			"BACK"),
 		],
+		"Volume" => [
+			new Control("Mute",			"VOLUME_MUTE"),
+			new Control("Up",			"VOLUME_UP"),
+			new Control("Down",			"VOLUME_DOWN"),
+		],
 		"Engine" => [
 			new Control("Charter",		"CHARTER"),
 			new Control("Switch Mod",	"SWITCH_MOD")
@@ -70,7 +75,7 @@ class ControlsMenu extends MusicBeatSubstate {
 		bg.scrollFactor.set();
 
 		call("onPreGenerateCategories", []);
-		categories = ["Notes", "UI", "Engine"];
+		categories = ["Notes", "UI", "Volume", "Engine"];
 		call("onGenerateCategories", []);
 
 		call("onPreGenerateControls", []);
@@ -203,13 +208,24 @@ class ControlsMenu extends MusicBeatSubstate {
 			if(FlxG.keys.justPressed.ANY) {
 				changingBind = false;
 
+				var saveData:String = controlDataArray[curSelected].saveData;
 				var curKey:FlxKey = FlxG.keys.getIsDown()[0].ID;
 				var text:Alphabet = controlsArray[curSelected][curBind + 1];
 				text.text = CoolUtil.keyToString(curKey);
-				Controls.controlsList[controlDataArray[curSelected].saveData][curBind] = curKey;
+				Controls.controlsList[saveData][curBind] = curKey;
 
 				flicker.stop();
 				CoolUtil.playMenuSFX(CONFIRM);
+
+				// Make the Flixel volume binds adjust
+				switch(saveData) {
+					case "VOLUME_MUTE":
+						FlxG.sound.muteKeys = Controls.controlsList[saveData];
+					case "VOLUME_UP":
+						FlxG.sound.volumeUpKeys = Controls.controlsList[saveData];
+					case "VOLUME_DOWN":
+						FlxG.sound.volumeDownKeys = Controls.controlsList[saveData];
+				}
 			}
 		}
 	}

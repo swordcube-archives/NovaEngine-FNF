@@ -292,6 +292,8 @@ class CoolUtil {
 			case SLASH:				"/";
 			case PAGEUP:			"PgUp";
 			case PAGEDOWN:			"PgDown";
+			case PLUS:				"+";
+			case MINUS:				"-";
 			default:				key.toString();
 		}
 	}

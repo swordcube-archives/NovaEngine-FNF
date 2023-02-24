@@ -92,7 +92,7 @@ class Receptor extends FNFSprite {
             playAnim("static");
     }
 
-    var cpuAnimTimer:Float = 0;
+    public var cpuAnimTimer:Float = 0;
 
     override function playAnim(name:String, force:Bool = false, context:AnimationContext = NORMAL, frame:Int = 0) {
         super.playAnim(name, force, context, frame);

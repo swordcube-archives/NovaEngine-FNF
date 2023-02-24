@@ -5,6 +5,8 @@ import core.dependency.scripting.*;
 import flixel.FlxBasic;
 import haxe.io.Path;
 
+typedef JSONReplacer = (key:Dynamic, value:Dynamic) -> Dynamic;
+
 /**
  * The class that allows you to load scripts for things like stages, characters, modcharts, etc.
  */
@@ -28,6 +30,14 @@ class ScriptHandler {
             "DateTools" => DateTools,
             "Main" => Main,
             "Path" => Path,
+            "Json" => {
+                "parse": (value:String) -> {
+                    return Json.parse(value);
+                },
+                "stringify": (value:Dynamic, ?space:String, ?replacer:JSONReplacer) -> {
+                    return Json.stringify(value, replacer, space);
+                }
+            },
 
             // Classes [Flixel],
             "FlxG" => flixel.FlxG,
@@ -48,6 +58,15 @@ class ScriptHandler {
             "FlxBackdrop" => flixel.addons.display.FlxBackdrop,
             "FlxTypedGroup" => flixel.group.FlxGroup.FlxTypedGroup,
             "FlxGroup" => flixel.group.FlxGroup,
+
+            "FlxUITabMenu" => flixel.addons.ui.FlxUITabMenu,
+            "FlxInputText" => flixel.addons.ui.FlxInputText,
+            "FlxUI9SliceSprite" => flixel.addons.ui.FlxUI9SliceSprite,
+            "FlxUI" => flixel.addons.ui.FlxUI,
+            "FlxUICheckBox" => flixel.addons.ui.FlxUICheckBox,
+            "FlxUIDropDownMenu" => flixel.addons.ui.FlxUIDropDownMenu,
+            "FlxUIInputText" => flixel.addons.ui.FlxUIInputText,
+            "FlxUINumericStepper" => flixel.addons.ui.FlxUINumericStepper,
 
             // VVV -- these are classes because lua tables are shitting themselves --
 
