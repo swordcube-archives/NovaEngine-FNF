@@ -1,6 +1,6 @@
 package states;
 
-import core.dependency.ScriptHandler;
+import backend.dependency.ScriptHandler;
 import flixel.addons.ui.FlxUISubState;
 import flixel.addons.ui.FlxUIState;
 

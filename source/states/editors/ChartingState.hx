@@ -17,13 +17,13 @@ import flixel.group.FlxGroup;
 import objects.ui.HealthIcon;
 import flixel.text.FlxText;
 import flixel.system.FlxSound;
-import core.song.SongFormat;
+import backend.song.SongFormat;
 import flixel.math.FlxMath;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.util.FlxStringUtil;
 import flixel.FlxObject;
 import flixel.FlxSprite;
-import core.utilities.MathUtil;
+import backend.utilities.MathUtil;
 import states.MusicBeat.MusicBeatState;
 
 // TODO: MODIFING SONG & SECTION DATA
@@ -272,22 +272,35 @@ class ChartingState extends MusicBeatState {
                 };
 
                 var characters:Array<String> = Paths.getFolderContents("data/characters", false, DIRS_ONLY);
+                var stages:Array<String> = Paths.getFolderContents("data/stages", false, FILES_ONLY, REMOVE_EXTENSION);
+                if(stages.length < 1) stages = ["", "stage"];
+                else stages.insert(0, "");
 
-                var player1DropDown = new FlxUIDropDownMenu(10, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), (character:String) -> {
+                var dropDownLabel1 = new FlxText(10, 100, 0, "Player", 8);
+                var player1DropDown = new FlxUIDropDownMenu(10, 120, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), (character:String) -> {
                     SONG.player1 = characters[Std.parseInt(character)];
                     iconP1.loadIcon(SONG.player1);
                     updateIcons();
                 });
                 player1DropDown.selectedLabel = SONG.player1;
         
-                var player2DropDown = new FlxUIDropDownMenu(140, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), (character:String) -> {
+                var dropDownLabel2 = new FlxText(140, 100, 0, "Opponent", 8);
+                var player2DropDown = new FlxUIDropDownMenu(140, 120, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), (character:String) -> {
                     SONG.player2 = characters[Std.parseInt(character)];
                     iconP2.loadIcon(SONG.player2);
                     updateIcons();
                 });
                 player2DropDown.selectedLabel = SONG.player2;
 
-                for(item in [songName, needsVoices, saveButton, reloadSong, reloadSongJson, autosaveButton, stepperSpeed, stepperBPM, player1DropDown, player2DropDown])
+                var dropDownLabel3 = new FlxText(10, 150, 0, "Spectator", 8);
+                var player3DropDown = new FlxUIDropDownMenu(10, 170, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), (character:String) -> SONG.gfVersion = characters[Std.parseInt(character)]);
+                player3DropDown.selectedLabel = SONG.gfVersion;
+
+                var dropDownLabel4 = new FlxText(140, 150, 0, "Stage", 8);
+                var stageDropDown = new FlxUIDropDownMenu(140, 170, FlxUIDropDownMenu.makeStrIdLabelArray(stages, true), (stage:String) -> SONG.stage = stages[Std.parseInt(stage)]);
+                stageDropDown.selectedLabel = SONG.stage;
+
+                for(item in [songName, needsVoices, saveButton, reloadSong, reloadSongJson, autosaveButton, stepperSpeed, stepperBPM, dropDownLabel3, player3DropDown, dropDownLabel4, stageDropDown, dropDownLabel1, player1DropDown, dropDownLabel2, player2DropDown])
                     tabGroup.add(item);
         }
 

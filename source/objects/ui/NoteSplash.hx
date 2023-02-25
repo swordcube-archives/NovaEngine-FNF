@@ -2,7 +2,7 @@ package objects.ui;
 
 import flixel.math.FlxPoint;
 import flixel.math.FlxMath;
-import core.utilities.FNFSprite.AnimationContext;
+import backend.utilities.FNFSprite.AnimationContext;
 import states.PlayState;
 
 typedef NoteSplashAnimation = {

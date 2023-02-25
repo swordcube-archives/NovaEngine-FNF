@@ -1,6 +1,6 @@
 package states.menus;
 
-import core.modding.ModUtil;
+import backend.modding.ModUtil;
 import flixel.text.FlxText;
 import flixel.FlxObject;
 import flixel.util.FlxTimer;
@@ -9,7 +9,7 @@ import flixel.FlxState;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.math.FlxMath;
-import core.utilities.FNFSprite.AnimationContext;
+import backend.utilities.FNFSprite.AnimationContext;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import states.MusicBeat.MusicBeatState;

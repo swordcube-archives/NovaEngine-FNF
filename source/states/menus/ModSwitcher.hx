@@ -1,7 +1,7 @@
 package states.menus;
 
-import core.modding.Metadata;
-import core.modding.ModUtil;
+import backend.modding.Metadata;
+import backend.modding.ModUtil;
 import states.MusicBeat.MusicBeatSubstate;
 import flixel.math.FlxMath;
 import flixel.group.FlxGroup.FlxTypedGroup;

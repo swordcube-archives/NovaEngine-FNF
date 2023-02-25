@@ -1,7 +1,7 @@
 package cutscenes;
 
-import core.dependency.scripting.DummyScript;
-import core.dependency.ScriptHandler;
+import backend.scripting.DummyScript;
+import backend.dependency.ScriptHandler;
 
 class ScriptedCutscene extends Cutscene {
     var scriptPath:String;

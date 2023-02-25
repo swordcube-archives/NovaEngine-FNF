@@ -10,13 +10,13 @@ import sys.FileSystem;
 import haxe.Json;
 import flixel.addons.transition.FlxTransitionableState;
 
-import core.*;
-import core.dependency.*;
-import core.utilities.*;
-import core.handlers.*;
-import core.song.*;
+import backend.*;
+import backend.dependency.*;
+import backend.utilities.*;
+import backend.handlers.*;
+import backend.song.*;
 
-using core.utilities.CoolUtil;
+using backend.utilities.CoolUtil;
 #end
 
 using StringTools;

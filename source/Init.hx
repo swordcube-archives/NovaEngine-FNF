@@ -2,10 +2,10 @@ package;
 
 import lime.app.Application;
 import openfl.events.KeyboardEvent;
-import core.Controls;
+import backend.Controls;
 import flixel.FlxState;
 import openfl.ui.Keyboard;
-import core.modding.ModUtil;
+import backend.modding.ModUtil;
 
 class Init extends FlxState {
     override function create() {

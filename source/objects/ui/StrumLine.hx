@@ -4,7 +4,7 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import states.PlayState;
 import objects.ui.Note;
-import core.utilities.FNFSprite.AnimationContext;
+import backend.utilities.FNFSprite.AnimationContext;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
 class StrumLine extends FlxTypedSpriteGroup<Receptor> {

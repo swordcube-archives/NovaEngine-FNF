@@ -1,10 +1,10 @@
 package objects;
 
-import core.utilities.FNFSprite.AnimationContext;
+import backend.utilities.FNFSprite.AnimationContext;
 import flixel.util.FlxColor;
-import core.song.Conductor;
+import backend.song.Conductor;
 import flixel.addons.effects.FlxTrail;
-import core.dependency.ScriptHandler;
+import backend.dependency.ScriptHandler;
 import haxe.xml.Access;
 import flixel.math.FlxPoint;
 import flixel.FlxCamera;

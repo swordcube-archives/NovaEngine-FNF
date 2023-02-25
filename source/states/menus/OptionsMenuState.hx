@@ -1,6 +1,6 @@
 package states.menus;
 
-import core.dependency.scripting.events.CancellableEvent;
+import backend.scripting.events.CancellableEvent;
 import flixel.math.FlxMath;
 import flixel.effects.FlxFlicker;
 import flixel.util.FlxColor;

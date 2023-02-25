@@ -1,6 +1,6 @@
 package objects.ui;
 
-import core.utilities.FNFSprite.AnimationContext;
+import backend.utilities.FNFSprite.AnimationContext;
 import flixel.math.FlxPoint;
 import objects.TrackingSprite;
 import states.PlayState;

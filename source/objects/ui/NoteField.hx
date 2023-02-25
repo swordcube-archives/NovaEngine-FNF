@@ -1,6 +1,6 @@
 package objects.ui;
 
-import core.dependency.scripting.events.*;
+import backend.scripting.events.*;
 import flixel.util.FlxSort;
 import flixel.input.keyboard.FlxKey;
 import openfl.events.KeyboardEvent;

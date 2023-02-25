@@ -1,18 +1,24 @@
 package;
 
-import core.modding.ModUtil;
+import haxe.io.Path;
+import backend.modding.ModUtil;
 import openfl.utils.Assets;
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.media.Sound;
 import openfl.display.BitmapData;
 import flixel.graphics.FlxGraphic;
-import core.dependency.CacheManager;
-import core.utilities.IniParser;
+import backend.dependency.CacheManager;
+import backend.utilities.IniParser;
 
 enum abstract DirectoryFilter(Int) to Int from Int {
     var DIRS_AND_FILES = 0;
     var DIRS_ONLY = 1;
     var FILES_ONLY = 2;
+}
+
+enum abstract ExtensionFilter(Bool) to Bool from Bool {
+    var KEEP_EXTENSION = true;
+    var REMOVE_EXTENSION = false;
 }
 
 class Paths {
@@ -78,7 +84,7 @@ class Paths {
     }
 
     // Useful functions
-    public static function getFolderContents(folderPath:String, ?returnFullPath:Bool = false, ?directoryFilter:DirectoryFilter = DIRS_AND_FILES):Array<String> {
+    public static function getFolderContents(folderPath:String, ?returnFullPath:Bool = false, ?directoryFilter:DirectoryFilter = DIRS_AND_FILES, ?extensionFilter:ExtensionFilter = KEEP_EXTENSION):Array<String> {
         var coolList:Array<String> = [];
 
         var pathsToCheck:Array<String> = [
@@ -109,6 +115,9 @@ class Paths {
                 }
 
                 var penis:String = (returnFullPath) ? fullPath : item;
+                if(extensionFilter == REMOVE_EXTENSION)
+                    penis = penis.removeExtension();
+                
                 if(!coolList.contains(penis))
                     coolList.push(penis);
             }

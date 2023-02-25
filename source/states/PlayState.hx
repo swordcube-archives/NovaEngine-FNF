@@ -2,17 +2,17 @@ package states;
 
 import states.editors.ChartingState;
 import states.substates.GameOverSubstate;
-import core.modding.ModUtil;
+import backend.modding.ModUtil;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import cutscenes.*;
 import flixel.text.FlxText;
-import core.song.Ranking;
+import backend.song.Ranking;
 import objects.ui.StrumLine.Receptor;
 import flixel.FlxObject;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import haxe.io.Path;
-import core.dependency.ScriptHandler;
-import core.dependency.scripting.events.*;
+import backend.dependency.ScriptHandler;
+import backend.scripting.events.*;
 import openfl.media.Sound;
 import flixel.tweens.*;
 import flixel.graphics.FlxGraphic;
@@ -25,7 +25,7 @@ import objects.ui.*;
 import states.menus.*;
 import flixel.system.FlxSound;
 import states.MusicBeat.MusicBeatState;
-import core.song.SongFormat.SongData;
+import backend.song.SongFormat.SongData;
 
 class PlayState extends MusicBeatState {
 	public static var current:PlayState;

@@ -4,7 +4,7 @@ import states.PlayState;
 import flixel.FlxBasic;
 import flixel.math.FlxPoint;
 import flixel.util.typeLimit.OneOfTwo;
-import core.dependency.ScriptHandler;
+import backend.dependency.ScriptHandler;
 import flixel.group.FlxGroup.FlxTypedGroup;
 
 typedef StageLayer = FlxTypedGroup<FlxBasic>;
