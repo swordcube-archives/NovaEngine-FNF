@@ -85,7 +85,7 @@ class ScriptHandler {
             "FlxPoint" => flixel.math.FlxPoint.FlxBasePoint,
 
             // Classes [Funkin]
-            "Conductor" => backend.song.Conductor,
+            "Conductor" => music.Conductor,
             "Character" => objects.Character,
             "Boyfriend" => objects.Character, // compatibility
             "Alphabet" => objects.fonts.Alphabet,

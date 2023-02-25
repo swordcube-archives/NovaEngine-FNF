@@ -17,7 +17,7 @@ import flixel.group.FlxGroup;
 import objects.ui.HealthIcon;
 import flixel.text.FlxText;
 import flixel.system.FlxSound;
-import backend.song.SongFormat;
+import music.SongFormat;
 import flixel.math.FlxMath;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.util.FlxStringUtil;
@@ -25,6 +25,7 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import backend.utilities.MathUtil;
 import states.MusicBeat.MusicBeatState;
+import music.SongFormat;
 
 // TODO: MODIFING SONG & SECTION DATA
 
@@ -70,7 +71,7 @@ class ChartingState extends MusicBeatState {
     public var strumNotes:FlxTypedGroup<Receptor>;
 
     public var curNoteType:Int = 0;
-    public var curSelectedNote:Array<Dynamic>;
+    public var curSelectedNote:SectionNote;
 
     public var noteTypeList:Array<String> = [
         "Default",
@@ -92,8 +93,8 @@ class ChartingState extends MusicBeatState {
         var daBPM:Float = SONG.bpm;
         var daPos:Float = 0;
         for (i in 0...selectedSection) {
-            if (SONG.notes[i].changeBPM)
-                daBPM = SONG.notes[i].bpm;
+            if (SONG.sections[i].changeBPM)
+                daBPM = SONG.sections[i].bpm;
             
             daPos += 4 * (1000 * 60 / daBPM);
         }
@@ -145,8 +146,8 @@ class ChartingState extends MusicBeatState {
         add(strumNotes = new FlxTypedGroup<Receptor>());
         add(curRenderedNotes = new FlxTypedGroup<Note>());
 
-        add(iconP2 = new HealthIcon(0, 20, SONG.player2));
-        add(iconP1 = new HealthIcon(0, 20, SONG.player1));
+        add(iconP2 = new HealthIcon(0, 20, SONG.opponent));
+        add(iconP1 = new HealthIcon(0, 20, SONG.player));
 
         updateIcons();
 
@@ -171,7 +172,7 @@ class ChartingState extends MusicBeatState {
         add(camFollow = new FlxObject(FlxG.width * 0.5, 250, 1, 1));
         FlxG.camera.follow(camFollow, null, 1);
 
-        loadSong(SONG.song, PlayState.storyDifficulty);
+        loadSong(SONG.name, PlayState.storyDifficulty);
 
         for(i in 0...(SONG.keyCount * 2)) {
             var receptor = new Receptor(gridBG.x + (GRID_SIZE * i), gridBG.y, "default", SONG.keyCount, i % SONG.keyCount);
@@ -211,11 +212,11 @@ class ChartingState extends MusicBeatState {
     }
 
     public function loadSong(name:String, ?difficulty:String = "normal") {
-        FlxG.sound.playMusic(Paths.songInst(SONG.song, difficulty), 1);
+        FlxG.sound.playMusic(Paths.songInst(SONG.name, difficulty), 1);
         FlxG.sound.music.pause();
         FlxG.sound.music.time = 0;
 
-        FlxG.sound.list.add(vocals = new FlxSound().loadEmbedded(Paths.songVoices(SONG.song, difficulty)));
+        FlxG.sound.list.add(vocals = new FlxSound().loadEmbedded(Paths.songVoices(SONG.name, difficulty)));
         
         musicList = [FlxG.sound.music, vocals];
         musicList[0].onComplete = () -> {
@@ -240,8 +241,8 @@ class ChartingState extends MusicBeatState {
 
         switch(tab.name) {
             case "Song":
-                var songName = new FlxUIInputText(10, 10, 70, SONG.song, 8);
-                songName.callback = (text:String, action:String) -> SONG.song = text;
+                var songName = new FlxUIInputText(10, 10, 70, SONG.name, 8);
+                songName.callback = (text:String, action:String) -> SONG.name = text;
                 inputBoxes.push(songName);
 
                 var needsVoices = FlxTools.makeCheckbox(10, 25, "Has voice track", SONG.needsVoices);
@@ -251,17 +252,17 @@ class ChartingState extends MusicBeatState {
                 muteInst.callback = () -> musicList[0].volume = (muteInst.checked) ? 1 : 0;
 
                 var saveButton = new FlxButton(110, 8, "Save", () -> saveSong());
-                var reloadSong = new FlxButton(saveButton.x + saveButton.width + 10, saveButton.y, "Reload Audio", () -> loadSong(SONG.song, PlayState.storyDifficulty));
+                var reloadSong = new FlxButton(saveButton.x + saveButton.width + 10, saveButton.y, "Reload Audio", () -> loadSong(SONG.name, PlayState.storyDifficulty));
                 var reloadSongJson = new FlxButton(reloadSong.x, saveButton.y + 30, "Reload JSON", () -> {
-                    PlayState.SONG = Song.loadChart(SONG.song, PlayState.storyDifficulty);
+                    PlayState.SONG = Song.loadChart(SONG.name, PlayState.storyDifficulty);
                     FlxG.resetState();
                 });
                 
                 var autosaveButton = new FlxButton(reloadSongJson.x, reloadSongJson.y + 30, "Load Autosave", loadAutosave);
 
                 var stepperSpeed = new FlxUINumericStepper(10, 80, 0.1, 1, 0.1, 10, 2);
-                stepperSpeed.value = SONG.speed;
-                stepperSpeed.callback = () -> SONG.speed = stepperSpeed.value;
+                stepperSpeed.value = SONG.scrollSpeed;
+                stepperSpeed.callback = () -> SONG.scrollSpeed = stepperSpeed.value;
         
                 var stepperBPM = new FlxUINumericStepper(10, 65, 1, 100, 1, FlxMath.MAX_VALUE_INT, 3);
                 stepperBPM.value = Conductor.bpm;
@@ -278,23 +279,23 @@ class ChartingState extends MusicBeatState {
 
                 var dropDownLabel1 = new FlxText(10, 100, 0, "Player", 8);
                 var player1DropDown = new FlxUIDropDownMenu(10, 120, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), (character:String) -> {
-                    SONG.player1 = characters[Std.parseInt(character)];
-                    iconP1.loadIcon(SONG.player1);
+                    SONG.player = characters[Std.parseInt(character)];
+                    iconP1.loadIcon(SONG.player);
                     updateIcons();
                 });
-                player1DropDown.selectedLabel = SONG.player1;
+                player1DropDown.selectedLabel = SONG.player;
         
                 var dropDownLabel2 = new FlxText(140, 100, 0, "Opponent", 8);
                 var player2DropDown = new FlxUIDropDownMenu(140, 120, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), (character:String) -> {
-                    SONG.player2 = characters[Std.parseInt(character)];
-                    iconP2.loadIcon(SONG.player2);
+                    SONG.opponent = characters[Std.parseInt(character)];
+                    iconP2.loadIcon(SONG.opponent);
                     updateIcons();
                 });
-                player2DropDown.selectedLabel = SONG.player2;
+                player2DropDown.selectedLabel = SONG.opponent;
 
                 var dropDownLabel3 = new FlxText(10, 150, 0, "Spectator", 8);
-                var player3DropDown = new FlxUIDropDownMenu(10, 170, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), (character:String) -> SONG.gfVersion = characters[Std.parseInt(character)]);
-                player3DropDown.selectedLabel = SONG.gfVersion;
+                var player3DropDown = new FlxUIDropDownMenu(10, 170, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), (character:String) -> SONG.spectator = characters[Std.parseInt(character)]);
+                player3DropDown.selectedLabel = SONG.spectator;
 
                 var dropDownLabel4 = new FlxText(140, 150, 0, "Stage", 8);
                 var stageDropDown = new FlxUIDropDownMenu(140, 170, FlxUIDropDownMenu.makeStrIdLabelArray(stages, true), (stage:String) -> SONG.stage = stages[Std.parseInt(stage)]);
@@ -322,12 +323,11 @@ class ChartingState extends MusicBeatState {
         selectedSection += change;
         if(selectedSection < 0) selectedSection = 0;
 
-        if(SONG.notes[selectedSection] == null) {
-            SONG.notes.push({
-                sectionNotes: [],
-                lengthInSteps: SONG.notes[SONG.notes.length - 1].lengthInSteps,
-                sectionBeats: SONG.notes[SONG.notes.length - 1].sectionBeats,
-                mustHitSection: SONG.notes[SONG.notes.length - 1].mustHitSection,
+        if(SONG.sections[selectedSection] == null) {
+            SONG.sections.push({
+                notes: [],
+                stepLength: SONG.sections[SONG.sections.length - 1].stepLength,
+                playerSection: SONG.sections[SONG.sections.length - 1].playerSection,
                 bpm: 0,
                 changeBPM: false,
                 altAnim: false
@@ -337,14 +337,14 @@ class ChartingState extends MusicBeatState {
         updateGrid();
     }
 
-    public function initNote(dataShit:Array<Dynamic>, section:Int) {
-        var strumTime:Float = dataShit[0];
-        var noteData:Int = dataShit[1];
-        var sustainLength:Float = dataShit[2];
-        var noteType:Dynamic = dataShit[3];
+    public function initNote(dataShit:SectionNote, section:Int) {
+        var strumTime:Float = dataShit.strumTime;
+        var noteData:Int = dataShit.noteData;
+        var sustainLength:Float = dataShit.sustainLength;
+        var noteType:Dynamic = dataShit.noteType;
 
         var adjustedNoteData:Int = noteData;
-        if(SONG.notes[section].mustHitSection)
+        if(SONG.sections[section].playerSection)
             adjustedNoteData = Std.int((adjustedNoteData + SONG.keyCount) % (SONG.keyCount * 2));
 
         var note = new Note(-9999, -9999, PlayState.changeableSkin, SONG.keyCount, noteData % SONG.keyCount);
@@ -360,7 +360,7 @@ class ChartingState extends MusicBeatState {
         note.alpha = 0.4;
         note.noteData = adjustedNoteData;
 
-        if(SONG.notes[section].mustHitSection)
+        if(SONG.sections[section].playerSection)
             note.x = gridBG.x + Math.floor((noteData + SONG.keyCount) % (SONG.keyCount * 2) * GRID_SIZE);
 
         return note;
@@ -376,14 +376,14 @@ class ChartingState extends MusicBeatState {
             list.clear();
         }
 
-        if (SONG.notes[selectedSection].changeBPM)
-            Conductor.bpm = SONG.notes[selectedSection].bpm;
+        if (SONG.sections[selectedSection].changeBPM)
+            Conductor.bpm = SONG.sections[selectedSection].bpm;
         else {
             // get last bpm
             var daBPM:Float = SONG.bpm;
             for (i in 0...selectedSection) {
-                if (SONG.notes[i].changeBPM)
-                    daBPM = SONG.notes[i].bpm;
+                if (SONG.sections[i].changeBPM)
+                    daBPM = SONG.sections[i].bpm;
             }
             Conductor.bpm = daBPM;
         }
@@ -400,13 +400,13 @@ class ChartingState extends MusicBeatState {
         ];
         var penis:Int = 0;
         for(section in sectionsToRender) {
-            if(section < 0 || section >= SONG.notes.length) {
+            if(section < 0 || section >= SONG.sections.length) {
                 penis++;
                 continue;
             }
 
-            for(note in SONG.notes[section].sectionNotes) {
-                var sustainLength:Float = note[2];
+            for(note in SONG.sections[section].notes) {
+                var sustainLength:Float = note.sustainLength;
         
                 var note = initNote(note, section);
                 groups[penis][0].add(note);
@@ -426,11 +426,16 @@ class ChartingState extends MusicBeatState {
         var strumTime:Float = yToTime(dummyNote.y) + sectionStartTime();
         var noteData:Int = Math.floor((FlxG.mouse.x - gridBG.x) / GRID_SIZE);
 
-        if(SONG.notes[selectedSection].mustHitSection)
+        if(SONG.sections[selectedSection].playerSection)
             noteData = Math.floor((noteData + SONG.keyCount) % (SONG.keyCount * 2));
 
-        SONG.notes[selectedSection].sectionNotes.push([strumTime, noteData, 0, noteTypeList[curNoteType]]);
-        curSelectedNote = SONG.notes[selectedSection].sectionNotes[SONG.notes[selectedSection].sectionNotes.length - 1];
+        SONG.sections[selectedSection].notes.push({
+            strumTime: strumTime, 
+            noteData: noteData, 
+            sustainLength: 0, 
+            noteType: noteTypeList[curNoteType]
+        });
+        curSelectedNote = SONG.sections[selectedSection].notes[SONG.sections[selectedSection].notes.length - 1];
 
         curRenderedNotes.add(initNote(curSelectedNote, selectedSection));
     }
@@ -438,9 +443,9 @@ class ChartingState extends MusicBeatState {
     public function selectNote(note:Note) {
         var swagNum:Int = 0;
 
-        for (i in SONG.notes[selectedSection].sectionNotes) {
-            if (i[0] == note.strumTime && i[1] == note.rawNoteData) {
-                curSelectedNote = SONG.notes[selectedSection].sectionNotes[swagNum];
+        for (i in SONG.sections[selectedSection].notes) {
+            if (i.strumTime == note.strumTime && i.noteData == note.rawNoteData) {
+                curSelectedNote = SONG.sections[selectedSection].notes[swagNum];
                 break;
             }
             swagNum++;
@@ -448,10 +453,10 @@ class ChartingState extends MusicBeatState {
     }
 
     public function deleteNote(note:Note) {
-        for (i in SONG.notes[selectedSection].sectionNotes) {
-            if (i[0] == note.strumTime && i[1] == note.rawNoteData) {
+        for (i in SONG.sections[selectedSection].notes) {
+            if (i.strumTime == note.strumTime && i.noteData == note.rawNoteData) {
                 if(i == curSelectedNote) curSelectedNote = null;
-                SONG.notes[selectedSection].sectionNotes.remove(i);
+                SONG.sections[selectedSection].notes.remove(i);
             }
         }
         updateGrid();
@@ -459,9 +464,9 @@ class ChartingState extends MusicBeatState {
 
     public function changeNoteSustain(value:Float) {
         if (curSelectedNote != null) {
-            if (curSelectedNote[2] != null) {
-                curSelectedNote[2] += value;
-                curSelectedNote[2] = Math.max(curSelectedNote[2], 0);
+            if (curSelectedNote.sustainLength != null) {
+                curSelectedNote.sustainLength += value;
+                curSelectedNote.sustainLength = Math.max(curSelectedNote.sustainLength, 0);
             }
         }
         updateGrid();
@@ -487,13 +492,13 @@ class ChartingState extends MusicBeatState {
 
         var iconLerp:Float = 0.15;
 
-        var P2Scale:Float = (SONG.notes[selectedSection].mustHitSection) ? iconP2.initialScale * 0.4 : iconP2.initialScale * 0.5;
-        var P2Alpha:Float = (SONG.notes[selectedSection].mustHitSection) ? 0.6 : 1;
+        var P2Scale:Float = (SONG.sections[selectedSection].playerSection) ? iconP2.initialScale * 0.4 : iconP2.initialScale * 0.5;
+        var P2Alpha:Float = (SONG.sections[selectedSection].playerSection) ? 0.6 : 1;
         iconP2.scale.set(MathUtil.lerp(iconP2.scale.x, P2Scale, iconLerp), MathUtil.lerp(iconP2.scale.y, P2Scale, iconLerp));
         iconP2.alpha = MathUtil.lerp(iconP2.alpha, P2Alpha, iconLerp);
 
-        var P1Scale:Float = (SONG.notes[selectedSection].mustHitSection) ? iconP1.initialScale * 0.5 : iconP1.initialScale * 0.4;
-        var P1Alpha:Float = (SONG.notes[selectedSection].mustHitSection) ? 1 : 0.6;
+        var P1Scale:Float = (SONG.sections[selectedSection].playerSection) ? iconP1.initialScale * 0.5 : iconP1.initialScale * 0.4;
+        var P1Alpha:Float = (SONG.sections[selectedSection].playerSection) ? 1 : 0.6;
         iconP1.scale.set(MathUtil.lerp(iconP1.scale.x, P1Scale, iconLerp), MathUtil.lerp(iconP1.scale.y, P1Scale, iconLerp));
         iconP1.alpha = MathUtil.lerp(iconP1.alpha, P1Alpha, iconLerp);
 
@@ -650,7 +655,7 @@ class ChartingState extends MusicBeatState {
         curRenderedNotes.forEach((note:Note) -> {
             note.color = 0xFFFFFFFF;
 
-            if (curSelectedNote != null && curSelectedNote[0] == note.strumTime && curSelectedNote[1] == note.rawNoteData) {
+            if (curSelectedNote != null && curSelectedNote.strumTime == note.strumTime && curSelectedNote.noteData == note.rawNoteData) {
                 colorSine += FlxG.elapsed;
                 var colorVal:Float = 0.7 + Math.sin(Math.PI * colorSine) * 0.3;
                 note.color = FlxColor.fromRGBFloat(colorVal, colorVal, colorVal, 0.999); //Alpha can't be 100% or the color won't be updated for some reason, good job flixel devs
@@ -693,7 +698,7 @@ class ChartingState extends MusicBeatState {
             __file.addEventListener(Event.COMPLETE, onSaveComplete);
             __file.addEventListener(Event.CANCEL, onSaveCancel);
             __file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-            __file.save(data.trim(), SONG.song.toLowerCase() + ".json");
+            __file.save(data.trim(), SONG.name.toLowerCase() + ".json");
         }
     }
 

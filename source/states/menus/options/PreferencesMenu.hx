@@ -63,6 +63,22 @@ class PreferencesMenu extends PageSubState {
                     10000, 
                     5, 
                     0
+                ),
+				new Number(
+                    "Scroll Speed",
+                    "Adjust how fast or slow the notes scroll during gameplay.\n0 = Chart's scroll speed",
+                    "scrollSpeed",
+                    "", 
+                    0, 
+                    10, 
+                    0.1, 
+                    1
+                ),
+                new List(
+                    "Scroll Type",
+                    "Choose how you want the scroll speed of notes to be applied.",
+                    "scrollType",
+                    ["Multiplier", "Constant"]
                 )
 			],
 			"Appearance" => [
@@ -92,7 +108,7 @@ class PreferencesMenu extends PageSubState {
                     "Choose what camera you want the ratings & combo to be on.",
                     "judgementCamera",
                     ["World", "HUD"]
-                ),
+                )
 			],
 			"Tools" => [
 				new Custom(

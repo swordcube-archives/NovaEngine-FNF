@@ -2,7 +2,7 @@ package objects;
 
 import backend.utilities.FNFSprite.AnimationContext;
 import flixel.util.FlxColor;
-import backend.song.Conductor;
+import music.Conductor;
 import flixel.addons.effects.FlxTrail;
 import backend.dependency.ScriptHandler;
 import haxe.xml.Access;
@@ -204,6 +204,7 @@ class Character extends FNFSprite implements MusicHandler {
 		var cachedGuyPerson = new Character(0, 0, false).loadCharacter(name);
 		FlxG.state.add(cachedGuyPerson);
 		cachedGuyPerson.kill();
+		return cachedGuyPerson;
 	}
 
 	public function loadCharacter(name:String) {

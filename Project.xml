@@ -87,7 +87,7 @@
 
 	<section if="COMPILE_ALL_CLASSES">
 		<haxeflag name="-dce" value="no" />
-		<haxeflag name="--macro" value="macros.ScriptsMacro.addAdditionalClasses()" />
+		<haxeflag name="--macro" value="game.macros.ScriptsMacro.addAdditionalClasses()" />
 	</section>
 
 	<!-- _________________________________ Custom _______________________________ -->

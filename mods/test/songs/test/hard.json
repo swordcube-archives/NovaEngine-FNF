@@ -6,6 +6,21 @@
         "player1": "bf",
         "player2": "bf-pixel",
         "speed": 1.6,
+        "events": [
+            {
+                "time": 0,
+                "events": [
+                    {
+                        "name": "Add Camera Zoom",
+                        "parameters": ["5", "1"]
+                    },
+                    {
+                        "name": "Change Character",
+                        "parameters": ["0", "dad"]
+                    }
+                ]
+            }
+        ],
         "notes": [
             {
                 "lengthInSteps": 16,

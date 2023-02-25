@@ -4,9 +4,9 @@ import states.editors.ChartingState;
 import states.substates.GameOverSubstate;
 import backend.modding.ModUtil;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
-import cutscenes.*;
+import game.cutscenes.*;
 import flixel.text.FlxText;
-import backend.song.Ranking;
+import music.Ranking;
 import objects.ui.StrumLine.Receptor;
 import flixel.FlxObject;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -25,7 +25,7 @@ import objects.ui.*;
 import states.menus.*;
 import flixel.system.FlxSound;
 import states.MusicBeat.MusicBeatState;
-import backend.song.SongFormat.SongData;
+import music.SongFormat.SongData;
 
 class PlayState extends MusicBeatState {
 	public static var current:PlayState;
@@ -124,7 +124,12 @@ class PlayState extends MusicBeatState {
 	public var startTimer:FlxTimer;
 	public var finishTimer:FlxTimer;
 
+	public var preloadedCharacters:Map<String, Character> = [];
 	public var noteTypeScripts:Map<String, ScriptModule> = [];
+	public var eventScripts:Map<String, ScriptModule> = [];
+
+	public var events:EventManager;
+
 	public var countdownImages:Map<Int, FlxGraphic> = [];
 	public var countdownSounds:Map<Int, Sound> = [];
 
@@ -224,12 +229,15 @@ class PlayState extends MusicBeatState {
 		if(SONG.splashSkin == null)
 			SONG.splashSkin = "noteSplashes";
 
-		var instPath:String = Paths.songInst(SONG.song, storyDifficulty, true);
-		FlxG.sound.playMusic(Paths.songInst(SONG.song, storyDifficulty), 0, false);
+		if(SONG.keyCount == null)
+			SONG.keyCount = 4;
+
+		var instPath:String = Paths.songInst(SONG.name, storyDifficulty, true);
+		FlxG.sound.playMusic(Paths.songInst(SONG.name, storyDifficulty), 0, false);
 		FlxG.sound.list.add(vocals = new FlxSound());
 
-		if(SONG.needsVoices && FileSystem.exists(Paths.songVoices(SONG.song, storyDifficulty, true)))
-			vocals.loadEmbedded(Paths.songVoices(SONG.song, storyDifficulty), false);
+		if(SONG.needsVoices && FileSystem.exists(Paths.songVoices(SONG.name, storyDifficulty, true)))
+			vocals.loadEmbedded(Paths.songVoices(SONG.name, storyDifficulty), false);
 
 		FlxG.cameras.reset(camGame = new FNFCamera());
 		FlxG.cameras.add(camHUD = new FNFCamera(), false);
@@ -242,15 +250,15 @@ class PlayState extends MusicBeatState {
 
 		add(stage = new Stage(SONG.stage));
 
-		add(gf = new Character(stage.gfPos.x, stage.gfPos.y, SONG.gfVersion));
+		add(gf = new Character(stage.gfPos.x, stage.gfPos.y, SONG.spectator));
 		gf.danceOnBeat = false;
 
 		add(stage.gfLayer);
 
-		add(dad = new Character(stage.dadPos.x, stage.dadPos.y, SONG.player2));
+		add(dad = new Character(stage.dadPos.x, stage.dadPos.y, SONG.opponent));
 		add(stage.dadLayer);
 
-		add(boyfriend = new Character(stage.bfPos.x, stage.bfPos.y, SONG.player1, true));
+		add(boyfriend = new Character(stage.bfPos.x, stage.bfPos.y, SONG.player, true));
 		add(stage.bfLayer);
 
 		GameOverSubstate.resetVariables();
@@ -273,7 +281,7 @@ class PlayState extends MusicBeatState {
 		}
 
 		// Scripts specific to the current song
-		for(path in Paths.getFolderContents('songs/${SONG.song.toLowerCase()}', true, FILES_ONLY)) {
+		for(path in Paths.getFolderContents('songs/${SONG.name.toLowerCase()}', true, FILES_ONLY)) {
 			if(!FileSystem.exists(path) || !Paths.scriptExts.contains(Path.extension(path)))
 				continue;
 			
@@ -320,6 +328,22 @@ class PlayState extends MusicBeatState {
 			comboGroup.cameras = [camHUD];
 		
 		notes.addNotes(ChartParser.parseChart(SONG));
+		add(events = new EventManager());
+
+		if(SONG.events != null && SONG.events.length > 0) {
+			for(group in SONG.events) {
+				for(event in group.events) {
+					if(event.name == "Change Character" && !preloadedCharacters.exists(event.parameters[1]))
+						preloadedCharacters.set(event.parameters[1], Character.preloadCharacter(event.parameters[1]));
+					
+					if(eventScripts.exists(event.name)) continue;
+					var script = ScriptHandler.loadModule(Paths.script('data/events/${event.name}'));
+					eventScripts.set(event.name, script);
+					scripts.add(script);
+				}
+				events.add(group.time, EventManager.generateList(group));
+			}
+		}
 
 		healthBarBG = new TrackingSprite(0, FlxG.height * (SettingsAPI.downscroll ? 0.1 : 0.9)).loadGraphic(Paths.image("UI/base/healthBar"));
 		healthBarBG.screenCenter(X);
@@ -335,10 +359,10 @@ class PlayState extends MusicBeatState {
 
 		add(healthBarBG);
 
-		add(iconP1 = new HealthIcon(0, healthBar.y, (boyfriend != null) ? boyfriend.healthIcon : SONG.player1));
+		add(iconP1 = new HealthIcon(0, healthBar.y, (boyfriend != null) ? boyfriend.healthIcon : SONG.player));
 		iconP1.flipX = true;
 
-		add(iconP2 = new HealthIcon(0, healthBar.y, (dad != null) ? dad.healthIcon : SONG.player2));
+		add(iconP2 = new HealthIcon(0, healthBar.y, (dad != null) ? dad.healthIcon : SONG.opponent));
 
 		add(scoreTxt = new FlxText(0, healthBarBG.y + 36, 0, "obtain realism", 18));
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), 18, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
@@ -428,7 +452,7 @@ class PlayState extends MusicBeatState {
 		if(!playCutscenes)
 			startCountdown();
 		else {
-			var videoCutscene = Paths.video('${PlayState.SONG.song.toLowerCase()}-cutscene');
+			var videoCutscene = Paths.video('${PlayState.SONG.name.toLowerCase()}-cutscene');
 			persistentUpdate = false;
 			persistentDraw = false;
 			if (cutscene != null) {
@@ -467,7 +491,7 @@ class PlayState extends MusicBeatState {
 		if(!playCutscenes)
 			endSong();
 		else {
-			var videoCutscene = Paths.video('${PlayState.SONG.song.toLowerCase()}-endcutscene');
+			var videoCutscene = Paths.video('${PlayState.SONG.name.toLowerCase()}-endcutscene');
 			persistentUpdate = false;
 			if (endCutscene != null) {
 				openSubState(new ScriptedCutscene(endCutscene, () -> {
@@ -521,7 +545,7 @@ class PlayState extends MusicBeatState {
 
 		// make sure it's fair to set the score before setting it
 		if(!usedAutoplay && SettingsAPI.healthGainMultiplier <= 1)
-			Highscore.setScore(SONG.song+":"+ModUtil.currentMod, storyDifficulty, songScore);
+			Highscore.setScore(SONG.name+":"+ModUtil.currentMod, storyDifficulty, songScore);
 
 		var event = scripts.event("onEndSong", new CancellableEvent());
 		event = scripts.event("onSongEnd", event);
@@ -701,7 +725,7 @@ class PlayState extends MusicBeatState {
 
 		var swagCounter:Int = 0;
 		startTimer = new FlxTimer().start(Conductor.crochet / 1000, (tmr:FlxTimer) -> {
-			var char:Character = ((SONG.notes[0] != null && SONG.notes[0].mustHitSection) ? boyfriend : dad);
+			var char:Character = ((SONG.sections[0] != null && SONG.sections[0].playerSection) ? boyfriend : dad);
 			var pos = char.getCameraPosition();
 			if(swagCounter == 0) camFollow.setPosition(pos.x, pos.y);
 
@@ -920,17 +944,21 @@ class PlayState extends MusicBeatState {
 			script.call("onStepHit", [curStep]);
 	}
 
+	public function updateCamera() {
+		var char:Character = ((SONG.sections[curSection] != null && SONG.sections[curSection].playerSection) ? boyfriend : dad);
+		var pos = char.getCameraPosition();
+		camFollow.setPosition(pos.x, pos.y);
+	}
+
 	override public function sectionHit(curSection:Int) {
 		if(FlxG.sound.music.time >= FlxG.sound.music.length || endingSong) return;
 
 		super.sectionHit(curSection);
 
-		if(SONG.notes[curSection] != null && SONG.notes[curSection].changeBPM)
-			Conductor.bpm = SONG.notes[curSection].bpm;
+		if(SONG.sections[curSection] != null && SONG.sections[curSection].changeBPM)
+			Conductor.bpm = SONG.sections[curSection].bpm;
 
-		var char:Character = ((SONG.notes[curSection] != null && SONG.notes[curSection].mustHitSection) ? boyfriend : dad);
-		var pos = char.getCameraPosition();
-		camFollow.setPosition(pos.x, pos.y);
+		updateCamera();
 
 		scripts.call("onSectionHit", [curSection]);
 		for(script in noteTypeScripts)

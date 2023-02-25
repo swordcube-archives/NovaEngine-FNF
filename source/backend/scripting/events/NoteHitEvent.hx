@@ -1,7 +1,7 @@
 package backend.scripting.events;
 
 import states.PlayState;
-import backend.song.Ranking;
+import music.Ranking;
 import objects.*;
 import objects.ui.*;
 

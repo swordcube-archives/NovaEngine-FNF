@@ -18,6 +18,8 @@ class SettingsAPI {
     public static var disableResetButton:Bool = true;
     public static var hitsoundVolume:Int = 0; // Ranges from 0% to 100%
     public static var noteOffset:Float = 0; // In milliseconds
+    public static var scrollSpeed:Float = 0; // 0 = Chart's scroll speed
+    public static var scrollType:String = "Multiplier";
 
     // appearance tab
     public static var fpsCounter:Bool = true;

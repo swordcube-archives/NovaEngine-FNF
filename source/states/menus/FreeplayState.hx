@@ -1,5 +1,6 @@
 package states.menus;
 
+import music.Song.ChartFormat;
 import flixel.util.FlxColor;
 import states.MusicBeat.MusicBeatState;
 import flixel.text.FlxText;
@@ -20,6 +21,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
     var difficulties:Array<String>;
     var ?bgColor:Null<FlxColor>;
     var ?bpm:Null<Float>;
+    var ?chartFormat:Null<ChartFormat>;
 }
 
 class FreeplayState extends MusicBeatState {
@@ -148,7 +150,8 @@ class FreeplayState extends MusicBeatState {
                     character: song.has.character ? song.att.character : "face",
                     difficulties: song.has.difficulties ? CoolUtil.trimArray(song.att.difficulties.split(",")) : ["easy", "normal", "hard"],
                     bgColor: song.has.bgColor ? FlxColor.fromString(song.att.bgColor) : 0xFF9271FD,
-                    bpm: song.has.bpm ? Std.parseFloat(song.att.bpm) : 100
+                    bpm: song.has.bpm ? Std.parseFloat(song.att.bpm) : 100,
+                    chartFormat: song.has.chartFormat ? song.att.chartFormat : AUTO_DETECT
                 });
             }
         } catch(e) {

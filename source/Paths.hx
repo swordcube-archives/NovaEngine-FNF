@@ -131,7 +131,7 @@ class Paths {
         if(mod == null) mod = ModUtil.currentMod;
 
         var pathsToCheck:Array<String> = [
-            '../../../../mods/$path',
+            '../../../../mods/$mod/$path',
             './mods/$mod/$path',
 
             '../../../../assets/$path'
@@ -246,6 +246,7 @@ class Paths {
     }
 
     public static function songJson(song:String, ?diff:String = "normal", ?pathOnly:Bool = false, ?mod:Null<String>):Dynamic {
+        song = song.toLowerCase();
         var songPaths:Array<String> = [
             getPath('songs/$song/$song-$diff.json', mod),
             getPath('data/$song/$song-$diff.json', mod),

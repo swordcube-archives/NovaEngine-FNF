@@ -14,7 +14,7 @@ import backend.*;
 import backend.dependency.*;
 import backend.utilities.*;
 import backend.handlers.*;
-import backend.song.*;
+import music.*;
 
 using backend.utilities.CoolUtil;
 #end
