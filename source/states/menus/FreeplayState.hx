@@ -156,7 +156,7 @@ class FreeplayState extends MusicBeatState {
             }
         } catch(e) {
             songs = [];
-			Logs.trace('Failed to load the freeplay song list XML: ${e.details()}', ERROR);
+			WindowUtil.showMessage('Failed to load the freeplay song list XML', '$e', MSG_ERROR);
 		}
     }
 

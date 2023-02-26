@@ -32,7 +32,7 @@ class ModUtil {
         var metadata:Metadata = fallbackMetadata;
 
         #if MOD_SUPPORT
-        var metadataJsonPathSource:String = '../../../../mods/$modName/pack.json';
+        var metadataJsonPathSource:String = '${Paths.backPath}mods/$modName/pack.json';
         var metadataJsonPath:String = './mods/$modName/pack.json';
 
         // If the mod we selected is "Friday Night Funkin'", then try to load metadata from assets
@@ -66,7 +66,7 @@ class ModUtil {
 
         #if MOD_SUPPORT
         var foldersToCheck:Array<String> = [
-            "../../../../mods",
+            '${Paths.backPath}mods',
             "./mods"
         ];
 

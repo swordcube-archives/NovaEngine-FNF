@@ -22,6 +22,8 @@ enum abstract ExtensionFilter(Bool) to Bool from Bool {
 }
 
 class Paths {
+    public static final backPath:String = "../../../../";
+
     public static var assetCache:Cache = new Cache();
 
     public static var scriptExts:Array<String> = ["hx", "hxs", "hsc", "hscript", "lua"];
@@ -88,10 +90,10 @@ class Paths {
         var coolList:Array<String> = [];
 
         var pathsToCheck:Array<String> = [
-            '../../../../mods/${ModUtil.currentMod}/$folderPath',
+            '${backPath}mods/${ModUtil.currentMod}/$folderPath',
             './mods/${ModUtil.currentMod}/$folderPath',
 
-            '../../../../assets/$folderPath',
+            '${backPath}assets/$folderPath',
             './assets/$folderPath'
         ];
 
@@ -118,7 +120,7 @@ class Paths {
                 if(extensionFilter == REMOVE_EXTENSION)
                     penis = penis.removeExtension();
                 
-                if(!coolList.contains(penis))
+                if(!coolList.contains(penis) && !coolList.contains(penis.replace(backPath, "./")) && !coolList.contains(penis.replace("./", backPath)))
                     coolList.push(penis);
             }
         }
@@ -131,10 +133,10 @@ class Paths {
         if(mod == null) mod = ModUtil.currentMod;
 
         var pathsToCheck:Array<String> = [
-            '../../../../mods/$mod/$path',
+            '${backPath}mods/$mod/$path',
             './mods/$mod/$path',
 
-            '../../../../assets/$path'
+            '${backPath}assets/$path'
         ];
 
         for(path in pathsToCheck) {

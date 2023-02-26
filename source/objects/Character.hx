@@ -354,12 +354,12 @@ class Character extends FNFSprite implements MusicHandler {
 		var charXmlPath:String = Paths.xml('data/characters/$curCharacter/config', true);
 
         if(!FileSystem.exists(charXmlPath))
-            return Logs.trace('Occured on character: $curCharacter | The XML doesn\'t exist!', ERROR);
+            return WindowUtil.showMessage('Occured on character: $curCharacter', 'The XML doesn\'t exist!', MSG_ERROR);
 
 		// Load the intial XML Data.
 		var xml:Xml = Xml.parse(File.getContent(charXmlPath)).firstElement();
 		if (xml == null)
-			return Logs.trace('Occured on character: $curCharacter | Either the XML doesn\'t exist or the "character" node is missing!', ERROR);
+			return WindowUtil.showMessage('Occured on character: $curCharacter', 'Either the XML doesn\'t exist or the "character" node is missing!', MSG_ERROR);
 
 		var data:Access = new Access(xml);
 

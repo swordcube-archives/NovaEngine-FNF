@@ -123,7 +123,7 @@ class LuaScript extends ScriptModule {
 			var error = Lua.tostring(luaState, -1);
             var msg:String = 'Lua file at path: $path couldn\'t be ran! Here\'s the error message:\n$error';
 
-            Logs.trace(msg, ERROR);
+            WindowUtil.showMessage("Error occured on LUA file! ("+fileName+")", msg, MSG_ERROR);
             #if windows
             Application.current.window.alert(msg);
             #end
@@ -199,7 +199,7 @@ class LuaScript extends ScriptModule {
 
 			// Calls the function of the script. If it does not return 0, will trace what went wrong.
 			if (Lua.pcall(luaState, nparams, 1, 0) != 0) {
-				Logs.trace('Error occured while running function ($name): ${Lua.tostring(luaState, -1)}', ERROR);
+				WindowUtil.showMessage('Error occured while running function ($name)', '${Lua.tostring(luaState, -1)}', MSG_ERROR);
 				return null;
 			}
 
@@ -209,7 +209,7 @@ class LuaScript extends ScriptModule {
 			currentLua = lastLua;
 			return v;
 		} catch(e) {
-			Logs.trace('Error occured trying to run lua function ($name): $e', ERROR);
+			WindowUtil.showMessage('Error occured trying to run lua function ($name)', '$e', MSG_ERROR);
 		}
 		currentLua = lastLua;
 		#end
@@ -259,7 +259,7 @@ class LuaScript extends ScriptModule {
 		try {
 			returned = functions[funcNum](params[0], params[1], params[2]);
 		} catch (e) {
-			Logs.trace('Error occured on Lua file (${currentLua.fileName}): ' + e.details(), ERROR);
+			WindowUtil.showMessage('Error occured on Lua file (${currentLua.fileName})', '$e', MSG_ERROR);
 		}
 		Lua.settop(state, 0);
 

@@ -81,7 +81,7 @@ class HealthIcon extends TrackingSprite {
                 jsonData = Json.parse(File.getContent(jsonPath));
         } catch(e) {
             jsonData = {};
-            Logs.trace("Error occured while loading health icon for character: "+char+" - "+e.details(), ERROR);
+            Logs.trace("Error occured while loading health icon for character: "+char+" - "+e, ERROR);
         }
         jsonData.setFieldDefault("icons", 2);
         jsonData.setFieldDefault("iconHeight", Std.int(height));

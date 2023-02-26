@@ -13,6 +13,9 @@ class Main extends Sprite {
 		fullscreen: false
 	};
 
+	@:dox(hide) public static var audioDisconnected:Bool = false;
+	@:dox(hide) public static var changeID:Int = 0;
+
 	public static function setFPSCap(framerate:Int) {
 		var refreshRate = lime.app.Application.current.window.displayMode.refreshRate;
 

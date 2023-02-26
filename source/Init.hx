@@ -6,6 +6,7 @@ import backend.Controls;
 import flixel.FlxState;
 import openfl.ui.Keyboard;
 import backend.modding.ModUtil;
+import backend.native.windows.WindowsAPI;
 
 class Init extends FlxState {
     override function create() {
@@ -46,6 +47,8 @@ class Init extends FlxState {
             Controls.save();
         });
         SettingsAPI.load();
+        AudioSwitchFix.init();
+        WindowsAPI.setDarkMode(true);
         
         Main.setFPSCap(SettingsAPI.fpsCap);
         FlxG.autoPause = SettingsAPI.autoPause;

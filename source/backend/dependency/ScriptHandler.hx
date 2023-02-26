@@ -121,6 +121,8 @@ class ScriptHandler {
             "OutlineShader" => shaders.OutlineShader,
             "FlxFixedShader" => shaders.FlxFixedShader,
 
+            "WindowUtil" => backend.utilities.WindowUtil,
+
             // Variables
             "engine" => {
                 name: "Nova Engine",

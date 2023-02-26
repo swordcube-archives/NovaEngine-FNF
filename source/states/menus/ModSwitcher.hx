@@ -38,9 +38,9 @@ class ModSwitcher extends MusicBeatSubstate {
 
         // Loading the list of mods (only loads base game if mod support is disabled)
         #if MOD_SUPPORT
-        if(FileSystem.exists('../../../../mods')) {
-            for(modFolder in FileSystem.readDirectory('../../../../mods')) {
-                if (!mods.contains(modFolder) && FileSystem.isDirectory('../../../../mods/$modFolder') && FileSystem.exists('../../../../mods/$modFolder/pack.json'))
+        if(FileSystem.exists('${Paths.backPath}mods')) {
+            for(modFolder in FileSystem.readDirectory('${Paths.backPath}mods')) {
+                if (!mods.contains(modFolder) && FileSystem.isDirectory('${Paths.backPath}mods/$modFolder') && FileSystem.exists('${Paths.backPath}mods/$modFolder/pack.json'))
                     mods.push(modFolder);
             }
         }
@@ -75,7 +75,7 @@ class ModSwitcher extends MusicBeatSubstate {
                 else
                     addModToList(metadata.name, mod);
             } catch(e) {
-                Logs.trace('mods/$mod has an invalid "pack.json" file! - ${e.details()}', ERROR);
+                Logs.trace('mods/$mod has an invalid "pack.json" file! - $e', ERROR);
                 mods.remove(mod);
             }
         }
