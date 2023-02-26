@@ -206,7 +206,7 @@ class CoolUtil {
 
 		// Set the Conductor's BPM if the "BPM" property exists
 		if(section.exists("BPM"))
-			Conductor.bpm = Std.parseFloat(section["BPM"]);
+			Conductor.changeBPM(Std.parseFloat(section["BPM"]));
     }
 
 	/**

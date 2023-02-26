@@ -25,6 +25,7 @@ class Song {
 		splashSkin: "noteSplashes",
 		needsVoices: false,
 		assetModifier: "base",
+		timeScale: [4, 4],
 		novaChart: true
 	};
 
@@ -77,36 +78,41 @@ class Song {
 				var eventList:Array<EventGroup> = [];
 				var sections:Array<SectionData> = [];
 
-				for(item in fnfChart.events) {
-					if(item is Array)
-						trace("Found an event that the engine can't parse: "+item);
-					else if(item is Dynamic)
-						eventList.push(item);
+				if(fnfChart.events != null) {
+					for(item in fnfChart.events) {
+						if(item is Array)
+							trace("Found an event that the engine can't parse: "+item);
+						else if(item is Dynamic)
+							eventList.push(item);
+					}
 				}
 
+				var prevSteps:Int = (fnfChart.notes[0] != null) ? fnfChart.notes[0].lengthInSteps : 16;
 				for(section in fnfChart.notes) {
-					if(section != null) {
-						var coolSex:SectionData = {
-							notes: [],
-							playerSection: section.mustHitSection,
-							altAnim: section.altAnim,
-							bpm: section.bpm,
-							changeBPM: section.changeBPM,
-							stepLength: section.lengthInSteps
-						}
-						for(note in section.sectionNotes) {
-							var altAnim:Bool = section.altAnim;
-							if(note[3] != null && note[3]) altAnim = note[3];
+					if(section == null) continue;
 
-							coolSex.notes.push({
-								strumTime: note[0],
-								noteData: Std.int(note[1]),
-								sustainLength: note[2],
-								noteType: "Default"
-							});
-						}
-						sections.push(coolSex);
+					var coolSex:SectionData = {
+						notes: [],
+						playerSection: section.mustHitSection,
+						altAnim: section.altAnim,
+						bpm: section.bpm,
+						changeBPM: section.changeBPM,
+						changeTimeScale: (prevSteps != section.lengthInSteps),
+						timeScale: [Std.int(section.lengthInSteps / 4), 4]
 					}
+					for(note in section.sectionNotes) {
+						var altAnim:Bool = section.altAnim;
+						if(note[3] != null && note[3]) altAnim = note[3];
+
+						coolSex.notes.push({
+							strumTime: note[0],
+							noteData: Std.int(note[1]),
+							sustainLength: note[2],
+							noteType: "Default"
+						});
+					}
+					prevSteps = section.lengthInSteps;
+					sections.push(coolSex);
 				}
 
 				var keyCount:Int = 4;
@@ -150,6 +156,7 @@ class Song {
 					assetModifier: assetModifier,
 					changeableSkin: changeableSkin,
 					splashSkin: splashSkin,
+					timeScale: [4, 4],
 
 					novaChart: true
 				};
@@ -166,29 +173,33 @@ class Song {
 
 				var eventList:Array<EventGroup> = [];
 				var sections:Array<SectionData> = [];
-				for(section in psychChart.notes) {
-					if(section != null) {
-						var coolSex:SectionData = {
-							notes: [],
-							playerSection: section.mustHitSection,
-							altAnim: section.altAnim,
-							bpm: section.bpm,
-							changeBPM: section.changeBPM,
-							stepLength: Std.int(section.sectionBeats * 4)
-						}
-						for(note in section.sectionNotes) {
-							var altAnim:Bool = section.altAnim;
-							if(note[3] != null && note[3]) altAnim = note[3];
 
-							coolSex.notes.push({
-								strumTime: note[0],
-								noteData: Std.int(note[1]),
-								sustainLength: note[2],
-								noteType: "Default"
-							});
-						}
-						sections.push(coolSex);
+				var prevBeats:Int = (psychChart.notes[0] != null) ? Std.int(psychChart.notes[0].sectionBeats) : 4;
+				for(section in psychChart.notes) {
+					if(section == null) continue;
+
+					var coolSex:SectionData = {
+						notes: [],
+						playerSection: section.mustHitSection,
+						altAnim: section.altAnim,
+						bpm: section.bpm,
+						changeBPM: section.changeBPM,
+						changeTimeScale: (prevBeats != Std.int(section.sectionBeats)),
+						timeScale: [Std.int(section.sectionBeats), 4]
 					}
+					for(note in section.sectionNotes) {
+						var altAnim:Bool = section.altAnim;
+						if(note[3] != null && note[3]) altAnim = note[3];
+
+						coolSex.notes.push({
+							strumTime: note[0],
+							noteData: Std.int(note[1]),
+							sustainLength: note[2],
+							noteType: "Default"
+						});
+					}
+					prevBeats = Std.int(section.sectionBeats);
+					sections.push(coolSex);
 				}
 
 				var gfVersion:String = "gf";
@@ -272,6 +283,7 @@ class Song {
 					assetModifier: "base",
 					changeableSkin: "default",
 					splashSkin: splashSkin,
+					timeScale: [(psychChart.notes[0] != null) ? Std.int(psychChart.notes[0].sectionBeats * 4) : 16, 4],
 
 					novaChart: true
 				};

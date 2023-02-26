@@ -40,7 +40,7 @@ class GameOverSubstate extends MusicBeatSubstate {
         super.create();
 
 		if(runDefaultCode) {
-			Conductor.position = 0;
+			Conductor.songPosition = 0;
 
 			boyfriend = new Character(deathX, deathY, true).loadCharacter(characterName);
 			add(boyfriend);
@@ -49,7 +49,7 @@ class GameOverSubstate extends MusicBeatSubstate {
 			add(camFollow);
 
 			FlxG.sound.play(Paths.sound(deathSoundName));
-			Conductor.bpm = 100;
+			Conductor.changeBPM(100);
 
 			FlxG.camera.target = null;
 			FlxG.camera.scroll.set();
@@ -96,7 +96,7 @@ class GameOverSubstate extends MusicBeatSubstate {
 				coolStartDeath();
 			}
 
-			if (FlxG.sound.music.playing) Conductor.position = FlxG.sound.music.time;
+			if (FlxG.sound.music.playing) Conductor.songPosition = FlxG.sound.music.time;
 		}
 	}
 

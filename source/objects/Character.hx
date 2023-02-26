@@ -561,9 +561,9 @@ class Character extends FNFSprite implements MusicHandler {
         script.call("onStepHitPost", [step]);
 	}
 
-    public function sectionHit(section:Int) {
+    public function measureHit(section:Int) {
 		if(!alive) return;
-		script.call("onSectionHit", [section]);
+		script.call("onMeasureHit", [section]);
         script.call("onSectionPost", [section]);
 	}
 

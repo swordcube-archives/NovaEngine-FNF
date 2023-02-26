@@ -33,7 +33,7 @@ class NoteGroup extends FlxTypedGroup<Note> {
                 i++;
                 continue;
             }
-            if (__loopSprite.strumTime - Conductor.position > (2500 / Math.abs(__loopSprite.getScrollSpeed())))
+            if (__loopSprite.strumTime - Conductor.songPosition > (2500 / Math.abs(__loopSprite.getScrollSpeed())))
                 break;
             __loopSprite.update(elapsed);
             i++;
@@ -55,7 +55,7 @@ class NoteGroup extends FlxTypedGroup<Note> {
                 i++;
                 continue;
             }
-            if (__loopSprite.strumTime - Conductor.position > (2500 / Math.abs(__loopSprite.getScrollSpeed()))) break;
+            if (__loopSprite.strumTime - Conductor.songPosition > (2500 / Math.abs(__loopSprite.getScrollSpeed()))) break;
             __loopSprite.draw();
             i++;
         }
@@ -77,7 +77,7 @@ class NoteGroup extends FlxTypedGroup<Note> {
                 i++;
                 continue;
             }
-            if (__loopSprite.strumTime - Conductor.position > (2500 / Math.abs(__loopSprite.getScrollSpeed()))) break;
+            if (__loopSprite.strumTime - Conductor.songPosition > (2500 / Math.abs(__loopSprite.getScrollSpeed()))) break;
             noteFunc(__loopSprite);
             i++;
         }

@@ -217,20 +217,12 @@ class PlayState extends MusicBeatState {
 
 		// VVV -- PRELOADING -----------------------------------------------------------
 
-		if(SONG == null)
-			SONG = Song.fallbackSong;
-
-		if(SONG.assetModifier != null)
-			assetModifier = SONG.assetModifier;
-
-		if(SONG.changeableSkin != null)
-			changeableSkin = SONG.changeableSkin;
-
-		if(SONG.splashSkin == null)
-			SONG.splashSkin = "noteSplashes";
-
-		if(SONG.keyCount == null)
-			SONG.keyCount = 4;
+		if(SONG == null) SONG = Song.fallbackSong;
+		if(SONG.assetModifier != null) assetModifier = SONG.assetModifier;
+		if(SONG.changeableSkin != null) changeableSkin = SONG.changeableSkin;
+		if(SONG.splashSkin == null) SONG.splashSkin = "noteSplashes";
+		if(SONG.keyCount == null) SONG.keyCount = 4;
+		if(SONG.timeScale == null) SONG.timeScale = [4, 4];
 
 		var instPath:String = Paths.songInst(SONG.name, storyDifficulty, true);
 		FlxG.sound.playMusic(Paths.songInst(SONG.name, storyDifficulty), 0, false);
@@ -243,10 +235,10 @@ class PlayState extends MusicBeatState {
 		FlxG.cameras.add(camHUD = new FNFCamera(), false);
 		FlxG.cameras.add(camOther = new FNFCamera(), false);
 
-		Conductor.bpm = SONG.bpm;
+		Conductor.changeBPM(SONG.bpm, SONG.timeScale[0], SONG.timeScale[1]);
 		Conductor.mapBPMChanges(SONG);
 
-		Conductor.position = Conductor.crochet * -5;
+		Conductor.songPosition = Conductor.crochet * -5;
 
 		add(stage = new Stage(SONG.stage));
 
@@ -544,7 +536,7 @@ class PlayState extends MusicBeatState {
 		endingSong = true;
 
 		// make sure it's fair to set the score before setting it
-		if(!usedAutoplay && SettingsAPI.healthGainMultiplier <= 1)
+		if(!usedAutoplay && SettingsAPI.healthGainMultiplier <= 1 && SettingsAPI.healthLossMultiplier >= 1)
 			Highscore.setScore(SONG.name+":"+ModUtil.currentMod, storyDifficulty, songScore);
 
 		var event = scripts.event("onEndSong", new CancellableEvent());
@@ -631,7 +623,7 @@ class PlayState extends MusicBeatState {
 		vocals.volume = 1;
 		note.wasGoodHit = true;
 
-		var judgeData:Judgement = (note.mustPress && !note.strumLine.autoplay) ? Ranking.judgementFromTime(note.strumTime - Conductor.position) : Ranking.judgements[0];
+		var judgeData:Judgement = (note.mustPress && !note.strumLine.autoplay) ? Ranking.judgementFromTime(note.strumTime - Conductor.songPosition) : Ranking.judgements[0];
 
 		var funcName:String = note.mustPress ? "onPlayerHit" : "onOpponentHit";
 		// other function names u can use if you're used to how another engine does it
@@ -882,8 +874,8 @@ class PlayState extends MusicBeatState {
 		}
 
 		if(!endingSong && !inCutscene) {
-			Conductor.position += elapsed * 1000;
-			if(Conductor.position >= 0 && startingSong)
+			Conductor.songPosition += elapsed * 1000;
+			if(Conductor.songPosition >= 0 && startingSong)
 				startSong();
 		}
 
@@ -945,36 +937,36 @@ class PlayState extends MusicBeatState {
 	}
 
 	public function updateCamera() {
-		var char:Character = ((SONG.sections[curSection] != null && SONG.sections[curSection].playerSection) ? boyfriend : dad);
+		var char:Character = ((SONG.sections[curMeasure] != null && SONG.sections[curMeasure].playerSection) ? boyfriend : dad);
 		var pos = char.getCameraPosition();
 		camFollow.setPosition(pos.x, pos.y);
 	}
 
-	override public function sectionHit(curSection:Int) {
+	override public function measureHit(curMeasure:Int) {
 		if(FlxG.sound.music.time >= FlxG.sound.music.length || endingSong) return;
 
-		super.sectionHit(curSection);
+		super.measureHit(curMeasure);
 
-		if(SONG.sections[curSection] != null && SONG.sections[curSection].changeBPM)
-			Conductor.bpm = SONG.sections[curSection].bpm;
+		if(SONG.sections[curMeasure] != null && SONG.sections[curMeasure].changeBPM)
+			Conductor.changeBPM(SONG.sections[curMeasure].bpm);
 
 		updateCamera();
 
-		scripts.call("onSectionHit", [curSection]);
+		scripts.call("onMeasureHit", [curMeasure]);
 		for(script in noteTypeScripts)
-			script.call("onSectionHit", [curSection]);
+			script.call("onMeasureHit", [curMeasure]);
 	}
 
 	public function resyncVocals() {
 		if(startingSong || endingSong) return;
 
-		if (Conductor.position <= vocals.length)
+		if (Conductor.songPosition <= vocals.length)
 			vocals.pause();
 
 		FlxG.sound.music.play();
-		Conductor.position = FlxG.sound.music.time;
-		if (Conductor.position <= vocals.length) {
-			vocals.time = Conductor.position;
+		Conductor.songPosition = FlxG.sound.music.time;
+		if (Conductor.songPosition <= vocals.length) {
+			vocals.time = Conductor.songPosition;
 			vocals.play();
 		}
 
@@ -988,7 +980,7 @@ class PlayState extends MusicBeatState {
 
 		FlxG.sound.music.pause();
 		FlxG.sound.music.volume = 1;
-		FlxG.sound.music.time = vocals.time = Conductor.position = 0;
+		FlxG.sound.music.time = vocals.time = Conductor.songPosition = 0;
 		FlxG.sound.music.onComplete = finishSong.bind();
 		FlxG.sound.music.play();
 		vocals.play();

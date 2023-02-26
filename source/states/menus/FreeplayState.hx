@@ -210,7 +210,7 @@ class FreeplayState extends MusicBeatState {
             FlxG.sound.music.volume = 0.0;
             FlxG.sound.music.fadeIn(1.0, 0.0, 1.0);
             FlxG.sound.music.pitch = 1;
-            Conductor.bpm = songs[curSelected].bpm;
+            Conductor.changeBPM(songs[curSelected].bpm);
             songToPlay = null;
         }
         mutex.release();

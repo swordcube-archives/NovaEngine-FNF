@@ -33,17 +33,19 @@ typedef SongData = {
 	var assetModifier:String; // Usually "base"
 	var changeableSkin:String; // Usually "default"
 	var splashSkin:String; // Usually "noteSplashes"
+	var timeScale:Array<Int>; // Measure & Steps (Default is 4/4)
 
 	var novaChart:Bool; // Usually set to true to indicate that this is a Nova chart, if you have this value in another chart and it's set to true, Things will break.
 }
 
 typedef SectionData = {
 	var playerSection:Bool;
-	var stepLength:Int; // usually 16
 	var notes:Array<SectionNote>;
 	var altAnim:Bool;
 	var changeBPM:Bool;
+	var changeTimeScale:Bool;
 	var bpm:Float;
+	var timeScale:Array<Int>; // Measure & Steps (Default is 4/4)
 }
 
 typedef SectionNote = {

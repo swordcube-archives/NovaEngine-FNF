@@ -71,7 +71,7 @@ class EventManager extends FlxBasic {
         super.update(elapsed);
 
         if(groups.length > 0 && groups[0] != null) {
-            while(groups[0] != null && groups[0].time <= Conductor.position)
+            while(groups[0] != null && groups[0].time <= Conductor.songPosition)
                 groups.shift().fire();
         }
     }

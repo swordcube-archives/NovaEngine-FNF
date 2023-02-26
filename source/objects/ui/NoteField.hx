@@ -126,7 +126,7 @@ class NoteField extends NoteGroup {
 			var downscrollMultiplier:Int = (strumLine.downscroll ? -1 : 1) * FlxMath.signOf(roundedSpeed);
 
 			var psuedoX:Float = 25;
-			var psuedoY:Float = (downscrollMultiplier * -((Conductor.position - note.strumTime) * (0.45 * Math.abs(roundedSpeed))));
+			var psuedoY:Float = (downscrollMultiplier * -((Conductor.songPosition - note.strumTime) * (0.45 * Math.abs(roundedSpeed))));
 			var receptor:Receptor = strumLine.members[note.noteData];
 
 			note.x = (receptor.x - psuedoX)
@@ -153,13 +153,13 @@ class NoteField extends NoteGroup {
 			note.angle = -note.noteAngle;
 
 			// automatically hitting notes for opponent
-			if (strumLine.autoplay && !note.wasGoodHit && note.strumTime <= Conductor.position && note.shouldHit) {
+			if (strumLine.autoplay && !note.wasGoodHit && note.strumTime <= Conductor.songPosition && note.shouldHit) {
 				receptor.playAnim("confirm", true);
 				game.goodNoteHit(note);
 			}
 
 			// sustain input
-			if(note.isSustainNote && !strumLine.autoplay && __pressedKeys[note.noteData] && note.strumTime <= Conductor.position && !note.wasGoodHit && !note.tooLate) {
+			if(note.isSustainNote && !strumLine.autoplay && __pressedKeys[note.noteData] && note.strumTime <= Conductor.songPosition && !note.wasGoodHit && !note.tooLate) {
 				receptor.playAnim("confirm", true);
 				game.goodNoteHit(note);
 			}
@@ -169,7 +169,7 @@ class NoteField extends NoteGroup {
 				note.flipY = downscrollMultiplier < 0;
 
 				if ((strumLine.autoplay && note.shouldHit) || (note.wasGoodHit || (note.prevNote.wasGoodHit && !note.canBeHit))) {
-					var t = FlxMath.bound((Conductor.position - note.strumTime) / (note.height / (0.45 * Math.abs(roundedSpeed))), 0, 1);
+					var t = FlxMath.bound((Conductor.songPosition - note.strumTime) / (note.height / (0.45 * Math.abs(roundedSpeed))), 0, 1);
 					var swagRect = new FlxRect(0, t * note.frameHeight, note.frameWidth, note.frameHeight);
 					note.clipRect = swagRect;
 				}

@@ -108,7 +108,7 @@ class ChartingState extends MusicBeatState {
 
         SONG = PlayState.SONG;
 
-        Conductor.position = 0;
+        Conductor.songPosition = 0;
 
         add(bg = new FlxSprite().loadGraphic(Paths.image("menus/base/menuBGDesat")));
         bg.screenCenter();
@@ -221,7 +221,7 @@ class ChartingState extends MusicBeatState {
         musicList = [FlxG.sound.music, vocals];
         musicList[0].onComplete = () -> {
             FlxG.sound.music.pause();
-            Conductor.position = 0;
+            Conductor.songPosition = 0;
             if(vocals != null) {
                 vocals.pause();
                 vocals.time = 0;
@@ -326,7 +326,8 @@ class ChartingState extends MusicBeatState {
         if(SONG.sections[selectedSection] == null) {
             SONG.sections.push({
                 notes: [],
-                stepLength: SONG.sections[SONG.sections.length - 1].stepLength,
+                changeTimeScale: false,
+                timeScale: [4, 4],
                 playerSection: SONG.sections[SONG.sections.length - 1].playerSection,
                 bpm: 0,
                 changeBPM: false,
@@ -377,7 +378,7 @@ class ChartingState extends MusicBeatState {
         }
 
         if (SONG.sections[selectedSection].changeBPM)
-            Conductor.bpm = SONG.sections[selectedSection].bpm;
+            Conductor.changeBPM(SONG.sections[selectedSection].bpm);
         else {
             // get last bpm
             var daBPM:Float = SONG.bpm;
@@ -385,7 +386,7 @@ class ChartingState extends MusicBeatState {
                 if (SONG.sections[i].changeBPM)
                     daBPM = SONG.sections[i].bpm;
             }
-            Conductor.bpm = daBPM;
+            Conductor.changeBPM(daBPM);
         }
 
         var groups:Array<Array<FlxTypedGroup<Dynamic>>> = [
@@ -506,11 +507,11 @@ class ChartingState extends MusicBeatState {
             if(musicList[0].playing) {
                 for(music in musicList) {
                     music.pause();
-                    music.time = Conductor.position;
+                    music.time = Conductor.songPosition;
                 }
             } else {
                 for(music in musicList) {
-                    music.time = Conductor.position;
+                    music.time = Conductor.songPosition;
                     music.play();
                 }
             }
@@ -534,12 +535,12 @@ class ChartingState extends MusicBeatState {
         }
 
         if(FlxG.mouse.wheel != 0) {
-            Conductor.position -= (FlxG.mouse.wheel * Conductor.stepCrochet * 0.4);
-            if(Conductor.position < 0)
-                Conductor.position = 0;
+            Conductor.songPosition -= (FlxG.mouse.wheel * Conductor.stepCrochet * 0.4);
+            if(Conductor.songPosition < 0)
+                Conductor.songPosition = 0;
 
-            if(Conductor.position >= FlxG.sound.music.length) {
-                Conductor.position = 0;
+            if(Conductor.songPosition >= FlxG.sound.music.length) {
+                Conductor.songPosition = 0;
                 selectedSection = 0;
                 changeSection();
                 Conductor.update();
@@ -547,36 +548,36 @@ class ChartingState extends MusicBeatState {
 
             for(music in musicList) {
                 music.pause();
-                music.time = Conductor.position;
+                music.time = Conductor.songPosition;
             }
         }
 
         if(musicList[0].playing)
-            Conductor.position = musicList[0].time;
+            Conductor.songPosition = musicList[0].time;
 
-        if(Conductor.position >= FlxG.sound.music.length) {
-            Conductor.position = 0;
+        if(Conductor.songPosition >= FlxG.sound.music.length) {
+            Conductor.songPosition = 0;
             selectedSection = 0;
             changeSection();
         }
 
-        if(Conductor.position < sectionStartTime()) {
+        if(Conductor.songPosition < sectionStartTime()) {
             changeSection(-1);
             Conductor.update();
             for(music in musicList) {
                 music.pause();
-                music.time = Conductor.position;
+                music.time = Conductor.songPosition;
             }
         }
 
-        if(Conductor.position > sectionStartTime() + (4 * (1000 * (60 / Conductor.bpm)))) {
+        if(Conductor.songPosition > sectionStartTime() + (4 * (1000 * (60 / Conductor.bpm)))) {
             changeSection(1);
-            Conductor.position = sectionStartTime();
+            Conductor.songPosition = sectionStartTime();
             Conductor.update();
             var playing = musicList[0].playing;
             for(music in musicList) {
                 music.pause();
-                music.time = Conductor.position;
+                music.time = Conductor.songPosition;
                 if(playing)
                     music.play();
             }
@@ -588,9 +589,9 @@ class ChartingState extends MusicBeatState {
         if(left || right) {
             changeSection((right ? 1 : 0) + (left ? -1 : 0));
 
-            Conductor.position = sectionStartTime();
-            if(Conductor.position >= FlxG.sound.music.length) {
-                Conductor.position = 0;
+            Conductor.songPosition = sectionStartTime();
+            if(Conductor.songPosition >= FlxG.sound.music.length) {
+                Conductor.songPosition = 0;
                 selectedSection = 0;
                 changeSection();
             }
@@ -598,14 +599,14 @@ class ChartingState extends MusicBeatState {
 
             for(music in musicList) {
                 music.pause();
-                music.time = Conductor.position;
+                music.time = Conductor.songPosition;
             }
         }
 
         if(musicList[0].playing && !Conductor.isAudioSynced(musicList[0])) {
             for(music in musicList) {
                 music.pause();
-                music.time = Conductor.position;
+                music.time = Conductor.songPosition;
                 music.play();
             }
         }
@@ -661,7 +662,7 @@ class ChartingState extends MusicBeatState {
                 note.color = FlxColor.fromRGBFloat(colorVal, colorVal, colorVal, 0.999); //Alpha can't be 100% or the color won't be updated for some reason, good job flixel devs
             }
 
-            if(yToTime(note.y) + (Conductor.stepCrochet / 4) <= Conductor.position - sectionStartTime()) {
+            if(yToTime(note.y) + (Conductor.stepCrochet / 4) <= Conductor.songPosition - sectionStartTime()) {
                 if(musicList[0].playing && note.noteData >= 0 && note.alpha == 1) {
                     FlxG.sound.play(Paths.sound("game/hitsound"));
                     var receptor:Receptor = strumNotes.members[note.noteData];
@@ -673,12 +674,12 @@ class ChartingState extends MusicBeatState {
                 note.alpha = 1;
         });
 
-        strumLine.y = timeToY(Conductor.position - sectionStartTime());
+        strumLine.y = timeToY(Conductor.songPosition - sectionStartTime());
         camFollow.y = strumLine.y + 50;
         strumNotes.forEach((receptor:Receptor) -> receptor.y = strumLine.y);
         FlxG.camera.snapToTarget();
 
-        bpmTxt.text = (FlxStringUtil.formatTime(Conductor.position / 1000)
+        bpmTxt.text = (FlxStringUtil.formatTime(Conductor.songPosition / 1000)
             + " / "
             + FlxStringUtil.formatTime(FlxG.sound.music.length / 1000)
             + "\nBeat: "

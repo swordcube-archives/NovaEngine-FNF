@@ -20,8 +20,11 @@ class MusicBeatState extends FlxUIState implements MusicHandler {
     public var preciseStep(get, never):Float;
     private function get_preciseStep() return Conductor.preciseStep;
 
-    public var curSection(get, never):Int;
-    private function get_curSection() return Conductor.curSection;
+    public var curMeasure(get, never):Int;
+    private function get_curMeasure() return Conductor.curMeasure;
+
+    public var preciseMeasure(get, never):Float;
+    private function get_preciseMeasure() return Conductor.preciseMeasure;
 
     public var scriptName:String;
     public var scriptParameters:Array<Dynamic> = [];
@@ -57,7 +60,7 @@ class MusicBeatState extends FlxUIState implements MusicHandler {
 
         Conductor.onBeatHit.add(beatHit);
         Conductor.onStepHit.add(stepHit);
-        Conductor.onSectionHit.add(sectionHit);
+        Conductor.onMeasureHit.add(measureHit);
 
         script = ScriptHandler.loadModule(Paths.script('data/states/$scriptName'));
         script.setParent(this);
@@ -136,18 +139,18 @@ class MusicBeatState extends FlxUIState implements MusicHandler {
         call("onStepHit", [value]);
     }
 
-	public function sectionHit(value:Int) {
+	public function measureHit(value:Int) {
         for(m in members) {
             if(m != null && m is MusicHandler)
-                cast(m, MusicHandler).sectionHit(value);
+                cast(m, MusicHandler).measureHit(value);
         }
-        call("onSectionHit", [value]);
+        call("onMeasureHit", [value]);
     }
 
     override function destroy() {
         Conductor.onBeatHit.remove(beatHit);
         Conductor.onStepHit.remove(stepHit);
-        Conductor.onSectionHit.remove(sectionHit);
+        Conductor.onMeasureHit.remove(measureHit);
 
         super.destroy();
     }
@@ -172,8 +175,11 @@ class MusicBeatSubstate extends FlxUISubState implements MusicHandler {
     public var preciseStep(get, never):Float;
     private function get_preciseStep() return Conductor.preciseStep;
 
-    public var curSection(get, never):Int;
-    private function get_curSection() return Conductor.curSection;
+    public var curMeasure(get, never):Int;
+    private function get_curMeasure() return Conductor.curMeasure;
+
+    public var preciseMeasure(get, never):Float;
+    private function get_preciseMeasure() return Conductor.preciseMeasure;
 
     public var scriptName:String;
     public var scriptParameters:Array<Dynamic> = [];
@@ -204,7 +210,7 @@ class MusicBeatSubstate extends FlxUISubState implements MusicHandler {
 
         Conductor.onBeatHit.add(beatHit);
         Conductor.onStepHit.add(stepHit);
-        Conductor.onSectionHit.add(sectionHit);
+        Conductor.onMeasureHit.add(measureHit);
 
         script = ScriptHandler.loadModule(Paths.script('data/substates/$scriptName'));
         script.setParent(this);
@@ -279,18 +285,18 @@ class MusicBeatSubstate extends FlxUISubState implements MusicHandler {
         call("onStepHit", [value]);
     }
 
-	public function sectionHit(value:Int) {
+	public function measureHit(value:Int) {
         for(m in members) {
             if(m != null && m is MusicHandler)
-                cast(m, MusicHandler).sectionHit(value);
+                cast(m, MusicHandler).measureHit(value);
         }
-        call("onSectionHit", [value]);
+        call("onMeasureHit", [value]);
     }
 
     override function destroy() {
         Conductor.onBeatHit.remove(beatHit);
         Conductor.onStepHit.remove(stepHit);
-        Conductor.onSectionHit.remove(sectionHit);
+        Conductor.onMeasureHit.remove(measureHit);
 
         super.destroy();
     }

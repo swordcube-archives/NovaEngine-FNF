@@ -165,9 +165,9 @@ class TitleState extends MusicBeatState {
 		if(!runDefaultCode) return;
 
 		if(FlxG.sound.music != null)
-			Conductor.position = FlxG.sound.music.time;
+			Conductor.songPosition = FlxG.sound.music.time;
 		else
-			Conductor.position += elapsed * 1000;
+			Conductor.songPosition += elapsed * 1000;
 
 		if(controls.ACCEPT) {
 			if(!transitioning && skippedIntro) {
