@@ -175,7 +175,7 @@ class PlayState extends MusicBeatState {
 	public var comboGroup:FlxTypedSpriteGroup<FNFSprite>;
 
 	public var scripts:ScriptGroup;
-	public var scrollSpeed:Float = 3.4;
+	public var scrollSpeed:Float = 1;
 
 	public var rankFormat = new FlxTextFormatMarkerPair(new FlxTextFormat(0xFF888888, false), "<rank>");
 
@@ -223,6 +223,14 @@ class PlayState extends MusicBeatState {
 		if(SONG.splashSkin == null) SONG.splashSkin = "noteSplashes";
 		if(SONG.keyCount == null) SONG.keyCount = 4;
 		if(SONG.timeScale == null) SONG.timeScale = [4, 4];
+
+		scrollSpeed = SONG.scrollSpeed;
+		switch(SettingsAPI.scrollType.toLowerCase()) {
+			case "multiplier":
+				scrollSpeed *= SettingsAPI.scrollSpeed;
+			case "constant":
+				scrollSpeed = SettingsAPI.scrollSpeed;
+		}
 
 		var instPath:String = Paths.songInst(SONG.name, storyDifficulty, true);
 		FlxG.sound.playMusic(Paths.songInst(SONG.name, storyDifficulty), 0, false);
@@ -949,6 +957,11 @@ class PlayState extends MusicBeatState {
 
 		if(SONG.sections[curMeasure] != null && SONG.sections[curMeasure].changeBPM)
 			Conductor.changeBPM(SONG.sections[curMeasure].bpm);
+
+		if(SONG.sections[curMeasure] != null && SONG.sections[curMeasure].changeTimeScale) {
+			Conductor.beatsPerMeasure = SONG.sections[curMeasure].timeScale[0];
+			Conductor.stepsPerBeat = SONG.sections[curMeasure].timeScale[1];
+		}
 
 		updateCamera();
 

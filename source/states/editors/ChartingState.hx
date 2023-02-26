@@ -108,6 +108,9 @@ class ChartingState extends MusicBeatState {
 
         SONG = PlayState.SONG;
 
+        Conductor.changeBPM(SONG.bpm, SONG.timeScale[0], SONG.timeScale[1]);
+        Conductor.mapBPMChanges(SONG);
+
         Conductor.songPosition = 0;
 
         add(bg = new FlxSprite().loadGraphic(Paths.image("menus/base/menuBGDesat")));
@@ -192,9 +195,6 @@ class ChartingState extends MusicBeatState {
 
         uiBox.selected_tab = 0;
 
-        Conductor.changeBPM(SONG.bpm);
-        Conductor.mapBPMChanges(SONG);
-
         updateGrid();
     }
 
@@ -260,48 +260,48 @@ class ChartingState extends MusicBeatState {
                 
                 var autosaveButton = new FlxButton(reloadSongJson.x, reloadSongJson.y + 30, "Load Autosave", loadAutosave);
 
-                var stepperSpeed = new FlxUINumericStepper(10, 80, 0.1, 1, 0.1, 10, 2);
+                var scrollSpeedLabel = new FlxText(10, 50, 0, "Scroll Speed", 8);
+                var stepperSpeed = new FlxUINumericStepper(10, 65, 0.1, 1, 0.1, 10, 2);
                 stepperSpeed.value = SONG.scrollSpeed;
                 stepperSpeed.callback = () -> SONG.scrollSpeed = stepperSpeed.value;
         
-                var stepperBPM = new FlxUINumericStepper(10, 65, 1, 100, 1, FlxMath.MAX_VALUE_INT, 3);
+                var songBPMLabel = new FlxText(10, 90, 0, "Song BPM", 8);
+                var stepperBPM = new FlxUINumericStepper(10, 105, 1, 145, 1, FlxMath.MAX_VALUE_INT, 3);
                 stepperBPM.value = Conductor.bpm;
                 stepperBPM.callback = () -> {
                     SONG.bpm = stepperBPM.value;
+                    Conductor.changeBPM(SONG.bpm, SONG.timeScale[0], SONG.timeScale[1]);
                     Conductor.mapBPMChanges(SONG);
-                    Conductor.changeBPM(SONG.bpm);
                 };
 
                 var characters:Array<String> = Paths.getFolderContents("data/characters", false, DIRS_ONLY);
                 var stages:Array<String> = Paths.getFolderContents("data/stages", false, FILES_ONLY, REMOVE_EXTENSION);
-                if(stages.length < 1) stages = ["", "stage"];
-                else stages.insert(0, "");
 
-                var dropDownLabel1 = new FlxText(10, 100, 0, "Player", 8);
-                var player1DropDown = new FlxUIDropDownMenu(10, 120, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), (character:String) -> {
+                var dropDownLabel1 = new FlxText(10, 130, 0, "Player", 8);
+                var player1DropDown = new FlxUIDropDownMenu(10, 145, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), (character:String) -> {
                     SONG.player = characters[Std.parseInt(character)];
                     iconP1.loadIcon(SONG.player);
                     updateIcons();
                 });
                 player1DropDown.selectedLabel = SONG.player;
         
-                var dropDownLabel2 = new FlxText(140, 100, 0, "Opponent", 8);
-                var player2DropDown = new FlxUIDropDownMenu(140, 120, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), (character:String) -> {
+                var dropDownLabel2 = new FlxText(140, 130, 0, "Opponent", 8);
+                var player2DropDown = new FlxUIDropDownMenu(140, 145, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), (character:String) -> {
                     SONG.opponent = characters[Std.parseInt(character)];
                     iconP2.loadIcon(SONG.opponent);
                     updateIcons();
                 });
                 player2DropDown.selectedLabel = SONG.opponent;
 
-                var dropDownLabel3 = new FlxText(10, 150, 0, "Spectator", 8);
-                var player3DropDown = new FlxUIDropDownMenu(10, 170, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), (character:String) -> SONG.spectator = characters[Std.parseInt(character)]);
+                var dropDownLabel3 = new FlxText(10, 170, 0, "Spectator", 8);
+                var player3DropDown = new FlxUIDropDownMenu(10, 185, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), (character:String) -> SONG.spectator = characters[Std.parseInt(character)]);
                 player3DropDown.selectedLabel = SONG.spectator;
 
-                var dropDownLabel4 = new FlxText(140, 150, 0, "Stage", 8);
-                var stageDropDown = new FlxUIDropDownMenu(140, 170, FlxUIDropDownMenu.makeStrIdLabelArray(stages, true), (stage:String) -> SONG.stage = stages[Std.parseInt(stage)]);
+                var dropDownLabel4 = new FlxText(140, 170, 0, "Stage", 8);
+                var stageDropDown = new FlxUIDropDownMenu(140, 185, FlxUIDropDownMenu.makeStrIdLabelArray(stages, true), (stage:String) -> SONG.stage = stages[Std.parseInt(stage)]);
                 stageDropDown.selectedLabel = SONG.stage;
 
-                for(item in [songName, needsVoices, saveButton, reloadSong, reloadSongJson, autosaveButton, stepperSpeed, stepperBPM, dropDownLabel3, player3DropDown, dropDownLabel4, stageDropDown, dropDownLabel1, player1DropDown, dropDownLabel2, player2DropDown])
+                for(item in [songName, needsVoices, saveButton, reloadSong, reloadSongJson, autosaveButton, scrollSpeedLabel, stepperSpeed, songBPMLabel, stepperBPM, dropDownLabel3, player3DropDown, dropDownLabel4, stageDropDown, dropDownLabel1, player1DropDown, dropDownLabel2, player2DropDown])
                     tabGroup.add(item);
         }
 
@@ -327,8 +327,8 @@ class ChartingState extends MusicBeatState {
             SONG.sections.push({
                 notes: [],
                 changeTimeScale: false,
-                timeScale: [4, 4],
-                playerSection: SONG.sections[SONG.sections.length - 1].playerSection,
+                timeScale: SONG.sections.last().timeScale,
+                playerSection: SONG.sections.last().playerSection,
                 bpm: 0,
                 changeBPM: false,
                 altAnim: false
@@ -377,16 +377,25 @@ class ChartingState extends MusicBeatState {
             list.clear();
         }
 
-        if (SONG.sections[selectedSection].changeBPM)
-            Conductor.changeBPM(SONG.sections[selectedSection].bpm);
-        else {
-            // get last bpm
+        if (SONG.sections[selectedSection] != null && SONG.sections[selectedSection].changeBPM) {
+            var daTimeScale:Array<Int> = SONG.timeScale;
+            for (i in 0...selectedSection) {
+                if (SONG.sections[i].changeTimeScale)
+                    daTimeScale = SONG.sections[i].timeScale;
+            }
+            Conductor.changeBPM(SONG.sections[selectedSection].bpm, daTimeScale[0], daTimeScale[1]);
+        } else {
+            // get last bpm and timescale
+            var daTimeScale:Array<Int> = SONG.timeScale;
             var daBPM:Float = SONG.bpm;
             for (i in 0...selectedSection) {
                 if (SONG.sections[i].changeBPM)
                     daBPM = SONG.sections[i].bpm;
+
+                if (SONG.sections[i].changeTimeScale)
+                    daTimeScale = SONG.sections[i].timeScale;
             }
-            Conductor.changeBPM(daBPM);
+            Conductor.changeBPM(daBPM, daTimeScale[0], daTimeScale[1]);
         }
 
         var groups:Array<Array<FlxTypedGroup<Dynamic>>> = [
