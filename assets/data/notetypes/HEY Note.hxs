@@ -1,9 +1,0 @@
-function onOpponentHit(event:NoteHitEvent) {
-	for (i in event.characters)
-		i.playAnim('hey');
-}
-
-function onPlayerHit(event:NoteHitEvent) {
-	for (i in event.characters)
-		i.playAnim('hey');
-}
