@@ -828,6 +828,20 @@ class PlayState extends MusicBeatState {
 
 	override public function update(elapsed:Float) {
 		super.update(elapsed);
+
+		#if debug
+		var eee:Array<Dynamic> = [
+			['[GAME]', ""],
+			['beat', curBeat],
+			['step', curStep],
+			['section', curMeasure],
+			['bpm', Conductor.bpm],
+			['         ', ""]
+		];
+		for (i in eee)
+			FlxG.watch.addQuick(i[0], i[1]);
+		#end
+
 		scripts.call("onUpdate", [elapsed]);
 		for(script in noteTypeScripts)
 			script.call("onUpdate", [elapsed]);

@@ -1,6 +1,3 @@
-import states.PlayState;
-import backend.utilities.FNFSprite;
-
 var halloweewee:FNFSprite;
 var _strikeBeat:Int = 0;
 var _offset:Int = 0;
@@ -15,6 +12,18 @@ function onCreate() {
 	halloweewee.playAnim('bg');
 	add(halloweewee);
 }
+
+#if debug
+function onUpdate(elapsed) {
+	var eee:Array<Dynamic> = [
+		['[LIGHTNING]', ""],
+		['strike beat', _strikeBeat],
+		['offset', _offset]
+	];
+	for (i in eee)
+		FlxG.watch.addQuick(i[0], i[1]);
+}
+#end
 
 function onBeatHit(beat) {
 	if (FlxG.random.bool(10) && beat > _strikeBeat + _offset)

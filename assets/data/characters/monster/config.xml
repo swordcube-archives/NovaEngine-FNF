@@ -1,4 +1,3 @@
-<!DOCTYPE character SYSTEM "https://raw.githubusercontent.com/ThatOneIdiotXav/nova-basegame-actuallyfuckingfinished/main/syntax/character.dtd">
 <character icon="monster" flipX="false" y="100">
 	<anims>
 		<anim name="idle" anim="monster idle" fps="24" loop="false" x="3" y="0" />

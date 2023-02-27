@@ -1,4 +1,3 @@
-<!DOCTYPE character SYSTEM "https://raw.githubusercontent.com/ThatOneIdiotXav/nova-basegame-actuallyfuckingfinished/main/syntax/character.dtd">
 <character singDuration="6.1" icon="dad" flipX="false" >
     <anims>
         <anim name="idle" anim="Dad idle dance" indices="" fps="24" loop="false" x="0" y="0" />

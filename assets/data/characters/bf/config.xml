@@ -1,5 +1,4 @@
-<!DOCTYPE character SYSTEM "https://raw.githubusercontent.com/ThatOneIdiotXav/nova-basegame-actuallyfuckingfinished/main/syntax/character.dtd">
-<character x="0" y="350" camX="0" camY="0" isPlayer="true" antialiasing="true" singDuration="4" deathCharacter="bf-dead" icon="bf" flipX="true" danceSteps="idle" >
+<character sprite="bf/normal" x="0" y="350" camX="0" camY="0" isPlayer="true" antialiasing="true" singDuration="4" deathCharacter="bf-dead" icon="bf" flipX="true" danceSteps="idle" >
     <anims>
         <anim name="idle" anim="BF idle dance" indices="" fps="24" loop="false" x="0" y="0" />
 

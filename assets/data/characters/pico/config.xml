@@ -1,0 +1,21 @@
+<character icon="pico" flipX="true" y="300" sprite="pico/normal">
+	<anims>
+		<anim name="idle" anim="Pico Idle Dance" indices="" fps="24" loop="false" x="0" y="0" />
+
+		<!-- left and right are flipped. dont question it. -->
+		<anim name="singLEFT" anim="Pico Note Right0" x="65" y="9" fps="24" />
+		<anim name="singDOWN" anim="Pico Down Note0" x="200" y="-70" fps="24" />
+		<anim name="singUP" anim="pico Up note0" x="-29" y="27" fps="24" />
+		<anim name="singRIGHT" anim="Pico NOTE LEFT0" x="-68" y="-7" fps="24" />
+
+		<anim name="singLEFTmiss" anim="Pico Note Right Miss" fps="24" x="62" y="64" />
+		<anim name="singDOWNmiss" anim="Pico Down Note MISS" fps="24" x="210" y="-28" />
+		<anim name="singUPmiss" anim="pico Up note miss" fps="24" x="-19" y="67" />
+		<anim name="singRIGHTmiss" anim="Pico NOTE LEFT miss" fps="24" x="-60" y="41" />
+	</anims>
+
+	<scale x="1" y="1" />
+	<scrollFactor x="1" y="1" />
+
+	<healthColor rgb="183,216,85" />
+</character>

@@ -1,0 +1,15 @@
+<character sprite="mom/car" icon="mom" flipX="true">
+    <anims>
+        <anim name="idle" anim="Mom Idle" fps="24" x="0" y="0" />
+
+		<anim name="singLEFT" anim="Mom Left Pose" fps="24" x="250" y="-23" />
+		<anim name="singDOWN" anim="MOM DOWN POSE" fps="24" x="20" y="-160" />
+		<anim name="singUP" anim="Mom Up Pose" fps="24" x="14" y="71" />
+		<anim name="singRIGHT" anim="Mom Pose Left" fps="24" x="10" y="-60" /> <!-- oh 'Mom Pose Left' and 'Mom Left Pose' aren't confusing AT ALL >:( -->
+    </anims>
+
+    <scale x="1" y="1" />
+    <scrollFactor x="1" y="1" />
+
+    <healthColor rgb="216,85,142" />
+</character>

@@ -41,7 +41,8 @@ class Controls {
 
         // Engine controls
         "CHARTER" => [SEVEN, NUMPADSEVEN],
-        "SWITCH_MOD" => [TAB, NONE]
+        "SWITCH_MOD" => [TAB, NONE],
+		"GAMEPLAY_MODIFIERS" => [SHIFT, NONE]
     ];
 
     public static var controlsList:Map<String, KeyList> = [];
@@ -59,6 +60,7 @@ class Controls {
      * Loads all of your saved controls.
      */
     public static function load() {
+
         for(name => keys in __defaultControls) {
             var savedKeys:KeyList = Reflect.field(__save.data, 'CONTROLS_$name');
 
@@ -153,6 +155,9 @@ class Controls {
 
     public var RESET(get, never):Bool;
     private function get_RESET() return __checkKeys(controlsList["RESET"], JUST_PRESSED);
+
+	public var GAMEPLAY_MODIFIERS(get, never):Bool;
+	private function get_GAMEPLAY_MODIFIERS() return __checkKeys(controlsList["GAMEPLAY_MODIFIERS"], JUST_PRESSED);
 
     // -- HELPER VARIABLES & FUNCTIONS ------------------------------------------------
 

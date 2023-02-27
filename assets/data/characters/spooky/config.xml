@@ -1,4 +1,3 @@
-<!DOCTYPE character SYSTEM "https://raw.githubusercontent.com/ThatOneIdiotXav/nova-basegame-actuallyfuckingfinished/main/syntax/character.dtd">
 <character icon="spooky" sprite="spooky-kids" flipX="false" danceSteps="danceLeft,danceRight"
 	y="200">
 	<anims>
