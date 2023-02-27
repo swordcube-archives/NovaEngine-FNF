@@ -1,0 +1,24 @@
+<!DOCTYPE character SYSTEM "../../../../syntax/character.dtd">
+<character icon="spooky" sprite="spooky-kids" flipX="false" danceSteps="danceLeft,danceRight"
+	y="200">
+	<anims>
+		<anim name="danceLeft" anim="spooky dance idle" indices="0,2,6" fps="12" loop="false" x="0"
+			y="0" />
+		<anim name="danceRight" anim="spooky dance idle" indices="8,10,12,14" fps="12" loop="false"
+			x="0" y="0" />
+
+		<anim name="singLEFT" anim="note sing left" indices="" fps="24" loop="false" x="130" y="-10" />
+		<anim name="singDOWN" anim="spooky DOWN note" indices="" fps="24" loop="false" x="-50"
+			y="-130" />
+		<anim name="singUP" anim="spooky UP NOTE" indices="" fps="24" loop="false" x="-20" y="26" />
+		<anim name="singRIGHT" anim="spooky sing right" indices="" fps="24" loop="false" x="-130"
+			y="-14" />
+
+		<anim name="hey" anim="spooky kids YEAH!!" fps="24" loop="false" x="59" y="-20" />
+	</anims>
+
+	<scale x="1" y="1" />
+	<scrollFactor x="1" y="1" />
+
+	<healthColor rgb="213, 126 ,0" />
+</character>

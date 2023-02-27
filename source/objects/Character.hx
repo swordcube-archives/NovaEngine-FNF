@@ -501,7 +501,7 @@ class Character extends FNFSprite implements MusicHandler {
 			if (animTimer > 0) {
 				animTimer -= elapsed;
 				if (animTimer <= 0) {
-					if (specialAnim && animation.curAnim.name == 'hey' || animation.curAnim.name == 'cheer') {
+					if (specialAnim && animation.curAnim.name == 'hey' || animation.curAnim.name == 'cheer' || animation.curAnim.name == 'scared') {
 						specialAnim = false;
 						dance();
 					}

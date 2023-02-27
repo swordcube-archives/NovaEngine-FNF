@@ -1,0 +1,100 @@
+<!-- The character. Go figure. -->
+<!ELEMENT character (anims,scale,scrollFactor,healthColor)>
+
+	<!-- The type of atlas used for the character. -->
+	<!ATTLIST character atlasType (SPARROW|PACKER|TEXTURE) #IMPLIED>
+	
+	<!-- The name of the character spritesheet. Looks in the `images/characters/` folder. -->
+	<!ATTLIST character sprite CDATA #IMPLIED>
+	
+	<!-- Controls whether the object is smoothed when rotated, affects performance. Usually, you want
+	this set to true for pixel characters. -->
+	<!ATTLIST character antialiasing (false|true) #IMPLIED>
+	
+	<!-- Controls how long the character can hold down a note for before going back to idle. -->
+	<!ATTLIST character singDuration CDATA #IMPLIED>
+	
+	<!-- The icon used for the health bar. -->
+	<!ATTLIST character icon CDATA #IMPLIED>
+	
+	<!-- Flips the character horizontally if set to true. -->
+	<!ATTLIST character flipX (false|true) #IMPLIED>
+	
+	<!-- Controls if the character acts like Boyfriend (Like only going back to idle when you release a
+	note) -->
+	<!ATTLIST character isPlayer (false|true) #IMPLIED>
+	
+	<!-- The character to load when you lose all of your health. -->
+	<!ATTLIST character deathCharacter CDATA #IMPLIED>
+	
+	<!-- X. -->
+	<!ATTLIST character x CDATA #IMPLIED>
+	
+	<!-- Y. -->
+	<!ATTLIST character y CDATA #IMPLIED>
+	
+	<!-- The X offset of this character's camera position. -->
+	<!ATTLIST character camX CDATA #IMPLIED>
+	
+	<!-- The Y offset of this character's camera position. -->
+	<!ATTLIST character camY CDATA #IMPLIED>
+	
+	<!-- Allows you to have multiple animations when the character dances. -->
+	<!ATTLIST character danceSteps CDATA #IMPLIED>
+
+<!-- The animations. -->
+<!ELEMENT anims (anim+)>
+
+	<!-- An animation. -->
+	<!ELEMENT anim EMPTY>
+
+		<!-- The name of the animation. Examples include: idle, singLEFT, singRIGHTmiss -->
+		<!ATTLIST anim name CDATA #REQUIRED>
+
+		<!-- The name of the animation as defined by the spritesheet. -->
+		<!ATTLIST anim anim CDATA #REQUIRED>
+
+		<!-- The specific frames that the animation should play. -->
+		<!ATTLIST anim indices CDATA #IMPLIED>
+
+		<!-- The animation's framerate. -->
+		<!ATTLIST anim fps CDATA #REQUIRED>
+
+		<!-- Whether or not the animation should be looping when played. -->
+		<!ATTLIST anim loop (false|true) #IMPLIED>
+
+		<!-- Prevents the character from idling until the animation is done. -->
+		<!ATTLIST anim specialAnim (false|true) #IMPLIED>
+
+		<!-- X. -->
+		<!ATTLIST anim x CDATA #REQUIRED>
+
+		<!-- Y. -->
+		<!ATTLIST anim y CDATA #REQUIRED>
+
+<!-- The character's scale. -->
+<!ELEMENT scale EMPTY>
+
+	<!-- X. -->
+	<!ATTLIST scale x CDATA #REQUIRED>
+
+	<!-- Y. -->
+	<!ATTLIST scale y CDATA #REQUIRED>
+
+<!-- Basically paralax intensity. Figure that meaning out. :) -->
+<!ELEMENT scrollFactor EMPTY>
+
+	<!-- X. -->
+	<!ATTLIST scrollFactor x CDATA #REQUIRED>
+
+	<!-- Y. -->
+	<!ATTLIST scrollFactor y CDATA #REQUIRED>
+
+<!-- The character's health bar color. -->
+<!ELEMENT healthColor EMPTY>
+	
+	<!-- Alternative is `hex`. -->
+	<!ATTLIST healthColor rgb CDATA #IMPLIED>
+
+	<!-- Alternative is `rgb`. -->
+	<!ATTLIST healthColor hex CDATA #IMPLIED>
