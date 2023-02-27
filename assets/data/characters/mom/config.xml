@@ -1,4 +1,4 @@
-<character sprite="mom/normal" icon="mom" flipX="true">
+<character sprite="mom/normal" icon="mom" flipX="false">
     <anims>
         <anim name="idle" anim="Mom Idle" fps="24" x="0" y="0" />
 
