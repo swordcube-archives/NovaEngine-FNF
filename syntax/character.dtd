@@ -18,7 +18,7 @@
 	<!ATTLIST character icon CDATA #IMPLIED>
 	
 	<!-- Flips the character horizontally if set to true. -->
-	<!ATTLIST character flipX (false|true) #IMPLIED>
+	<!ATTLIST character flipX (false|true) #REQUIRED>
 	
 	<!-- Controls if the character acts like Boyfriend (Like only going back to idle when you release a
 	note) -->
