@@ -253,7 +253,6 @@ class FreeplayState extends MusicBeatState {
 						if (index == curSelected && index != curSongPlaying) {
 							var inst:Sound = Sound.fromFile(Paths.songInst(songs[curSelected].name, true));
 							if (index == curSelected && threadActive && FileSystem.exists(Paths.songVoices(songs[curSelected].name, true))) {
-								if(curSongPlaying > -1) grpIcons.members[curSongPlaying].scale.set(1,1);
 								mutex.acquire();
 								songToPlay = inst;
 								mutex.release();

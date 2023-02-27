@@ -225,11 +225,13 @@ class PlayState extends MusicBeatState {
 		if(SONG.timeScale == null) SONG.timeScale = [4, 4];
 
 		scrollSpeed = SONG.scrollSpeed;
-		switch(SettingsAPI.scrollType.toLowerCase()) {
-			case "multiplier":
-				scrollSpeed *= SettingsAPI.scrollSpeed;
-			case "constant":
-				scrollSpeed = SettingsAPI.scrollSpeed;
+		if(SettingsAPI.scrollSpeed > 0) {
+			switch(SettingsAPI.scrollType.toLowerCase()) {
+				case "multiplier":
+					scrollSpeed *= SettingsAPI.scrollSpeed;
+				case "constant":
+					scrollSpeed = SettingsAPI.scrollSpeed;
+			}
 		}
 
 		var instPath:String = Paths.songInst(SONG.name, storyDifficulty, true);
@@ -252,11 +254,18 @@ class PlayState extends MusicBeatState {
 
 		add(gf = new Character(stage.gfPos.x, stage.gfPos.y, SONG.spectator));
 		gf.danceOnBeat = false;
-
 		add(stage.gfLayer);
 
 		add(dad = new Character(stage.dadPos.x, stage.dadPos.y, SONG.opponent));
 		add(stage.dadLayer);
+
+		if(SONG.opponent == SONG.spectator) {
+			dad.setPosition(gf.x, gf.y);
+			gf.kill();
+			gf.destroy();
+			remove(gf, true);
+			gf = null;
+		}
 
 		add(boyfriend = new Character(stage.bfPos.x, stage.bfPos.y, SONG.player, true));
 		add(stage.bfLayer);
@@ -292,7 +301,11 @@ class PlayState extends MusicBeatState {
 		scripts.call("onCreate", []);
 		camGame.zoom = defaultCamZoom;
 
-		camFollow.setPosition(gf.getMidpoint().x - 100, (boyfriend.getCameraPosition().y) - 100);
+		var spectator:Character = (gf != null) ? gf : dad;
+		camFollow.setPosition(
+			((spectator != null) ? spectator.getMidpoint().x : 0) - 100, 
+			((boyfriend != null) ? boyfriend.getCameraPosition().y : 0) - 100
+		);
 		camGame.follow(camFollow, null, 0.04);
 		camGame.snapToTarget();
 
@@ -744,7 +757,7 @@ class PlayState extends MusicBeatState {
 					cast(m, MusicHandler).beatHit((tmr.loops - tmr.loopsLeft) - 5);
 			}
 			
-			if(gf.lastAnimContext != SING && gfSpeed > 0 && curBeat % gfSpeed == 0)
+			if(gf != null && gf.lastAnimContext != SING && gfSpeed > 0 && curBeat % gfSpeed == 0)
 				gf.dance();
 
 			if(event.image != null && !event.cancelled) {
@@ -924,7 +937,7 @@ class PlayState extends MusicBeatState {
 			iconP2.updateHitbox();
 		}
 
-		if(gf.lastAnimContext != SING && gfSpeed > 0 && curBeat % gfSpeed == 0)
+		if(gf != null && gf.lastAnimContext != SING && gfSpeed > 0 && curBeat % gfSpeed == 0)
 			gf.dance();
 
 		positionIcons();

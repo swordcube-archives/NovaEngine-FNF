@@ -154,6 +154,7 @@ class PageSubState extends MusicBeatSubstate {
 						if(option.callback != null)
 							option.callback(option.value);
 				}
+				if(holdTimer > 0.5) holdTimer = 0.435;
 			}
 
 			if(justPressed && playSelectSound)
