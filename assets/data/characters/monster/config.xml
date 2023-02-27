@@ -1,0 +1,16 @@
+<!DOCTYPE character SYSTEM "https://raw.githubusercontent.com/ThatOneIdiotXav/nova-basegame-actuallyfuckingfinished/main/syntax/character.dtd">
+<character icon="monster" flipX="false" y="100">
+	<anims>
+		<anim name="idle" anim="monster idle" fps="24" loop="false" x="3" y="0" />
+
+		<anim name="singLEFT" anim="Monster left note" fps="24" loop="false" x="-30" y="20" />
+		<anim name="singDOWN" anim="monster down" fps="24" loop="false" x="-50" y="-80" />
+		<anim name="singUP" anim="monster up note" fps="24" loop="false" x="-20" y="94" />
+		<anim name="singRIGHT" anim="Monster Right note" fps="24" loop="false" x="-51" y="30" />
+	</anims>
+
+	<scale x="1" y="1" />
+	<scrollFactor x="1" y="1" />
+
+	<healthColor rgb="243,255,110" />
+</character>

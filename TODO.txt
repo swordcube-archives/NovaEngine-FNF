@@ -1,5 +1,6 @@
 -- HARD TASKS --
 Chart Editor
+	bpm changes fuck up :)
 
 -- EASY TASKS --
 Controls Menu [DONE]

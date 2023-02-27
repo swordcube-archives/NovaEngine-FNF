@@ -389,7 +389,7 @@ class PlayState extends MusicBeatState {
 		add(timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4, LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8), Std.int(timeBarBG.height - 8)));
 		timeBar.createGradientBar([0xFF2C183B, 0xFF5C1C57], [0xFFB062F0, 0xFFE44DD7], 1, 90);
 
-		timeBar.setParent(Conductor, "position");
+		timeBar.setParent(Conductor, "songPosition");
 		timeBar.setRange(0, (FileSystem.exists(instPath)) ? FlxG.sound.music.length : 1);
 
 		add(timeBarBG);

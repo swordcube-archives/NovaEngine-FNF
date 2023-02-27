@@ -1,0 +1,152 @@
+import flixel.text.FlxTextAlign;
+import flixel.text.FlxTextBorderStyle;
+
+var subBG:FNFSprite;
+var subLine:FlxText;
+
+// [step, 'line', 'set character (optional)']
+// Note: god this is over-done just for subs man ~Xav
+var lines:Array<Dynamic> = [
+	[84, "Guess it's time,\n                                       ", 'monster'],
+	[92, "Guess it's time,\nyou better plug in all your nightlights"],
+	[114], // clears and hides the subtitles
+
+	[148, "What's out there,\n                        "],
+	[156, "What's out there,\npast your darkened door?"],
+	[178],
+
+	[208, "Just the eyes floating up\n                 "],
+	[224, "Just the eyes floating up\nout of the shore."],
+	[240],
+
+	[290, "Hey man,\n                             "],
+	[294, "Hey man,\nI'm gonna eat your girlfriend"],
+	[320],
+
+	[354, "Or maybe turn her into broth\n              "],
+	[376, "Or maybe turn her into broth\nla-           "],
+	[377, "Or maybe turn her into broth\nla-la-        "],
+	[378, "Or maybe turn her into broth\nla-la-la      "],
+	[381, "Or maybe turn her into broth\nla-la-la la   "],
+	[382, "Or maybe turn her into broth\nla-la-la la la"],
+	[388],
+
+	[416, "Kill a kid,          \n                                        "],
+	[420, "Kill a kid, cut em up\n                                        "],
+	[424, "Kill a kid, cut em up\nStuff em up inside of my secret meat box"],
+	[448],
+
+	[480, "Find                                 \n                         "],
+	[488, "Find my                              \n                         "],
+	[496, "Find my hands across your body slowly\n                         "],
+	[502, "Find my hands across your body slowly\nso to                    "],
+	[504, "Find my hands across your body slowly\nso to peel               "],
+	[506, "Find my hands across your body slowly\nso to peel your          "],
+	[508, "Find my hands across your body slowly\nso to peel your skin     "],
+	[510, "Find my hands across your body slowly\nso to peel your skin off!"],
+	[516, ""],
+
+	[562, "You'll meet your friends\n                     "],
+	[590, "You'll meet your friends\ninside the ambulance!"],
+	[604],
+
+	[616, "Call into the night,\n               "],
+	[638, "Call into the night,\nto the werewolf"],
+	[648],
+
+	[658, "Give all your blood to him,\n                                 "],
+	[684, "Give all your blood to him,\nstand under the warm street light"],
+	[698],
+
+	[712, "Let yourself be hypnotized"],
+	[732],
+
+	[786, "You're just a little snack,\n                         "],
+	[814, "You're just a little snack,\nand so is your girlfriend"],
+	[848],
+
+	[930, "Hey man,\n                            "],
+	[934, "Hey man,\nI'm gonna tear your eyes out"],
+	[960],
+	
+	[994, "And then I'll boil your girlfriend\n              "],
+	[1016, "And then I'll boil your girlfriend\nla-           "],
+	[1017, "And then I'll boil your girlfriend\nla-la-        "],
+	[1018, "And then I'll boil your girlfriend\nla-la-la      "],
+	[1021, "And then I'll boil your girlfriend\nla-la-la la   "],
+	[1022, "And then I'll boil your girlfriend\nla-la-la la la"],
+	[1028],
+
+	[1056, "Kill a kid,          \n                                     "],
+	[1060, "Kill a kid, cut em up\n                                     "],
+	[1064, "Kill a kid, cut em up\nStuff em up inside my burning dungeon"],
+	[1088],
+
+	[1120, "I                                       \n              "],
+	[1128, "I would                                 \n              "],
+	[1136, "I would give you guys a little break but\n              "],
+	[1144, "I would give you guys a little break but\nI'm not Satan."],
+	[1156, ""],
+];
+
+function onCreatePost() {
+	if (SettingsAPI.subtitles) {
+		add(subBG = new FNFSprite().makeGraphic(1, 1, 0xFFFFFFFF)); // force color here cuz like, the lemon's the only fucker who's singing anyway.
+
+		add(subLine = new FlxText(0, 0, 0, "SORRY  NOTHING"));
+		subLine.setFormat(Paths.font('vcr.ttf'), SettingsAPI.subtitleSize, 0xFFFFFFFF, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, 0xFF000000);
+		subLine.borderSize = 3;
+
+		subBG.cameras = subLine.cameras = [camGame];
+		subBG.scrollFactor.set();
+		subLine.scrollFactor.set();
+
+		subBG.visible = subLine.visible = false; // hide em subbers straight away
+	}
+}
+
+function onStepHit(step)
+	if (SettingsAPI.subtitles)
+		for (line in lines)
+			if (step == line[0])
+				changeSub((line[1] != null) ? line[1] : "", (line[2] != null) ? line[2] : '');
+
+var lastChar:String = "";
+
+/**
+ * Changes the subtitle line. Leave empty to hide.
+ * @param txt The line. (what else would i even fuckin put here lmao)
+ */
+function changeSub(txt:String, char:String) {
+	if (SettingsAPI.subtitles) {
+		subLine.visible = subBG.visible = (txt != '');
+		subLine.text = txt;
+
+		if (txt != '') {
+			subBG.scale.set(subLine.width + 10, subLine.height + 5);
+			subBG.updateHitbox();
+
+			subLine.screenCenter(FlxAxes.X);
+			subBG.screenCenter(FlxAxes.X);
+			
+			subBG.y = FlxG.height * 0.75 - subBG.height;
+			subLine.y = subBG.y + 2.5;
+
+			if (lastChar != char)
+				switch (char) {
+					// add character-specific shits here !!
+
+					case 'monster':
+						subBG.color = 0xFF727A0F;
+
+					case 'invis':
+						subBG.color = 0x00000000; // literally invisible
+
+					default:
+						subBG.color = 0xFF000000;
+				}
+		}
+	} else {
+		trace('Subtitles disabled, ignoring subtitle line change ..');
+	}
+}
