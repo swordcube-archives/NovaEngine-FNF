@@ -119,7 +119,7 @@ class PreferencesMenu extends PageSubState {
 					"The subtitle's size, if enabled.",
 					"subtitleSize",
 					"",
-					15,
+					10,
 					55,
 					1,
 					0
