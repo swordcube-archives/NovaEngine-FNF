@@ -1,3 +1,4 @@
+<!DOCTYPE character SYSTEM "https://raw.githubusercontent.com/ThatOneIdiotXav/nova-basegame-actuallyfuckingfinished/main/syntax/character.dtd">
 <character icon="gf" flipX="false" danceSteps="danceLeft,danceRight" >
     <anims>
         <anim name="danceLeft" anim="GF Dancing Beat" indices="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14" fps="24" loop="false" x="0" y="-9" />
