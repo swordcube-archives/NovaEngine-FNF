@@ -103,6 +103,14 @@ class PageSubState extends MusicBeatSubstate {
 	}
 
 	override function createPost() {
+		// lazy null fix
+		for(tab in tabs) {
+			if(options.get(tab) == null || options.get(tab).length < 1) {
+				Logs.trace('Options tab called "$tab" doesn\'t exist or has no options in it! This tab will not show up.', ERROR);
+				tabs.remove(tab);
+			}
+		}
+
 		changeTab(0, true);
 		if(tabs.length < 2) {
 			for(obj in [tabStrip, tabName, tabArrows, tabIndicatorBox, tabIndicatorTxt])

@@ -139,10 +139,11 @@ class FreeplayState extends MusicBeatState {
         var path:String = Paths.xml("data/freeplaySongList", true);
         if(!FileSystem.exists(path)) return;
 
-        var xml:Xml = Xml.parse(File.getContent(path)).firstElement();
-        if(xml == null) return;
 
         try {
+            var xml:Xml = Xml.parse(File.getContent(path)).firstElement();
+            if(xml == null) return;
+
             var data = new haxe.xml.Access(xml);
             for (song in data.nodes.song) {
                 var songName:String = song.has.name ? song.att.name : "???";
