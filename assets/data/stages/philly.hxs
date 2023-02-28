@@ -19,9 +19,6 @@ var trainCars:Int = 8;
 var trainFinishing:Bool = false;
 var trainCooldown:Int = 0;
 var trainStartedMoving:Bool = false;
-#if debug
-var debugVals:FlxText;
-#end
 
 function onCreate() {
 	trainSound = new FlxSound().loadEmbedded(Paths.sound('game/philly/train'));
@@ -49,7 +46,7 @@ function onCreate() {
 }
 
 function onUpdate(elapsed) {
-	light.alpha = FlxMath.lerp(light.alpha, 0, /*(Conductor.crochet / 1000) * */ (elapsed * 2));
+	light.alpha -= (Conductor.crochet / 1000) * elapsed;
 
 	if (trainMoving) {
 		trainFrameTiming += elapsed;
@@ -71,6 +68,7 @@ function onUpdate(elapsed) {
 		['frame timing', trainFrameTiming],
 		['cars', trainCars],
 		['gf special anim', PlayState.current.gf.specialAnim],
+		['sound time', trainSound.time],
 		[" ", ""],
 		['[LIGHTS]', ""],
 		['alpha', light.alpha]

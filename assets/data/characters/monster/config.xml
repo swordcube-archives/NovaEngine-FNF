@@ -1,4 +1,4 @@
-<character icon="monster" flipX="false" y="100">
+<character icon="monster" sprite="monster/normal" flipX="false" y="100">
 	<anims>
 		<anim name="idle" anim="monster idle" fps="24" loop="false" x="3" y="0" />
 
