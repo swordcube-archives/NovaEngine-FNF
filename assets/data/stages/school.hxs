@@ -10,14 +10,6 @@ var treeLeaves:FlxSprite;
 var bgGirls:FlxSprite;
 var bgGirls_danceDir:Bool = false;
 
-function stageSparrow(lmao:String) {
-	return Paths.getSparrowAtlas('game/stages/school/' + lmao);
-}
-
-function stagePacker(lmao:String) {
-	return Paths.getPackerAtlas('game/stages/school/' + lmao);
-}
-
 function onCreate() {
 	add(bgSky = new FlxSprite().loadGraphic(stageImage('weebSky')));
 	bgSky.scrollFactor.set(0.1, 0.1);
@@ -77,9 +69,7 @@ function onCreate() {
 
 	for (i in [bgSky, bgSchool, bgStreet, fgTrees, bgTrees, treeLeaves, bgGirls])
 		i.antialiasing = false;
-}
 
-function onCreatePost() {
 	boyfriend.x += 200;
 	boyfriend.y += 220;
 	gf.x += 180;

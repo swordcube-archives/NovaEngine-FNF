@@ -4,6 +4,7 @@ Chart Editor
 
 -- MED TASKS (amogus) --
 Week 5 Alt Anims no work :(
+Pixel Notes
 
 -- EASY TASKS --
 Controls Menu [DONE]
