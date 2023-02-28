@@ -1,0 +1,15 @@
+<character sprite="senpai/normal" antialiasing="false" icon="senpai" flipX="false" x="150" y="360" camX="-240" camY="-330" >
+    <anims>
+        <anim name="idle" anim="Angry Senpai Idle" fps="24" loop="false" x="0.16666666666666666" y="0" />
+
+        <anim name="singLEFT" anim="Angry Senpai LEFT NOTE" fps="24" loop="false" x="6.666666666666667" y="0" />
+        <anim name="singDOWN" anim="Angry Senpai DOWN NOTE" fps="24" loop="false" x="2.3333333333333335" y="0" />
+        <anim name="singUP" anim="Angry Senpai UP NOTE" fps="24" loop="false" x="0.8333333333333334" y="6.166666666666667" />
+        <anim name="singRIGHT" anim="Angry Senpai RIGHT NOTE" fps="24" loop="false" x="0" y="0" />
+    </anims>
+
+    <scale x="6" y="6" />
+    <scrollFactor x="1" y="1" />
+
+    <healthColor rgb="255,170,111" />
+</character>
