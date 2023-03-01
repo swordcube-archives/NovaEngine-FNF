@@ -17,10 +17,11 @@
 
 -cp source
 
---macro include('core')
---macro include('funkin')
---macro include('scripting')
---macro keep('Main')
+--macro include('backend')
+--macro include('game')
+--macro include('music')
+--macro include('objects')
+--macro include('states')
 
 --no-output
 
