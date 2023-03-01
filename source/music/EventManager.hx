@@ -37,11 +37,22 @@ class EventManager extends FlxBasic {
     public static inline function convert(rawEvent:EventData) {
         var event:SongEvent = switch(rawEvent.name) {
             // Built-in engine events
-            case "Add Camera Zoom":     new AddCameraZoom(Std.parseFloat(rawEvent.parameters[0]), Std.parseFloat(rawEvent.parameters[1]));
+            case "Add Camera Zoom":     
+                var zoom1:Float = Std.parseFloat(rawEvent.parameters[0]);
+                if(Math.isNaN(zoom1)) zoom1 = 0.015;
+
+                var zoom2:Float = Std.parseFloat(rawEvent.parameters[1]);
+                if(Math.isNaN(zoom2)) zoom2 = 0.03;
+
+                new AddCameraZoom(zoom1, zoom2);
             case "Change Character":    new ChangeCharacter(charFromString(rawEvent.parameters[0]), rawEvent.parameters[1]);
             case "Change Scroll Speed": new ChangeScrollSpeed(rawEvent.parameters[0], Std.parseFloat(rawEvent.parameters[1]), Std.parseFloat(rawEvent.parameters[2]));
             case "Set GF Speed":        new SetGFSpeed(Std.parseInt(rawEvent.parameters[0]));
-            case "Hey!", "Hey":         new HeyEvent(charFromString(rawEvent.parameters[0]), Std.parseFloat(rawEvent.parameters[1]));
+            case "Hey!", "Hey":         
+                var time:Float = Std.parseFloat(rawEvent.parameters[1]);
+                if(Math.isNaN(time)) time = 0.6;
+
+                new HeyEvent(charFromString(rawEvent.parameters[0]), time);
             case "Play Animation":      new PlayAnimation(charFromString(rawEvent.parameters[0]), rawEvent.parameters[1]);
             case "Screen Shake":        new ScreenShake(rawEvent.parameters[0], Std.parseFloat(rawEvent.parameters[1]), Std.parseFloat(rawEvent.parameters[2]));
 

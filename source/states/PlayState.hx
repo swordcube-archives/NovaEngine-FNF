@@ -234,6 +234,7 @@ class PlayState extends MusicBeatState {
 			}
 		}
 
+		// Preload music
 		var instPath:String = Paths.songInst(SONG.name, storyDifficulty, true);
 		FlxG.sound.playMusic(Paths.songInst(SONG.name, storyDifficulty), 0, false);
 		FlxG.sound.list.add(vocals = new FlxSound());
@@ -245,18 +246,20 @@ class PlayState extends MusicBeatState {
 		FlxG.cameras.add(camHUD = new FNFCamera(), false);
 		FlxG.cameras.add(camOther = new FNFCamera(), false);
 
+		// Setup song
 		Conductor.changeBPM(SONG.bpm, SONG.timeScale[0], SONG.timeScale[1]);
 		Conductor.mapBPMChanges(SONG);
 
 		Conductor.songPosition = Conductor.crochet * -5;
 
+		// Load stages & characters
 		add(stage = new Stage(SONG.stage));
 
-		add(gf = new Character(stage.gfPos.x, stage.gfPos.y, SONG.spectator));
+		add(gf = new Character(0, 0, SONG.spectator));
 		gf.danceOnBeat = false;
 		add(stage.gfLayer);
 
-		add(dad = new Character(stage.dadPos.x, stage.dadPos.y, SONG.opponent));
+		add(dad = new Character(0, 0, SONG.opponent));
 		add(stage.dadLayer);
 
 		if(SONG.opponent == SONG.spectator) {
@@ -267,7 +270,7 @@ class PlayState extends MusicBeatState {
 			gf = null;
 		}
 
-		add(boyfriend = new Character(stage.bfPos.x, stage.bfPos.y, SONG.player, true));
+		add(boyfriend = new Character(0, 0, SONG.player, true));
 		add(stage.bfLayer);
 
 		GameOverSubstate.resetVariables();
@@ -278,6 +281,7 @@ class PlayState extends MusicBeatState {
 			prevCamFollow = null;
 		}
 		add(camFollow);
+		add(events = new EventManager());
 
 		// ^^^ -- END OF PRELOADING ----------------------------------------------------
 
@@ -301,6 +305,23 @@ class PlayState extends MusicBeatState {
 		scripts.call("onCreate", []);
 		camGame.zoom = defaultCamZoom;
 
+		// Position the characters to the positions set
+		// in the stage (this used to be broken, woops)
+		var stageShit:Array<Array<Dynamic>> = [
+			[stage.dadPos, dad],
+			[stage.gfPos, gf],
+			[stage.bfPos, boyfriend],
+		];
+		for(item in stageShit) {
+			var position:FlxPoint = item[0];
+			var character:Character = item[1];
+
+			if(character == null) continue;
+
+			character.setPosition(position.x, position.y);
+		}
+
+		// Center the camera on the spectator/opponent (depends on if the spectator is null or not)
 		var spectator:Character = (gf != null) ? gf : dad;
 		camFollow.setPosition(
 			((spectator != null) ? spectator.getMidpoint().x : 0) - 100, 
@@ -309,6 +330,7 @@ class PlayState extends MusicBeatState {
 		camGame.follow(camFollow, null, 0.04);
 		camGame.snapToTarget();
 
+		// Generate strumlines
 		var receptorSpacing:Float = FlxG.width / 4;
 		var strumY:Float = (SettingsAPI.downscroll) ? FlxG.height - 160 : 50;
 
@@ -332,6 +354,7 @@ class PlayState extends MusicBeatState {
 		autoplayTxt.borderSize = 2;
 		autoplayTxt.screenCenter(X);
 
+		// Preload notes
 		add(notes = new NoteField());
 		add(grpNoteSplashes = new FlxTypedGroup<NoteSplash>());
  
@@ -341,8 +364,8 @@ class PlayState extends MusicBeatState {
 			comboGroup.cameras = [camHUD];
 		
 		notes.addNotes(ChartParser.parseChart(SONG));
-		add(events = new EventManager());
 
+		// Load events
 		if(SONG.events != null && SONG.events.length > 0) {
 			for(group in SONG.events) {
 				for(event in group.events) {
@@ -358,6 +381,7 @@ class PlayState extends MusicBeatState {
 			}
 		}
 
+		// Generate health bar & icons
 		healthBarBG = new TrackingSprite(0, FlxG.height * (SettingsAPI.downscroll ? 0.1 : 0.9)).loadGraphic(Paths.image("UI/base/healthBar"));
 		healthBarBG.screenCenter(X);
 		healthBarBG.trackingOffset.set(-4, -4);
@@ -382,6 +406,7 @@ class PlayState extends MusicBeatState {
 		scoreTxt.borderSize = 2;
 		updateScoreText();
 
+		// Generate time bar
 		timeBarBG = new TrackingSprite(0, FlxG.height * (SettingsAPI.downscroll ? 0.945 : 0.025)).loadGraphic(Paths.image("UI/base/timeBar"));
 		timeBarBG.screenCenter(X);
 		timeBarBG.trackingOffset.set(-4, -4);
@@ -389,7 +414,7 @@ class PlayState extends MusicBeatState {
 		add(timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4, LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8), Std.int(timeBarBG.height - 8)));
 		timeBar.createGradientBar([0xFF2C183B, 0xFF5C1C57], [0xFFB062F0, 0xFFE44DD7], 1, 90);
 
-		timeBar.setParent(Conductor, "position");
+		timeBar.setParent(Conductor, "songPosition");
 		timeBar.setRange(0, (FileSystem.exists(instPath)) ? FlxG.sound.music.length : 1);
 
 		add(timeBarBG);
@@ -402,6 +427,7 @@ class PlayState extends MusicBeatState {
 		for(obj in [timeBarBG, timeBar, timeTxt])
 			obj.alpha = 0;
 
+		// Put everything HUD related on the HUD camera
 		timeBarBG.trackingMode = healthBarBG.trackingMode = LEFT;
 		healthBarBG.tracked = healthBar;
 		timeBarBG.tracked = timeBar;
@@ -423,7 +449,7 @@ class PlayState extends MusicBeatState {
 			0 => Paths.sound('game/countdown/$assetModifier/introGo')
 		];
 
-		// Preload ratings & combo
+		// Preload ratings, combo & hitsounds
 		var ratingImages:Array<String> = ["sick", "good", "bad", "shit"];
 		for(item in ratingImages)
 			FlxG.bitmap.add(Paths.image(NovaTools.returnSkinAsset('ratings/$item', assetModifier, changeableSkin, "game")));

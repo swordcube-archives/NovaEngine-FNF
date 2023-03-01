@@ -255,7 +255,7 @@ class Character extends FNFSprite implements MusicHandler {
 		var data:PsychCharacter = Json.parse(File.getContent(jsonPath));
 
 		// Loading frames
-		var spritesheetPath:String = 'characters/${data.image}';
+		var spritesheetPath:String = data.image;
 		loadAtlas(Paths.getSparrowAtlas(spritesheetPath));
 
 		spritesheet = curCharacter;
