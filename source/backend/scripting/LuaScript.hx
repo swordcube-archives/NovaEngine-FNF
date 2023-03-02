@@ -32,7 +32,7 @@ class LuaScript extends ScriptModule {
 	 */
 	var specialVars:Array<Dynamic> = [];
 
-	public function new(path:String, fileName:String = "hscript") {
+	public function new(path:String, fileName:String = "lua") {
 		super(path, fileName);
 
 		#if linc_luajit
@@ -290,12 +290,6 @@ class LuaScript extends ScriptModule {
 			return null;
 		}
 
-	public function newIndex(object:Dynamic, property:String, value:Dynamic) {
-		if (object is Array && property is Int) {
-			object[cast(property, Int)] = value;
-			return null;
-		}
-
 		if (object != null)
 			Reflect.setProperty(object, cast(property, String), value);
         return null;
@@ -440,7 +434,6 @@ class LuaScript extends ScriptModule {
 				var className:String = Type.getClassName(val);
 				if (className != null) {
 					Lua.pushstring(luaState, "new"); //This implements the work around function to create the class instance.
-
 					Lua.pushcfunction(luaState, workaroundCallable);
 					Lua.rawset(luaState, tableIndex);
 				}

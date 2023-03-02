@@ -7,6 +7,10 @@ function stageSparrow(path:String) { // overwrite 'curStage' variable :)
 }
 
 function onCreate() {
+	stage.dadPos.set(100, 100);
+	stage.gfPos.set(580, 430);
+	stage.bfPos.set(970, 320);
+
 	add(bg = new FNFSprite(400, 200));
 	bg.frames = stageSparrow('animatedEvilSchool');
 	bg.animation.addByPrefix('idle', 'background 2 instance 1', 24);
@@ -14,7 +18,4 @@ function onCreate() {
 	bg.scrollFactor.set(0.8, 0.9);
 	bg.scale.set(6, 6);
 	bg.antialiasing = false;
-
-	stage.bfPos.set(stage.bfPos.x + 200, stage.bfPos.y + 220);
-	stage.gfPos.set(stage.gfPos.x + 180, stage.gfPos.y + 300);
 }

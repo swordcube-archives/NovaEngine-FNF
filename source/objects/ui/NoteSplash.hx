@@ -15,7 +15,8 @@ typedef NoteSplashSkinData = {
     @:optional var scale:Float;
     @:optional var alpha:Float;
     @:optional var positionOffset:Dynamic;
-    var animations:Array<NoteSplashAnimation>;
+    @:optional var animations:Array<NoteSplashAnimation>;
+    @:optional var antialiasing:Bool;
 } 
 
 class NoteSplash extends FNFSprite {
@@ -40,9 +41,11 @@ class NoteSplash extends FNFSprite {
         var skinAsset:String = NovaTools.returnSkinAsset('noteSplashes/$skin', PlayState.assetModifier, PlayState.changeableSkin, "game");
         loadAtlas(Paths.getSparrowAtlas(skinAsset));
         skinData = Paths.json('images/${skinAsset}_config');
+        skinData.setFieldDefault("animations", new Array<NoteSplashAnimation>());
         skinData.setFieldDefault("scale", 1);
         skinData.setFieldDefault("alpha", 0.6);
         skinData.setFieldDefault("positionOffset", {x: 0, y: 0});
+        skinData.setFieldDefault("antialiasing", true);
 
         for(i => animation in skinData.animations) {
             animation.setFieldDefault("fps", 24);
@@ -51,6 +54,7 @@ class NoteSplash extends FNFSprite {
         }
         playAnim("splash" + FlxG.random.int(1, skinData.animations.length));
         
+        antialiasing = (skinData.antialiasing) ? SettingsAPI.antialiasing : false;
         initialScale = skinData.scale;
         scale.set(initialScale, initialScale);
         updateHitbox();

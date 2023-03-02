@@ -11,6 +11,10 @@ var bgGirls:FlxSprite;
 var bgGirls_danceDir:Bool = false;
 
 function onCreate() {
+	stage.dadPos.set(100, 100);
+	stage.gfPos.set(580, 430);
+	stage.bfPos.set(970, 320);
+
 	add(bgSky = new FlxSprite().loadGraphic(stageImage('weebSky')));
 	bgSky.scrollFactor.set(0.1, 0.1);
 
@@ -69,10 +73,6 @@ function onCreate() {
 
 	for (i in [bgSky, bgSchool, bgStreet, fgTrees, bgTrees, treeLeaves, bgGirls])
 		i.antialiasing = false;
-
-	// jank.
-	stage.bfPos.set(stage.bfPos.x + 200, stage.bfPos.y + 220);
-	stage.gfPos.set(stage.gfPos.x + 180, stage.gfPos.y + 300);
 }
 
 function onCreatePost() {}

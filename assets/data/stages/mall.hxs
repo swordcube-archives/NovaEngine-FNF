@@ -9,6 +9,10 @@ var fgSnow:FNFSprite;
 var stanta:FNFSprite;
 
 function onCreate() {
+	stage.dadPos.set(100, 100);
+    stage.gfPos.set(400, 130);
+    stage.bfPos.set(970, 100);
+
 	defaultCamZoom = 0.8;
 
 	add(bg = new FNFSprite(-1000, -500).loadGraphic(stageImage('bgWalls')));
@@ -46,9 +50,6 @@ function onCreate() {
 	stanta.animation.addByPrefix('idle', 'santa idle in fear', 24, false);
 	stanta.playAnim('idle');
 }
-
-function onCreatePost()
-	boyfriend.x += 200;
 
 function onBeatHit(beat) {
 	upperBoppers.playAnim('bop', true);

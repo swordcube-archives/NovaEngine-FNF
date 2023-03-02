@@ -3,12 +3,10 @@ Chart Editor
 	bpm changes fuck up :)
 
 -- MED TASKS (amogus) --
-Week 5 Alt Anims no work :(
-Pixel Notes
+Pixel Notes [DONE]
 
 -- EASY TASKS --
 Controls Menu [DONE]
 Discord RPC
-
--- i dont fucking know how hard this'll be TASKS --
-'inCutscene' kinda works (but not fully)
+'inCutscene' kinda works (but not fully) [FIXED]
+Week 5 Alt Anims no work :( [FIXED]

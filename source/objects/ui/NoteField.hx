@@ -131,11 +131,13 @@ class NoteField extends NoteGroup {
 
 			note.x = (receptor.x - psuedoX)
                 + (Math.cos(FlxAngle.asRadians(note.noteAngle)) * psuedoX)
-				+ (Math.sin(FlxAngle.asRadians(note.noteAngle)) * psuedoY);
+				+ (Math.sin(FlxAngle.asRadians(note.noteAngle)) * psuedoY)
+				+ note.offsetX;
 
 			note.y = receptor.y
                 + (Math.cos(FlxAngle.asRadians(note.noteAngle)) * psuedoY) 
-                + (Math.sin(FlxAngle.asRadians(note.noteAngle)) * psuedoX);
+                + (Math.sin(FlxAngle.asRadians(note.noteAngle)) * psuedoX)
+				+ note.offsetY;
 
 			if (note.isSustainNote) {
 				if (downscrollMultiplier < 0)
@@ -211,15 +213,17 @@ class NoteField extends NoteGroup {
 							if(event.characters != null && event.characters.length > 0) {
 								for(char in event.characters) {
 									char.holdTimer = 0;
-									var altShit:String = char.animation.exists(singAnim+"-alt") ? "-alt" : "";
+									var altShit:String = (note.altAnim && char.animation.exists(singAnim+"-alt")) ? "-alt" : "";
 									char.holdTimer = 0;
-									char.playAnim(singAnim+altShit, true);
+									if(!char.specialAnim)
+										char.playAnim(singAnim+altShit, true);
 								}
 							} else {
 								var char:Character = (note.mustPress) ? game.boyfriend : game.dad;
-								var altShit:String = char.animation.exists(singAnim+"-alt") ? "-alt" : "";
+								var altShit:String = (note.altAnim && char.animation.exists(singAnim+"-alt")) ? "-alt" : "";
 								char.holdTimer = 0;
-								char.playAnim(singAnim+altShit, true);
+								if(!char.specialAnim)
+									char.playAnim(singAnim+altShit, true);
 							}
 						}
 

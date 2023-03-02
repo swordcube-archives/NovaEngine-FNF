@@ -1,9 +1,9 @@
-function beatHit(curBeat) {
+function onBeatHit(curBeat) { // lmao i forgor to rename
     if (curBeat % 8 == 7) {
-        if(bf != null) {
-            bf.animTimer = 0.6;
-            bf.playAnim('hey', true);
-            bf.specialAnim = true;
+        if(boyfriend != null) {
+            boyfriend.animTimer = 0.6;
+            boyfriend.playAnim('hey', true);
+            boyfriend.specialAnim = true;
         }
     }
 }

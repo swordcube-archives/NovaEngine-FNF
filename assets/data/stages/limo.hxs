@@ -13,6 +13,10 @@ var fastCar:FNFSprite;
 var fastCarCanDrive:Bool = true;
 
 function onCreate() {
+	stage.dadPos.set(100, 100);
+    stage.gfPos.set(400, 130);
+    stage.bfPos.set(1030, -120);
+
 	defaultCamZoom = 0.9;
 
 	add(skyBG = new FNFSprite(-120, -50).loadGraphic(stageImage('limoSunset')));
@@ -48,14 +52,15 @@ function onCreate() {
 function onCreatePost() {
 	add(limo, 'gf');
 
-	boyfriend.y -= 240;
-	boyfriend.x += 260;
-
 	fastCar_reset();
 	add(fastCar);
 }
 
 var limoFuckersGoRight:Bool = false;
+
+function onCountdownTick(event) {
+	onBeatHit(event.swagCounter); // fuck you
+}
 
 function onBeatHit(beat) {
 	if (FlxG.random.bool(10) && fastCarCanDrive)
@@ -68,7 +73,6 @@ function onBeatHit(beat) {
 }
 
 function fastCar_reset() {
-	#if debug trace('FAST CAR - reset'); #end
 	fastCar.x = -12600;
 	fastCar.y = FlxG.random.int(140, 250);
 	fastCar.velocity.x = 0;
@@ -76,7 +80,6 @@ function fastCar_reset() {
 }
 
 function fastCar_drive() {
-	#if debug trace('FAST CAR - drive'); #end
 	FlxG.sound.play(Paths.soundRandom('carPass/', 1, 2), 0.7);
 
 	fastCar.velocity.x = (FlxG.random.int(170, 220) / FlxG.elapsed) * 3;

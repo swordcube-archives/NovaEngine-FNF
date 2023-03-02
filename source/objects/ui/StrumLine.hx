@@ -65,17 +65,38 @@ class Receptor extends FNFSprite {
         this.noteData = noteData;
 
         var skinAsset:String = NovaTools.returnSkinAsset("NOTE_assets", PlayState.assetModifier, skin, "game");
-        loadAtlas(Paths.getSparrowAtlas(skinAsset));
         skinData = Paths.json('images/${skinAsset}_config');
+        skinData.setFieldDefault("animations", new Array<NoteSkinAnimation>());
         skinData.setFieldDefault("scale", 0.7);
         skinData.setFieldDefault("isPixel", false);
+        skinData.setFieldDefault("antialiasing", true);
+
+        if(skinData.isPixel) {
+            skinData.setFieldDefault("rows", 4);
+            skinData.setFieldDefault("columns", 5);
+
+            loadGraphic(Paths.image(skinAsset));
+            loadGraphic(Paths.image(skinAsset), true, Std.int(width / skinData.rows), Std.int(height / skinData.columns));
+        } else
+            loadAtlas(Paths.getSparrowAtlas(skinAsset));
 
         for(animation in skinData.animations) {
             animation.setFieldDefault("fps", 24);
             animation.setFieldDefault("loop", false);
-            this.animation.addByPrefix(animation.name, animation.spritesheetName.replace("${DIRECTION}", directionName), animation.fps, animation.loop);
+            if(skinData.isPixel) {
+                animation.setFieldDefault("frames", new Array<Int>());
+                var adjustedFrames:Array<Int> = [];
+                for(item in animation.frames) 
+                    adjustedFrames.push(item + noteData);
+
+                this.animation.add(animation.name, adjustedFrames, animation.fps, animation.loop);
+            } else {
+                animation.setFieldDefault("spritesheetName", "${DIRECTION}");
+                this.animation.addByPrefix(animation.name, animation.spritesheetName.replace("${DIRECTION}", directionName), animation.fps, animation.loop);
+            }
         }
         playAnim("static");
+        antialiasing = (skinData.antialiasing) ? SettingsAPI.antialiasing : false;
         
         initialScale = skinData.scale;
         scale.set(initialScale, initialScale);

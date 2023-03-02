@@ -1,4 +1,4 @@
-<character sprite="bf/christmas" y="350" camY="-100" isPlayer="true" deathCharacter="bf-dead" icon="bf" flipX="true">
+<character sprite="bf/christmas" y="350" camY="0" isPlayer="true" deathCharacter="bf-dead" icon="bf" flipX="true">
     <anims>
         <anim name="idle" anim="BF idle dance" indices="" fps="24" loop="false" x="-3" y="-1" />
 

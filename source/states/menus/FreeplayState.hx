@@ -1,6 +1,5 @@
 package states.menus;
 
-import states.menus.options.ControlsMenu
 import objects.ui.SearchBox;
 import music.Song.ChartFormat;
 import flixel.util.FlxColor;

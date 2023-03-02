@@ -1,45 +1,48 @@
 {
-    "scale": 0.7,
+    "scale": 6,
 
-    "antialiasing": true,
-    "isPixel": false,
+    "antialiasing": false,
+    "isPixel": true,
+    "rows": 4,
+    "columns": 5,
 
     "animations": [
         {
             "name": "static",
-            "spritesheetName": "${DIRECTION} static0",
+            "frames": [0],
             "fps": 24,
             "loop": true
         },
         {
             "name": "pressed",
-            "spritesheetName": "${DIRECTION} pressed0",
-            "fps": 24,
+            "frames": [4, 8],
+            "fps": 12,
             "loop": false
         },
         {
             "name": "confirm",
-            "spritesheetName": "${DIRECTION} confirm0",
-            "fps": 24,
+            "frames": [12, 16],
+            "fps": 12,
             "loop": false
         },
         {
             "name": "note",
-            "spritesheetName": "${DIRECTION}0",
+            "frames": [4],
             "fps": 24,
             "loop": true
         },
         {
             "name": "hold",
-            "spritesheetName": "${DIRECTION} hold piece0",
+            "frames": [0],
             "fps": 24,
             "loop": true
         },
         {
             "name": "holdend",
-            "spritesheetName": "${DIRECTION} hold end0",
+            "frames": [4],
             "fps": 24,
             "loop": true
         }
-    ]
+    ],
+    "btw": "sustains are in their own spritesheet lol"
 }

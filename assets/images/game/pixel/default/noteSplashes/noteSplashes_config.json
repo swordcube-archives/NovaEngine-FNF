@@ -1,7 +1,7 @@
 {
     "scale": 1,
     "alpha": 0.6,
-    "antialiasing": true,
+    "antialiasing": false,
     "positionOffset": {"x": -80, "y": -90},
     "animations": [
         {

@@ -482,7 +482,8 @@ class PlayState extends MusicBeatState {
 
 		// Start the song's cutscene if it exists
 		// or the countdown if it doesn't exist
-		startCutscene();
+		if(!inCutscene)
+			startCutscene();
 
 		scripts.call("onCreatePost", []);
 	}
@@ -718,15 +719,17 @@ class PlayState extends MusicBeatState {
 			if(event.characters != null && event.characters.length > 0) {
 				for(char in event.characters) {
 					char.holdTimer = 0;
-					var altShit:String = char.animation.exists(singAnim+"-alt") ? "-alt" : "";
+					var altShit:String = (note.altAnim && char.animation.exists(singAnim+"-alt")) ? "-alt" : "";
 					char.holdTimer = 0;
-					char.playAnim(singAnim+altShit, true);
+					if(!char.specialAnim)
+						char.playAnim(singAnim+altShit, true);
 				}
 			} else {
 				var char:Character = (note.mustPress) ? boyfriend : dad;
-				var altShit:String = char.animation.exists(singAnim+"-alt") ? "-alt" : "";
+				var altShit:String = (note.altAnim && char.animation.exists(singAnim+"-alt")) ? "-alt" : "";
 				char.holdTimer = 0;
-				char.playAnim(singAnim+altShit, true);
+				if(!char.specialAnim)
+					char.playAnim(singAnim+altShit, true);
 			}
 		}
 
@@ -855,25 +858,12 @@ class PlayState extends MusicBeatState {
 	override public function update(elapsed:Float) {
 		super.update(elapsed);
 
-		#if debug
-		var eee:Array<Dynamic> = [
-			['[GAME]', ""],
-			['beat', curBeat],
-			['step', curStep],
-			['section', curMeasure],
-			['bpm', Conductor.bpm],
-			['         ', ""]
-		];
-		for (i in eee)
-			FlxG.watch.addQuick(i[0], i[1]);
-		#end
-
 		scripts.call("onUpdate", [elapsed]);
 		for(script in noteTypeScripts)
 			script.call("onUpdate", [elapsed]);
 
 		@:privateAccess
-		if (!Conductor.isAudioSynced(FlxG.sound.music) || (vocals._sound != null && !Conductor.isAudioSynced(vocals)))
+		if (!startingSong && !inCutscene && !Conductor.isAudioSynced(FlxG.sound.music) || (vocals._sound != null && !Conductor.isAudioSynced(vocals)))
 			resyncVocals();
 
 		timeTxt.text = FlxStringUtil.formatTime(FlxG.sound.music.time / 1000)+" / "+FlxStringUtil.formatTime(FlxG.sound.music.length / 1000);

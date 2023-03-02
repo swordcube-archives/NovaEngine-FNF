@@ -6,7 +6,8 @@ import states.PlayState;
 
 typedef NoteSkinAnimation = {
     var name:String;
-    var spritesheetName:String;
+    @:optional var spritesheetName:String; // non-pixel only
+    @:optional var frames:Array<Int>; // pixel only
     @:optional var fps:Null<Int>;
     @:optional var loop:Null<Bool>;
 }
@@ -14,7 +15,10 @@ typedef NoteSkinAnimation = {
 typedef NoteSkinData = {
     @:optional var scale:Float;
     @:optional var isPixel:Bool;
-    var animations:Array<NoteSkinAnimation>;
+    @:optional var antialiasing:Bool;
+    @:optional var rows:Int; // pixel only
+    @:optional var columns:Int; // pixel only
+    @:optional var animations:Array<NoteSkinAnimation>;
 }
 
 typedef ExtraKeyData = {
@@ -54,6 +58,9 @@ class Note extends FNFSprite {
     public var prevNote:Note;
     public var curSection:Int = 0;
 
+    public var offsetX:Float = 0;
+    public var offsetY:Float = 0;
+
     public var scrollSpeed:Null<Float> = null;
     public function getScrollSpeed():Float {
         if(strumLine != null && strumLine.scrollSpeed != null)
@@ -87,23 +94,50 @@ class Note extends FNFSprite {
     public var skinData:NoteSkinData;
     public var splashSkin:String = (FlxG.state == PlayState.current && PlayState.SONG != null) ? PlayState.SONG.splashSkin : "noteSplashes";
 
-    public function new(?x:Float = 0, ?y:Float = 0, ?skin:String = "default", ?keyCount:Int = 4, ?noteData:Int = 0) {
+    public function new(?x:Float = 0, ?y:Float = 0, ?skin:String = "default", ?keyCount:Int = 4, ?noteData:Int = 0, ?isSustainNote:Bool = false, ?isSustainTail:Bool = false) {
         super(x, y);
         this.keyCount = keyCount;
         this.noteData = noteData;
+        this.isSustainNote = isSustainNote;
+        this.isSustainTail = isSustainTail;
 
         var skinAsset:String = NovaTools.returnSkinAsset("NOTE_assets", PlayState.assetModifier, skin, "game");
-        loadAtlas(Paths.getSparrowAtlas(skinAsset));
         skinData = Paths.json('images/${skinAsset}_config');
+        skinData.setFieldDefault("animations", new Array<NoteSkinAnimation>());
         skinData.setFieldDefault("scale", 0.7);
         skinData.setFieldDefault("isPixel", false);
+        skinData.setFieldDefault("antialiasing", true);
+
+        var skinImageAsset:String = NovaTools.returnSkinAsset("NOTE_assets" + (((isSustainNote || isSustainTail) && skinData.isPixel) ? "ENDS" : ""), PlayState.assetModifier, skin, "game");
+        if(skinData.isPixel) {
+            if(isSustainNote || isSustainTail)
+                offsetX += 30; // the magic number!
+            
+            skinData.setFieldDefault("rows", 4);
+            skinData.setFieldDefault("columns", 5);
+
+            loadGraphic(Paths.image(skinImageAsset));
+            loadGraphic(Paths.image(skinImageAsset), true, Std.int(width / skinData.rows), Std.int(height / ((isSustainNote || isSustainTail) ? 2 : skinData.columns)));
+        } else
+            loadAtlas(Paths.getSparrowAtlas(skinImageAsset));
 
         for(animation in skinData.animations) {
             animation.setFieldDefault("fps", 24);
             animation.setFieldDefault("loop", false);
-            this.animation.addByPrefix(animation.name, animation.spritesheetName.replace("${DIRECTION}", directionName), animation.fps, animation.loop);
+            if(skinData.isPixel) {
+                animation.setFieldDefault("frames", new Array<Int>());
+                var adjustedFrames:Array<Int> = [];
+                for(item in animation.frames) 
+                    adjustedFrames.push(item + noteData);
+
+                this.animation.add(animation.name, adjustedFrames, animation.fps, animation.loop);
+            } else {
+                animation.setFieldDefault("spritesheetName", "${DIRECTION}");
+                this.animation.addByPrefix(animation.name, animation.spritesheetName.replace("${DIRECTION}", directionName), animation.fps, animation.loop);
+            }
         }
-        playAnim("note");
+        resetAnim();
+        antialiasing = (skinData.antialiasing) ? SettingsAPI.antialiasing : false;
         
         initialScale = skinData.scale;
         scale.set(initialScale, initialScale);
@@ -147,12 +181,11 @@ class Note extends FNFSprite {
             if(!isSustainTail) {
                 scale.y = 1 * ((stepCrochet / 100) * 1.05) * Math.abs(getScrollSpeed());
 
-                if(skinData.isPixel) {
-					scale.y *= 1.19;
-					scale.y *= (6 / height);
-				}
+                if(skinData.isPixel)
+                    scale.y *= 1.19;
+
+                scale.y *= initialScale;
             }
-            
             updateHitbox();
             centerXOffset();
         }

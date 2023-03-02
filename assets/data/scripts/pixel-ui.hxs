@@ -1,0 +1,18 @@
+function onCreate() {
+    PlayState.assetModifier = "pixel";
+}
+
+function onCountdownTickPost(event) {
+    event.sprite.antialiasing = false;
+}
+
+function onOpponentHit(event) {shit(event);}
+function onPlayerHit(event) {shit(event);}
+
+function shit(event) {
+    event.ratingAntialiasing = false;
+    event.comboAntialiasing = false;
+
+    event.ratingScale = 5.1;
+    event.comboScale = 6;
+}

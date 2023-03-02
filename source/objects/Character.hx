@@ -570,7 +570,7 @@ class Character extends FNFSprite implements MusicHandler {
 	}
 
 	public function dance(?force:Bool = false) {
-		if ((specialAnim && !force) || (!canDance && !force)) return;
+		if ((specialAnim || !canDance) && !force) return;
 		if ((animation.curAnim != null && !animation.curAnim.name.startsWith("hair")) || animation.curAnim == null) {
 			danced = !danced;
 

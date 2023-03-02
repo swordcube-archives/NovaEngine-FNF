@@ -1,31 +1,34 @@
-import flixel.tweens.FlxEase;
-import flixel.util.FlxTimer;
-import backend.utilities.FNFSprite;
-import states.PlayState;
-
 function onCreate() {
-	// this isn't 1-to-1 w/ base game but it kinda looks cooler so Shut the Fuck
+	inCutscene = true;
 
-	var blacc:FNFSprite = new FNFSprite().makeGraphic(FlxG.width * 5, FlxG.height * 5, 0xFF000000);
-	add(blacc);
-	blacc.scrollFactor.set();
-	camHUD.visible = false;
+	camBumping = false;
 	camZooming = false;
 
-	new FlxTimer().start(0.1, function(tmr) {
-		remove(blacc);
+	var blackScreen:FlxSprite = new FlxSprite(0, 0).makeGraphic(Std.int(FlxG.width * 2), Std.int(FlxG.height * 2), FlxColor.BLACK);
+	add(blackScreen);
+	blackScreen.scrollFactor.set();
+	camHUD.visible = false;
+
+	new FlxTimer().start(0.1, (tmr:FlxTimer) -> {
+		remove(blackScreen);
 		FlxG.sound.play(Paths.sound('game/christmas/lightsOn'));
 		camFollow.y = -2050;
 		camFollow.x += 200;
 		FlxG.camera.focusOn(camFollow.getPosition());
 		FlxG.camera.zoom = 1.5;
 
-		new FlxTimer().start(0.8, function(tmr) {
+		new FlxTimer().start(0.8, (tmr:FlxTimer) -> {
 			camHUD.visible = true;
-			camZooming = true;
+			remove(blackScreen);
 			FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 2.5, {
-				ease: FlxEase.quadInOut
+				ease: FlxEase.quadInOut,
+				onComplete: (twn:FlxTween) -> startCountdown()
 			});
 		});
 	});
+}
+
+function onOpponentHit(event:NoteHitEvent) {
+	camBumping = true;
+	camZooming = true;
 }

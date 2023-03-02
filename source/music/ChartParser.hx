@@ -55,22 +55,19 @@ class ChartParser {
                 if(susserLength >= 0.75) susLength++;
 
                 for(i in 0...susLength) {
-                    var susNote:Note = new Note(-9999, -9999, PlayState.changeableSkin, songData.keyCount, daNoteData % songData.keyCount);
+                    var susNote:Note = new Note(-9999, -9999, PlayState.changeableSkin, songData.keyCount, daNoteData % songData.keyCount, true, i >= susLength - 1);
                     susNote.strumTime = daStrumTime + (Conductor.stepCrochet * i);
                     susNote.curSection = sectionID;
                     susNote.prevNote = noteArray.last();
                     susNote.mustPress = gottaHitNote;
                     susNote.strumLine = swagNote.strumLine;
                     susNote.rawNoteData = daNoteData;
-                    susNote.isSustainNote = true;
-                    susNote.isSustainTail = i >= susLength - 1;
                     susNote.flipY = susNote.strumLine.downscroll;
                     susNote.alpha = (SettingsAPI.opaqueSustains) ? 1 : 0.6;
                     susNote.parentNote = swagNote;
                     susNote.stepCrochet = Conductor.stepCrochet;
                     susNote.noteType = daNoteType;
                     susNote.altAnim = (daNoteType == "Alt Animation") || section.altAnim;
-                    susNote.resetAnim();
                     noteArray.push(susNote);
 
                     swagNote.sustainNotes.push(susNote);
