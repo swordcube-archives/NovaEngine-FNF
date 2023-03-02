@@ -1,5 +1,6 @@
 package states.menus;
 
+import objects.ui.SearchBox;
 import music.Song.ChartFormat;
 import flixel.util.FlxColor;
 import states.MusicBeat.MusicBeatState;
@@ -38,6 +39,7 @@ class FreeplayState extends MusicBeatState {
     
     public var grpSongs:FlxTypedGroup<Alphabet>;
     public var grpIcons:FlxTypedGroup<HealthIcon>;
+    public var searchBox:SearchBox;
 
     public var curSelected:Int = 0;
     public var curDifficulty:Int = 1;
@@ -48,6 +50,8 @@ class FreeplayState extends MusicBeatState {
 	public var threadActive:Bool = true;
 	public var mutex:Mutex;
 	public var songToPlay:Sound;
+
+    public var searchingForSong:Bool = false;
 
     override function create() {
         super.create();
@@ -72,24 +76,7 @@ class FreeplayState extends MusicBeatState {
         add(grpIcons = new FlxTypedGroup<HealthIcon>());
 
         loadXML();
-        if(songs.length < 1) songs.push({
-            name: "Tutorial",
-            character: "gf",
-            difficulties: ["easy", "normal", "hard"]
-        });
-
-        for(i => song in songs) {
-            var songText = new Alphabet(0, (70 * i) + 30, Bold, (song.displayName != null) ? song.displayName : song.name);
-            songText.isMenuItem = true;
-            songText.targetY = i;
-            songText.alpha = 0.6;
-            songText.ID = i;
-            grpSongs.add(songText);
-
-            var icon:HealthIcon = new HealthIcon().loadIcon(song.character);
-            icon.tracked = songText;
-            grpIcons.add(icon);
-        }
+        reloadSongs();
 
         scoreText = new FlxText(FlxG.width * 0.7, 5, 0, "", 32);
 		scoreText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER);
@@ -121,11 +108,53 @@ class FreeplayState extends MusicBeatState {
         add(smallBannerBG);
         add(smallBannerText);
 
+        add(searchBox = new SearchBox(FlxG.width, smallBannerBG.y, 450, 50));
+        searchBox.x -= searchBox.width;
+        searchBox.y -= (smallBannerBG.height + searchBox.height) + 5;
+
         changeSelection();
         positionHighscore();
     }
 
-	function positionHighscore() {
+    public function reloadSongs(?songs:Array<SongMetadata>) {
+        if(songs == null) songs = this.songs;
+
+        // Make a template song if none could load
+        if(songs == null || songs.length < 1) songs = [{
+            name: "No songs found",
+            character: "face",
+            difficulties: ["ERROR"]
+        }];
+
+        // Remove all of the songs
+        grpSongs.forEach((a:Alphabet) -> {
+            a.kill();
+            a.destroy();
+        });
+        grpSongs.clear();
+
+        grpIcons.forEach((a:HealthIcon) -> {
+            a.kill();
+            a.destroy();
+        });
+        grpIcons.clear();
+
+        // Reload the songs
+        for(i => song in songs) {
+            var songText = new Alphabet(0, (70 * i) + 30, Bold, (song.displayName != null) ? song.displayName : song.name);
+            songText.isMenuItem = true;
+            songText.targetY = i;
+            songText.alpha = 0.6;
+            songText.ID = i;
+            grpSongs.add(songText);
+
+            var icon = new HealthIcon().loadIcon(song.character);
+            icon.tracked = songText;
+            grpIcons.add(icon);
+        }
+    }
+
+	public function positionHighscore() {
         scoreText.x = FlxG.width - scoreText.width - 6;
         scoreBG.scale.x = FlxG.width - scoreText.x + 6;
         scoreBG.x = FlxG.width - scoreBG.scale.x / 2;
@@ -160,6 +189,10 @@ class FreeplayState extends MusicBeatState {
 		}
     }
 
+    public function toggleSongSearch() {
+        searchingForSong = !searchingForSong;
+    }
+
     override function update(elapsed:Float) {
         super.update(elapsed);
 
@@ -171,38 +204,46 @@ class FreeplayState extends MusicBeatState {
 			openSubState(new GameplayModifiers());
         }
 
-        if(controls.ACCEPT) {
-            threadActive = false;
-            var selectedDiff:String = songs[curSelected].difficulties[curDifficulty];
-            PlayState.SONG = Song.loadChart(songs[curSelected].name, selectedDiff);
-            PlayState.isStoryMode = false;
-            PlayState.campaignScore = 0;
-            PlayState.storyDifficulty = selectedDiff;
-            FlxG.switchState(new PlayState());
+        if(controls.SONG_SEARCH) toggleSongSearch();
+
+        if(!searchingForSong) {
+            if(controls.ACCEPT) {
+                threadActive = false;
+                var selectedDiff:String = songs[curSelected].difficulties[curDifficulty];
+                PlayState.SONG = Song.loadChart(songs[curSelected].name, selectedDiff);
+                PlayState.isStoryMode = false;
+                PlayState.campaignScore = 0;
+                PlayState.storyDifficulty = selectedDiff;
+                FlxG.switchState(new PlayState());
+            }
+            
+            if(controls.SWITCH_MOD) {
+                persistentUpdate = false;
+                persistentDraw = true;
+                openSubState(new ModSwitcher());
+            }
+
+            if(controls.UI_UP_P) changeSelection(-1);
+            if(controls.UI_DOWN_P) changeSelection(1);
+
+            if(FlxG.mouse.wheel != 0) changeSelection(-Std.int(FlxG.mouse.wheel * 0.4));
+
+            if(controls.UI_LEFT_P) changeDifficulty(-1);
+            if(controls.UI_RIGHT_P) changeDifficulty(1);
+
+            if(controls.BACK) {
+                threadActive = false;
+                CoolUtil.playMenuSFX(CANCEL);
+                FlxG.switchState(new MainMenuState());
+            }
         }
-        
-        if(controls.SWITCH_MOD) {
-			persistentUpdate = false;
-			persistentDraw = true;
-			openSubState(new ModSwitcher());
-		}
 
-        if(controls.UI_UP_P) changeSelection(-1);
-        if(controls.UI_DOWN_P) changeSelection(1);
-
-        if(controls.UI_LEFT_P) changeDifficulty(-1);
-        if(controls.UI_RIGHT_P) changeDifficulty(1);
-
+        // Update score text
         lerpScore = MathUtil.lerp(lerpScore, intendedScore, 0.4);
         scoreText.text = "PERSONAL BEST:" + Math.round(lerpScore);
         positionHighscore();
 
-        if(controls.BACK) {
-            threadActive = false;
-            CoolUtil.playMenuSFX(CANCEL);
-            FlxG.switchState(new MainMenuState());
-        }
-
+        // Play the song's inst with a thread
         mutex.acquire();
         if (songToPlay != null) {
             CoolUtil.playMusic(songToPlay);
@@ -216,7 +257,7 @@ class FreeplayState extends MusicBeatState {
         mutex.release();
     }
 
-    function changeSelection(?change:Int = 0) {
+    public function changeSelection(?change:Int = 0) {
         curSelected = FlxMath.wrap(curSelected + change, 0, grpSongs.length - 1);
 
         if(bgTween != null) bgTween.cancel();

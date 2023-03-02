@@ -201,7 +201,7 @@ class Character extends FNFSprite implements MusicHandler {
 	 * @param name The character to preload.
 	 */
 	public static function preloadCharacter(name:String) {
-		var cachedGuyPerson = new Character(0, 0, false).loadCharacter(name);
+		var cachedGuyPerson = new Character(0, 0, name, false);
 		FlxG.state.add(cachedGuyPerson);
 		cachedGuyPerson.kill();
 		return cachedGuyPerson;
@@ -252,7 +252,7 @@ class Character extends FNFSprite implements MusicHandler {
 			return Logs.trace('Occured on character: $curCharacter | The JSON config file doesn\'t exist!', ERROR);
 
 		// JSON Data
-		var data:PsychCharacter = Json.parse(File.getContent(jsonPath));
+		var data:PsychCharacter = Paths.json('data/characters/$curCharacter/config');
 
 		// Loading frames
 		var spritesheetPath:String = data.image;
@@ -305,7 +305,7 @@ class Character extends FNFSprite implements MusicHandler {
 			return Logs.trace('Occured on character: $curCharacter | The JSON config file doesn\'t exist!', ERROR);
 
 		// JSON Data
-		var data:YoshiCharacter = Json.parse(File.getContent(jsonPath));
+		var data:YoshiCharacter = Paths.json('data/characters/$curCharacter/config');
 
 		// Loading frames
 		var spritesheetPath:String = 'characters/$curCharacter';
@@ -357,7 +357,7 @@ class Character extends FNFSprite implements MusicHandler {
             return WindowUtil.showMessage('Occured on character: $curCharacter', 'The XML doesn\'t exist!', MSG_ERROR);
 
 		// Load the intial XML Data.
-		var xml:Xml = Xml.parse(File.getContent(charXmlPath)).firstElement();
+		var xml:Xml = Xml.parse(Paths.xml('data/characters/$curCharacter/config')).firstElement();
 		if (xml == null)
 			return WindowUtil.showMessage('Occured on character: $curCharacter', 'Either the XML doesn\'t exist or the "character" node is missing!', MSG_ERROR);
 
@@ -567,8 +567,8 @@ class Character extends FNFSprite implements MusicHandler {
         script.call("onSectionPost", [section]);
 	}
 
-	public function dance() {
-		if (specialAnim || !canDance) return;
+	public function dance(?force:Bool = false) {
+		if ((specialAnim && !force) || (!canDance && !force)) return;
 		if ((animation.curAnim != null && !animation.curAnim.name.startsWith("hair")) || animation.curAnim == null) {
 			danced = !danced;
 
@@ -577,17 +577,17 @@ class Character extends FNFSprite implements MusicHandler {
 					curDanceStep = 0;
 
 				if (danceSteps[curDanceStep] == "idle")
-					playAnim(animation.exists(danceSteps[curDanceStep]+idleSuffix) ? danceSteps[curDanceStep]+idleSuffix : danceSteps[curDanceStep]);
+					playAnim(animation.exists(danceSteps[curDanceStep]+idleSuffix) ? danceSteps[curDanceStep]+idleSuffix : danceSteps[curDanceStep], force);
 				else
-					playAnim(danceSteps[curDanceStep]);
+					playAnim(danceSteps[curDanceStep], force);
 
 				curDanceStep++;
 			} else {
 				if (danceSteps.length > 0) {
 					if (danceSteps[0] == "idle")
-						playAnim(animation.exists(danceSteps[0]+idleSuffix) ? danceSteps[0]+idleSuffix : danceSteps[0]);
+						playAnim(animation.exists(danceSteps[0]+idleSuffix) ? danceSteps[0]+idleSuffix : danceSteps[0], force);
 					else
-						playAnim(danceSteps[0]);
+						playAnim(danceSteps[0], force);
 				}
 			}
 		}

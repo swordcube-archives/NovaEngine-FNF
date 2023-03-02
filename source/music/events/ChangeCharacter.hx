@@ -1,5 +1,6 @@
 package music.events;
 
+import flixel.util.typeLimit.OneOfTwo;
 import states.PlayState;
 
 enum abstract CharacterType(Int) to Int from Int {
@@ -14,10 +15,10 @@ enum abstract CharacterType(Int) to Int from Int {
 }
 
 class ChangeCharacter extends SongEvent {
-    public var toModify:CharacterType;
+    public var toModify:OneOfTwo<CharacterType, String>;
     public var characterName:String;
 
-    public function new(toModify:CharacterType, characterName:String) {
+    public function new(toModify:OneOfTwo<CharacterType, String>, characterName:String) {
         super("Change Character");
         this.toModify = toModify;
         this.characterName = characterName;
@@ -27,18 +28,20 @@ class ChangeCharacter extends SongEvent {
         if(fired) return;
         super.fire();
 
+        if(toModify is String) toModify = cast(toModify, String).toLowerCase();
+
         switch(toModify) {
-            case DAD, OPPONENT:
+            case "dad", "opponent", CharacterType.DAD, CharacterType.OPPONENT:
                 if(game.dad != null)
                     game.dad.loadCharacter(characterName);
 
                 game.iconP2.loadIcon((game.dad != null) ? game.dad.healthIcon : PlayState.SONG.opponent);
                 game.positionIcons();
 
-            case GIRLFRIEND, SPECTATOR, GF:
+            case "gf", "girlfriend", "spectator", CharacterType.GIRLFRIEND, CharacterType.SPECTATOR, CharacterType.GF:
                 game.gf.loadCharacter(characterName);
 
-            case BOYFRIEND, PLAYER, BF:
+            case "bf", "boyfriend", "player", CharacterType.BOYFRIEND, CharacterType.PLAYER, CharacterType.BF:
                 if(game.boyfriend != null)
                     game.boyfriend.loadCharacter(characterName);
                 
