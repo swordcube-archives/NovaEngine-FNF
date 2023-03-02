@@ -96,6 +96,9 @@ class SettingsAPI {
         if(doFlush) save();
 	}
 
+    /**
+     * Shortcut to `save()`.
+     */
     public static inline function flush() {save();}
 
     /**

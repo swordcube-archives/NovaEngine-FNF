@@ -13,7 +13,7 @@ class HScript extends ScriptModule {
     public var expr:Expr;
 
     private function __errorHandler(error:Error) {
-        #if !docs
+        #if !doc_gen
         var fn = '$fileName:${error.line}: ';
         var err = error.toString();
         if (err.startsWith(fn)) err = err.substr(fn.length);
@@ -25,7 +25,7 @@ class HScript extends ScriptModule {
     public function new(path:String, fileName:String = "hscript") {
         super(path, fileName);
 
-        #if !docs
+        #if !doc_gen
         var parser:Parser = new Parser();
         parser.allowJSON = parser.allowTypes = parser.allowMetadata = true;
         parser.preprocesorValues = ScriptHandler.compilerFlags;
@@ -102,7 +102,7 @@ class HScript extends ScriptModule {
     override public function trace(v:Dynamic) {
         if(interp == null) return Logs.trace(v, TRACE);
 
-        #if !docs
+        #if !doc_gen
         var pos = interp.posInfos();
         Logs.trace('$fileName - Line ${pos.lineNumber}: $v', TRACE);
         #end
@@ -114,7 +114,7 @@ class HScript extends ScriptModule {
     }
 
     override public function setParent(parent:Dynamic) {
-        #if !docs
+        #if !doc_gen
         if(interp == null) return;
         this.parent = interp.scriptObject = parent;
         #end

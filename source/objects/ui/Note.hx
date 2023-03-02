@@ -4,7 +4,7 @@ import flixel.math.FlxMath;
 import backend.utilities.FNFSprite.AnimationContext;
 import states.PlayState;
 
-typedef NoteSkinAnimation = {
+@:dox(hide) typedef NoteSkinAnimation = {
     var name:String;
     @:optional var spritesheetName:String; // non-pixel only
     @:optional var frames:Array<Int>; // pixel only
@@ -12,7 +12,7 @@ typedef NoteSkinAnimation = {
     @:optional var loop:Null<Bool>;
 }
 
-typedef NoteSkinData = {
+@:dox(hide) typedef NoteSkinData = {
     @:optional var scale:Float;
     @:optional var isPixel:Bool;
     @:optional var antialiasing:Bool;
@@ -21,7 +21,7 @@ typedef NoteSkinData = {
     @:optional var animations:Array<NoteSkinAnimation>;
 }
 
-typedef ExtraKeyData = {
+@:dox(hide) typedef ExtraKeyData = {
     var directions:Array<String>;
     @:optional var scale:Null<Float>;
     @:optional var spacing:Null<Float>;

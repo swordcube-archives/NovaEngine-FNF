@@ -133,17 +133,24 @@ class Character extends FNFSprite implements MusicHandler {
 	 * Controls how long the character can hold down a note for before going back to idle.
 	 */
 	public var singDuration:Float = 4;
-
-	public var animTimer:Float = 0;
 	public var holdTimer:Float = 0.0;
 
+	/**
+	 * Whether or not the character should automatically idle after singing a note.
+	 */
 	public var idleAfterSinging:Bool = true;
 
+	/**
+	 * Prevents the character from idling until the animation is finished.
+	 */
 	public var specialAnim:Bool = false;
-	public var debugMode:Bool = false;
 
-	public var stunned:Bool = false;
-	public var initialized:Bool = false;
+	/**
+	 * How long the current animation should last for. (Only applies if `specialAnim` is `true`.)
+	 */
+	public var animTimer:Float = 0;
+	
+	public var debugMode:Bool = false;
 
 	/**
 		The X and Y offset of this character's camera position.
@@ -207,11 +214,21 @@ class Character extends FNFSprite implements MusicHandler {
 		return cachedGuyPerson;
 	}
 
+	/**
+	 * Loads a different character onto an instance of a Character.
+	 * @param name The character to load.
+	 */
 	public function loadCharacter(name:String) {
 		if(!charExists(name) && charExists(DEFAULT_CHARACTER))
 			return loadCharacter(DEFAULT_CHARACTER);
 
-		curCharacter = name;
+	 	curCharacter = name;
+
+		if(trail != null) {
+			trail.kill();
+			trail.destroy();
+			FlxG.state.remove(trail, true);
+		}
 
 		// Loading the character's script
 		if (script != null) {
@@ -245,6 +262,13 @@ class Character extends FNFSprite implements MusicHandler {
 	// i have this so people can port characters from psych easier
 	// don't murder me shadowmario
 	// thanks
+
+	/**
+	 * Loads a character from a Psych Engine JSON.
+	 * The JSON file should be in `mods/your-mod/data/characters/your-char/config.json`.
+	 * The spritesheet should be in `mods/your-mod/images/characters/your-char.png`.
+	 * @param mod 
+	 */
 	public function loadPsych(?mod:Null<String>) {
 		// Error handling
 		var jsonPath:String = Paths.json('data/characters/$curCharacter/config', true);
@@ -298,6 +322,12 @@ class Character extends FNFSprite implements MusicHandler {
 		danceSteps = (animation.exists("danceLeft") && animation.exists("danceRight")) ? ["danceLeft", "danceRight"] : ["idle"];
 	}
 
+	/**
+	 * Loads a character from a Yoshi Engine JSON.
+	 * The JSON file should be in `mods/your-mod/data/characters/your-char/config.json`.
+	 * The spritesheet should be in `mods/your-mod/images/characters/your-char.png`.
+	 * @param mod 
+	 */
 	public function loadYoshi(?mod:Null<String>) {
 		// Error handling
 		var jsonPath:String = Paths.json('data/characters/$curCharacter/config', true);
@@ -350,6 +380,12 @@ class Character extends FNFSprite implements MusicHandler {
 		danceSteps = (data.danceSteps != null && data.danceSteps.length > 1) ? data.danceSteps : ["idle"];
 	}
 
+	/**
+	 * Loads a character from a Nova Engine XML.
+	 * The XML file should be in `mods/your-mod/data/characters/your-char/config.xml`.
+	 * The spritesheet should be in `mods/your-mod/images/characters/your-char.png`.
+	 * @param mod 
+	 */
 	public function loadXML(?mod:Null<String>) {
 		var charXmlPath:String = Paths.xml('data/characters/$curCharacter/config', true);
 
@@ -452,6 +488,9 @@ class Character extends FNFSprite implements MusicHandler {
 		animOffsets[anim2] = old;
 	}
 
+	/**
+	 * Returns an `FlxPoint` from the camera position of this character.
+	 */
 	public function getCameraPosition() {
 		var midpoint = getMidpoint();
 		return FlxPoint.get(midpoint.x
@@ -569,6 +608,10 @@ class Character extends FNFSprite implements MusicHandler {
         script.call("onSectionPost", [section]);
 	}
 
+	/**
+	 * Makes the character idle.
+	 * @param force Whether or not the animation for idling should forcefully restart.
+	 */
 	public function dance(?force:Bool = false) {
 		if ((specialAnim || !canDance) && !force) return;
 		if ((animation.curAnim != null && !animation.curAnim.name.startsWith("hair")) || animation.curAnim == null) {

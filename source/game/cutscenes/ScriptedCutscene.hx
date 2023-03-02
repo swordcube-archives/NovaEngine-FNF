@@ -3,6 +3,12 @@ package game.cutscenes;
 import backend.scripting.DummyScript;
 import backend.dependency.ScriptHandler;
 
+/**
+ * A cutscene with a script attached to it.
+ * Make sure to do `inCutscene = true;` to let the game know we're in a cutscene!
+ * 
+ * If you wanna play a video, do `playVideo(Paths.video("path/video.ext"));`!
+ */
 class ScriptedCutscene extends Cutscene {
     var scriptPath:String;
     

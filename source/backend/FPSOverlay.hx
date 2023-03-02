@@ -5,6 +5,9 @@ import openfl.events.Event;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
 
+/**
+ * An FPS counter that displays the FPS, Memory, and current state.
+ */
 class FPSOverlay extends TextField {
 	private var times:Array<Float> = [];
 	public var memPeak:Float = 0;

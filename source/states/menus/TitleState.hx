@@ -78,7 +78,7 @@ class TitleState extends MusicBeatState {
 	public var textGroup:FlxTypedGroup<Alphabet>;
 
 	function initTransitions() {
-		#if !docs
+		#if !doc_gen
 		initializedTransitions = true;
 
 		var diamond = FlxGraphic.fromClass(GraphicTransTileDiamond);

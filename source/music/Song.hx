@@ -2,6 +2,9 @@ package music;
 
 import music.SongFormat;
 
+/**
+ * A list of compatible engines for charts.
+ */
 enum abstract ChartFormat(String) to String from String {
 	var AUTO_DETECT = "AUTO_DETECT";
 	var FNF = "FNF";
@@ -11,6 +14,9 @@ enum abstract ChartFormat(String) to String from String {
 }
 
 class Song {
+	/**
+	 * The fallback song data used for when a song can't load correctly.
+	 */
 	public static final fallbackSong:SongData = {
 		name: "ERROR, CHECK YOUR CHART JSON!",
 		player: "bf",
@@ -29,14 +35,27 @@ class Song {
 		novaChart: true
 	};
 
+	/**
+	 * Shortcut to `loadChart`.
+	 */
 	public static inline function loadFromJson(song:String, ?diff:String = "normal", ?chartFormat:ChartFormat = AUTO_DETECT) {
 		return loadChart(song, diff, chartFormat);
 	}
 
-	public static inline function parseJSONshit(jsonString:String) {
-		return Json.parse(jsonString);
+	/**
+	 * Loads song data from a JSON string.
+	 * @param jsonString The string of JSON data to load as a song.
+	 */
+	public static inline function parseJSONshit(jsonString:String):SongData {
+		return Json.parse(jsonString).song;
 	}
 
+    /**
+     * Loads a chart json for a song.
+     * @param song The song to load.
+     * @param diff The difficulty to load.
+     * @param chartFormat [Optional] The engine the chart was made in.
+     */
     public static function loadChart(song:String, ?diff:String = "normal", ?chartFormat:ChartFormat = AUTO_DETECT):SongData {
 		var data:SongData = null;
 

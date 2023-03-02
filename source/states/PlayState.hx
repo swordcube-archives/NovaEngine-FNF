@@ -255,11 +255,15 @@ class PlayState extends MusicBeatState {
 		// Load stages & characters
 		add(stage = new Stage(SONG.stage));
 
-		add(gf = new Character(0, 0, SONG.spectator));
+		gf = new Character(0, 0, SONG.spectator);
+		if(dad.trail != null) add(gf.trail);
+		add(gf);
 		gf.danceOnBeat = false;
 		add(stage.gfLayer);
 
-		add(dad = new Character(0, 0, SONG.opponent));
+		dad = new Character(0, 0, SONG.opponent);
+		if(dad.trail != null) add(dad.trail);
+		add(dad);
 		add(stage.dadLayer);
 
 		if(SONG.opponent == SONG.spectator) {
@@ -270,7 +274,9 @@ class PlayState extends MusicBeatState {
 			gf = null;
 		}
 
-		add(boyfriend = new Character(0, 0, SONG.player, true));
+		boyfriend = new Character(0, 0, SONG.player, true);
+		if(boyfriend.trail != null) add(boyfriend.trail);
+		add(boyfriend);
 		add(stage.bfLayer);
 
 		GameOverSubstate.resetVariables();

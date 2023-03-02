@@ -67,7 +67,7 @@ class VideoHandler {
 		}
 	}
 
-	function checkFile(fileName:String):String {
+	public function checkFile(fileName:String):String {
 		fileName = Path.normalize(fileName)#if windows .replace("/", "\\") #end;
 		
 		var pDir = "";
@@ -83,7 +83,7 @@ class VideoHandler {
 
 	/////////////////////////////////////////////////////////////////////////////////////
 
-	function onVLCVideoReady() {
+	public function onVLCVideoReady() {
 		trace("video loaded!");
 
 		if (sprite != null) {
@@ -126,7 +126,7 @@ class VideoHandler {
 		bitmap.visible = false;
 	}
 
-	function onVLCError() {
+	public function onVLCError() {
 		if (finishCallback != null) {
 			finishCallback();
 		} else if (stateCallback != null) {
@@ -134,7 +134,7 @@ class VideoHandler {
 		}
 	}
 
-	function update(e:Event) {
+	public function update(e:Event) {
 		if (SettingsAPI.controls.ACCEPT && skippable) {
 			if (bitmap.isPlaying) {
 				onVLCComplete();
@@ -148,5 +148,45 @@ class VideoHandler {
 
 		bitmap.volume = volume;
 	}
+}
+#else
+import openfl.events.Event;
+import flixel.FlxState;
+import flixel.FlxG;
+import flixel.FlxSprite;
+
+/**
+ * The class used to play videos.
+ */
+class VideoHandler {
+	public var finishCallback:Void->Void;
+	public var stateCallback:FlxState;
+
+	public var canvasWidth:Null<Int> = null;
+	public var canvasHeight:Null<Int> = null;
+	public var fillScreen:Bool;
+	public var skippable:Bool = true;
+
+	public function new() {}
+
+	/**
+	 * Plays a video from a specified path.
+	 * @param path The path to the video.
+	 * @param repeat Whether or not this video should repeat/loop.
+	 * @param outputTo An `FlxSprite` to output the graphics of this video to.
+	 */
+	public function play(path:String, ?repeat:Bool = false, ?outputTo:FlxSprite = null):Void {}
+
+	public function checkFile(fileName:String):String {return "";}
+
+	/////////////////////////////////////////////////////////////////////////////////////
+
+	public function onVLCVideoReady() {}
+	public function onVLCComplete() {}
+
+	public function kill() {}
+
+	public function onVLCError() {}
+	public function update(e:Event) {}
 }
 #end

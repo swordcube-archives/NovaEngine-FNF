@@ -5,15 +5,16 @@ import haxe.macro.Context;
 import haxe.macro.Compiler;
 import haxe.macro.Expr;
 
+/**
+ * Macros containing additional help functions to expand HScript capabilities.
+ */
 class ScriptsMacro {
     public static function addAdditionalClasses() {
         Compiler.include("flixel");
-        Compiler.include("flixel.addons");
-        Compiler.include("flixel.addons.display");
-        Compiler.include("flixel.addons.ui");
-        #if sys
+        #if (sys && !web)
         Compiler.include("sys");
         #end
+
         Compiler.include("DateTools");
         Compiler.include("EReg");
         Compiler.include("Lambda");
@@ -21,7 +22,9 @@ class ScriptsMacro {
         Compiler.include("haxe.crypto");
         Compiler.include("haxe.display");
         Compiler.include("haxe.exceptions");
+        #if !web
         Compiler.include("haxe.extern");
+        #end
 
         // FOR ABSTRACTS
         Compiler.addGlobalMetadata('haxe.xml', '@:build(hscript.UsingHandler.build())');

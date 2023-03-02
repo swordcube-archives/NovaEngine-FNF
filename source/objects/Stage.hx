@@ -15,11 +15,29 @@ typedef StageLayer = FlxTypedGroup<FlxBasic>;
 class Stage extends StageLayer {
     public var firstLoad:Bool = true;
 
+    /**
+     * The name of the currently loaded stage.
+     */
     public var curStage:String = "";
+
+    /**
+     * The stage's script.
+     */
     public var script:ScriptModule;
 
+    /**
+     * The X and Y position of the opponent on the stage.
+     */
     public var dadPos = FlxPoint.get(100, 100);
+
+    /**
+     * The X and Y position of the spectator on the stage.
+     */
     public var gfPos = FlxPoint.get(400, 130);
+
+    /**
+     * The X and Y position of the player on the stage.
+     */
     public var bfPos = FlxPoint.get(770, 100);
 
     public var dadLayer:StageLayer = new StageLayer();
@@ -31,6 +49,10 @@ class Stage extends StageLayer {
         load(stage);
     }
 
+    /**
+     * Unloads the current stage and loads a new one.
+     * @param stage The stage you want to load.
+     */
     public function load(?stage:String = "stage") {
         var game = PlayState.current;
         curStage = stage;

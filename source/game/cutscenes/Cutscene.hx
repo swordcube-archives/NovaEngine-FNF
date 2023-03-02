@@ -3,6 +3,10 @@ package game.cutscenes;
 import states.PlayState;
 import states.MusicBeat.MusicBeatSubstate;
 
+/**
+ * The base of a cutscene.
+ * Just a simple substate that calls a function when closed.
+ */
 class Cutscene extends MusicBeatSubstate {
     var __callback:Void->Void;
     var game:PlayState = PlayState.current;

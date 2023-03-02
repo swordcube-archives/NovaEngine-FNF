@@ -5,13 +5,13 @@ import flixel.math.FlxMath;
 import backend.utilities.FNFSprite.AnimationContext;
 import states.PlayState;
 
-typedef NoteSplashAnimation = {
+@:dox(hide) typedef NoteSplashAnimation = {
     var spritesheetName:String;
     @:optional var fps:Null<Int>;
     @:optional var offset:Dynamic;
 }
 
-typedef NoteSplashSkinData = {
+@:dox(hide) typedef NoteSplashSkinData = {
     @:optional var scale:Float;
     @:optional var alpha:Float;
     @:optional var positionOffset:Dynamic;

@@ -1,8 +1,6 @@
 -D openfl=git
 -D flixel-leather=git
--D hxCodec=2.5.1
-
---define docs
+-D hxCodec=git
 
 -L lime
 -L openfl
@@ -15,7 +13,7 @@
 --remap flash:openfl
 --macro flixel.system.macros.FlxDefines.run()
 
--cp source
+--class-path source
 
 --macro include('backend')
 --macro include('game')
