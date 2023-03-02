@@ -8,11 +8,12 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.FlxBasic;
 import states.MusicBeat.MusicBeatSubstate;
 
-// TODO: MAKE MODDED OPTIONS WORK USING REFLECT!!!!
-
 class PageSubState extends MusicBeatSubstate {
 	public var bg:FNFSprite;
 	public var grpOptions:OptionGroup;
+
+	public var tooltipBG:FNFSprite;
+	public var tooltipTxt:FlxText;
 
 	public var tabs:Array<String> = [];
 	public var options:Map<String, Array<Option>> = [];	
@@ -65,6 +66,7 @@ class PageSubState extends MusicBeatSubstate {
 		tabName.y -= (tabName.height) * 0.5;
 		tabName.alpha = 0.6;
 
+		// funny
 		add(tabArrows = new Alphabet(0, tabStrip.y + (tabStrip.height * 0.5), Bold, "<                        >"));
 		tabArrows.screenCenter(X);
 		tabArrows.y -= (tabArrows.height) * 0.5;
@@ -78,7 +80,15 @@ class PageSubState extends MusicBeatSubstate {
 		tabIndicatorTxt.setFormat(Paths.font("vcr.ttf"), 20, 0xFFFFFFFF, RIGHT, OUTLINE, 0xFF000000);
 		tabIndicatorTxt.borderSize = 2;
 
-		for(obj in [bg, tabStrip, tabName, tabArrows, tabIndicatorBox, tabIndicatorTxt])
+		add(tooltipBG = new FNFSprite().makeGraphic(FlxG.width, 1, 0xFF000000));
+		tooltipBG.alpha = 0.6;
+
+		add(tooltipTxt = new FlxText(0, 0, FlxG.width - 30, "did you know? in ratatouille, the main character gets controlled by a rat using his hair. DID YOU KNOW?!?!?!!??!?!?!", 12));
+		tooltipTxt.setFormat(Paths.font("vcr.ttf"), 20, 0xFFFFFFFF, CENTER, OUTLINE, 0xFF000000);
+		tooltipTxt.borderSize = 2;
+		tooltipTxt.screenCenter(X);
+
+		for(obj in [bg, tabStrip, tabName, tabArrows, tabIndicatorBox, tabIndicatorTxt, tooltipBG, tooltipTxt])
 			obj.scrollFactor.set();
     }
 
@@ -188,6 +198,12 @@ class PageSubState extends MusicBeatSubstate {
 			option.update(0);
 		});
 		CoolUtil.playMenuSFX(SCROLL);
+
+		tooltipTxt.text = grpOptions.members[curSelected].description;
+		tooltipBG.scale.y = tooltipTxt.height + 10;
+		tooltipBG.updateHitbox();
+		tooltipBG.y = tabStrip.y - tooltipBG.height - 10;
+		tooltipTxt.y = tooltipBG.y + 5;
 	}
 
 	public function changeTab(change:Int, force:Bool = false) {

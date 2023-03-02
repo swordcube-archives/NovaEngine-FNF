@@ -371,6 +371,8 @@ class Character extends FNFSprite implements MusicHandler {
 
 		// might eventually add texture atlas??!?
 		switch (atlasType.toLowerCase()) {
+			case 'packer':
+				loadAtlas(Paths.getPackerAtlas('characters/$spritesheetName'));
 			default:
 				loadAtlas(Paths.getSparrowAtlas('characters/$spritesheetName'));
 		}
@@ -501,7 +503,7 @@ class Character extends FNFSprite implements MusicHandler {
 			if (animTimer > 0) {
 				animTimer -= elapsed;
 				if (animTimer <= 0) {
-					if (specialAnim && animation.curAnim.name == 'hey' || animation.curAnim.name == 'cheer') {
+					if (specialAnim && animation.curAnim.name == 'hey' || animation.curAnim.name == 'cheer' || animation.curAnim.name == 'scared') {
 						specialAnim = false;
 						dance();
 					}

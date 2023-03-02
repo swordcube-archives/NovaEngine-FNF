@@ -27,6 +27,8 @@ class SettingsAPI {
     public static var antialiasing:Bool = true;
     public static var opaqueSustains:Bool = false;
     public static var judgementCamera:String = "World";
+	public static var subtitles:Bool = false;
+	public static var subtitleSize:Int = 30;
 
     // misc tab
     public static var funnyVolumeBeep:Bool = false;

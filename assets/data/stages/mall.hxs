@@ -1,0 +1,57 @@
+import backend.utilities.FNFSprite;
+
+var bg:FNFSprite;
+var upperBoppers:FNFSprite;
+var bottomBoppers:FNFSprite;
+var bgEscalator:FNFSprite;
+var tree:FNFSprite;
+var fgSnow:FNFSprite;
+var stanta:FNFSprite;
+
+function onCreate() {
+	defaultCamZoom = 0.8;
+
+	add(bg = new FNFSprite(-1000, -500).loadGraphic(stageImage('bgWalls')));
+	bg.scrollFactor.set(0.2, 0.2);
+	bg.setGraphicSize(Std.int(bg.width * 0.8));
+	bg.updateHitbox();
+
+	add(upperBoppers = new FNFSprite(-240, -90));
+	upperBoppers.frames = Paths.getSparrowAtlas('game/stages/mall/upperBop');
+	upperBoppers.animation.addByPrefix('bop', 'Upper Crowd Bob', 24, false);
+	upperBoppers.playAnim('bop');
+	upperBoppers.scrollFactor.set(0.33, 0.33);
+	upperBoppers.setGraphicSize(Std.int(upperBoppers.width * 0.85));
+	upperBoppers.updateHitbox();
+
+	add(bgEscalator = new FNFSprite(-1100, -600).loadGraphic(stageImage('bgEscalator')));
+	bgEscalator.scrollFactor.set(0.3, 0.3);
+	bgEscalator.setGraphicSize(Std.int(bgEscalator.width * 0.9));
+	bgEscalator.updateHitbox();
+
+	add(tree = new FNFSprite(370, -250).loadGraphic(stageImage('christmasTree')));
+	tree.scrollFactor.set(0.4, 0.4);
+
+	add(bottomBoppers = new FNFSprite(-300, 140));
+	bottomBoppers.frames = Paths.getSparrowAtlas('game/stages/mall/bottomBop');
+	bottomBoppers.animation.addByPrefix('bop', 'Bottom Level Boppers', 24, false);
+	bottomBoppers.playAnim('bop');
+	bottomBoppers.scrollFactor.set(0.9, 0.9);
+	bottomBoppers.updateHitbox();
+
+	add(fgSnow = new FNFSprite(-600, 700).loadGraphic(stageImage('fgSnow')));
+
+	add(stanta = new FNFSprite(-840, 150));
+	stanta.frames = Paths.getSparrowAtlas('game/stages/mall/santa');
+	stanta.animation.addByPrefix('idle', 'santa idle in fear', 24, false);
+	stanta.playAnim('idle');
+}
+
+function onCreatePost()
+	boyfriend.x += 200;
+
+function onBeatHit(beat) {
+	upperBoppers.playAnim('bop', true);
+	bottomBoppers.playAnim('bop', true);
+	stanta.playAnim('idle', true);
+}

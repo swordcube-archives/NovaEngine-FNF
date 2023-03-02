@@ -306,7 +306,7 @@ class PlayState extends MusicBeatState {
 		camGame.zoom = defaultCamZoom;
 
 		// Position the characters to the positions set
-		// in the stage (this used to be broken, woops)
+		// in the stage (this used to be broken, whoops)
 		var stageShit:Array<Array<Dynamic>> = [
 			[stage.dadPos, dad],
 			[stage.gfPos, gf],
@@ -316,7 +316,7 @@ class PlayState extends MusicBeatState {
 			var position:FlxPoint = item[0];
 			var character:Character = item[1];
 
-			if(character == null) continue;
+			if (character == null) continue;
 
 			character.setPosition(position.x, position.y);
 		}
@@ -854,6 +854,20 @@ class PlayState extends MusicBeatState {
 
 	override public function update(elapsed:Float) {
 		super.update(elapsed);
+
+		#if debug
+		var eee:Array<Dynamic> = [
+			['[GAME]', ""],
+			['beat', curBeat],
+			['step', curStep],
+			['section', curMeasure],
+			['bpm', Conductor.bpm],
+			['         ', ""]
+		];
+		for (i in eee)
+			FlxG.watch.addQuick(i[0], i[1]);
+		#end
+
 		scripts.call("onUpdate", [elapsed]);
 		for(script in noteTypeScripts)
 			script.call("onUpdate", [elapsed]);

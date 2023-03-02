@@ -1,5 +1,6 @@
 package states.menus;
 
+import states.menus.options.ControlsMenu
 import objects.ui.SearchBox;
 import music.Song.ChartFormat;
 import flixel.util.FlxColor;
@@ -14,6 +15,7 @@ import sys.thread.Mutex;
 import sys.thread.Thread;
 import objects.fonts.Alphabet;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import backend.Controls;
 
 @:dox(hide) typedef SongMetadata = {
     var name:String;
@@ -96,7 +98,7 @@ class FreeplayState extends MusicBeatState {
         smallBannerBG.alpha = 0.6;
         smallBannerBG.scrollFactor.set();
 
-        var smallBannerText = new FlxText(5, FlxG.height, 0, "Press TAB to switch mods / Press SHIFT to change gameplay modifiers", 17);
+        var smallBannerText = new FlxText(5, FlxG.height, 0, 'Press ${CoolUtil.keyToString(Controls.controlsList['SWITCH_MOD'][0])} to switch mods / Press ${CoolUtil.keyToString(Controls.controlsList['GAMEPLAY_MODIFIERS'][0])} to change gameplay modifiers', 17);
         smallBannerText.setFormat(Paths.font("vcr.ttf"), 17, FlxColor.WHITE, RIGHT);
         smallBannerText.y -= smallBannerText.height + 5;
         smallBannerText.scrollFactor.set();
@@ -198,7 +200,7 @@ class FreeplayState extends MusicBeatState {
 
         if(!runDefaultCode) return;
 
-        if(FlxG.keys.justPressed.SHIFT) {
+        if(controls.GAMEPLAY_MODIFIERS) {
             persistentUpdate = false;
 			persistentDraw = true;
 			openSubState(new GameplayModifiers());

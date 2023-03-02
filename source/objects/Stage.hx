@@ -56,9 +56,19 @@ class Stage extends StageLayer {
         script = ScriptHandler.loadModule(scriptPath);
         script.setParent(game);
         script.set("stage", this);
+
+		// stage image types
+		
         script.set("stageImage", (path:String) -> {
             return Paths.image('game/stages/$curStage/$path');
         });
+		script.set("stageSparrow", (path:String) -> {
+			return Paths.getSparrowAtlas('game/stages/$curStage/$path');
+		});
+		script.set("stagePacker", (path:String) -> {
+			return Paths.getPackerAtlas('game/stages/$curStage/$path');
+		});
+
         script.set("add", (object:FlxBasic, ?layer:OneOfTwo<String, Int> = 0) -> {
             var val:OneOfTwo<String, Int> = layer is String ? cast(layer, String).toLowerCase() : layer;
             switch(val) {

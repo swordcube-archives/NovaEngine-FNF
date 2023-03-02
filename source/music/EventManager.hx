@@ -37,7 +37,7 @@ class EventManager extends FlxBasic {
     public static inline function convert(rawEvent:EventData) {
         var event:SongEvent = switch(rawEvent.name) {
             // Built-in engine events
-            case "Add Camera Zoom":     
+            case "Add Camera Zoom":
                 var zoom1:Float = Std.parseFloat(rawEvent.parameters[0]);
                 if(Math.isNaN(zoom1)) zoom1 = 0.015;
 

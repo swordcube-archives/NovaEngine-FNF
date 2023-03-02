@@ -1,0 +1,22 @@
+<character flipX="false" x="-500" >
+    <anims>
+        <anim name="idle" anim="Parent Christmas Idle" fps="24" loop="false" x="2" y="0" />
+
+		<!-- dad anims -->
+        <anim name="singLEFT" anim="Parent Left Note Dad" fps="24" loop="false" x="-30" y="16" />
+        <anim name="singDOWN" anim="Parent Down Note Dad" fps="24" loop="false" x="0" y="-30" />
+        <anim name="singUP" anim="Parent Up Note Dad" fps="24" loop="false" x="-31" y="-29" />
+        <anim name="singRIGHT" anim="Parent Right Note Dad" fps="24" loop="false" x="-1" y="-23" />
+
+		<!-- mom anims -->
+		<anim name="singLEFT-alt" anim="Parent Left Note Mom" fps="24" loop="false" x="-30" y="15" />
+		<anim name="singDOWN-alt" anim="Parent Down Note Mom" fps="24" loop="false" x="-30" y="-27" />
+		<anim name="singUP-alt" anim="Parent Up Note Mom" fps="24" loop="false" x="-47" y="24" />
+		<anim name="singRIGHT-alt" anim="Parent Right Note Mom" fps="24" loop="false" x="-1" y="-24" />
+	</anims>
+
+    <scale x="1" y="1" />
+    <scrollFactor x="1" y="1" />
+
+    <healthColor rgb="196,94,174" />
+</character>

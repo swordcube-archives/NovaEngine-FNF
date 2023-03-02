@@ -108,7 +108,22 @@ class PreferencesMenu extends PageSubState {
                     "Choose what camera you want the ratings & combo to be on.",
                     "judgementCamera",
                     ["World", "HUD"]
-                )
+                ),
+				new Checkbox(
+					"Subtitles",
+					"If enabled, shows subtitles on songs like Monster or Winter Horrorland.",
+					"subtitles"
+				),
+				new Number(
+					"Subtitle Size",
+					"The subtitle's size, if enabled.",
+					"subtitleSize",
+					"",
+					10,
+					55,
+					1,
+					0
+				)
 			],
 			"Tools" => [
 				new Custom(
