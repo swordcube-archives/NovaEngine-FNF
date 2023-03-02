@@ -371,6 +371,8 @@ class Character extends FNFSprite implements MusicHandler {
 
 		// might eventually add texture atlas??!?
 		switch (atlasType.toLowerCase()) {
+			case 'packer':
+				loadAtlas(Paths.getPackerAtlas('characters/$spritesheetName'));
 			default:
 				loadAtlas(Paths.getSparrowAtlas('characters/$spritesheetName'));
 		}
