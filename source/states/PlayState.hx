@@ -306,7 +306,7 @@ class PlayState extends MusicBeatState {
 		camGame.zoom = defaultCamZoom;
 
 		// Position the characters to the positions set
-		// in the stage (this used to be broken, woops)
+		// in the stage (this used to be broken, whoops)
 		var stageShit:Array<Array<Dynamic>> = [
 			[stage.dadPos, dad],
 			[stage.gfPos, gf],

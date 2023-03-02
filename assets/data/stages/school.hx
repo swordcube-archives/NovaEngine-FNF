@@ -70,11 +70,12 @@ function onCreate() {
 	for (i in [bgSky, bgSchool, bgStreet, fgTrees, bgTrees, treeLeaves, bgGirls])
 		i.antialiasing = false;
 
-	boyfriend.x += 200;
-	boyfriend.y += 220;
-	gf.x += 180;
-	gf.y += 300;
+	// jank.
+	stage.bfPos.set(stage.bfPos.x + 200, stage.bfPos.y + 220);
+	stage.gfPos.set(stage.gfPos.x + 180, stage.gfPos.y + 300);
 }
+
+function onCreatePost() {}
 
 function onBeatHit(beat) {
 	bgGirls_danceDir = !bgGirls_danceDir;
