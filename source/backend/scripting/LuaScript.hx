@@ -273,18 +273,22 @@ class LuaScript extends ScriptModule {
 	}
 
 	// These three functions are the actual functions that the metatable use.
-	// Without these, object oriented lua woudln't work at all.
-	public function index(object:Dynamic, property:String, ?uselessValue:Any):Dynamic {
+	// Without these, object oriented lua wouldn't work at all.
+	public function index(object:Dynamic, property:Any, ?uselessValue:Any):Dynamic {
 		if (object is Array && property is Int)
 			return object[cast(property, Int)];
 
 		var grabbedProperty:Dynamic = null;
 
-		if (object != null && (grabbedProperty = Reflect.getProperty(object, property)) != null)
-			return grabbedProperty;
-
-		return null;
+		if (object != null && (grabbedProperty = Reflect.getProperty(object, cast(property, String))) != null)
+            return grabbedProperty;
+        return null;
 	}
+    public function newIndex(object:Dynamic, property:Any, value:Dynamic) {
+		if (object is Array && property is Int) {
+			object[cast(property, Int)] = value;
+			return null;
+		}
 
 	public function newIndex(object:Dynamic, property:String, value:Dynamic) {
 		if (object is Array && property is Int) {
@@ -293,15 +297,15 @@ class LuaScript extends ScriptModule {
 		}
 
 		if (object != null)
-			Reflect.setProperty(object, property, value);
-		return null;
-	}
+			Reflect.setProperty(object, cast(property, String), value);
+        return null;
+    }
 	public function metatableCall(func:Dynamic, object:Dynamic, ?params:Array<Any>) {
 		var funcParams = (params != null && params.length > 0) ? params : [];
 
 		if (object != null && func != null && Reflect.isFunction(func))
-			return Reflect.callMethod(object, func, funcParams);
-		return null;
+            return Reflect.callMethod(object, func, funcParams);
+        return null;
 	}
 	public function enumIndex(object:Enum<Dynamic>, value:String, ?params:Array<Any>):EnumValue {
 		var funcParams = (params != null && params.length > 0) ? params : [];
@@ -309,8 +313,8 @@ class LuaScript extends ScriptModule {
 
 		enumValue = object.createByName(value, funcParams);
 		if (object != null && enumValue != null)
-			return enumValue;
-		return null;
+            return enumValue;
+        return null;
 	}
 
 	/**
@@ -388,7 +392,7 @@ class LuaScript extends ScriptModule {
 	 * Automatically calls `Lua.push[var-type]` so all you need to do is call `Lua.setglobal` or `Lua.settable`.
 	 * @param val                The value to convert.
 	 */
-	public function toLua(val:Any) {
+	 public function toLua(val:Any) {
 		var varType = Type.typeof(val);
 
 		switch (varType) {
@@ -410,48 +414,42 @@ class LuaScript extends ScriptModule {
 				}
 
 				Lua.newtable(luaState);
-				var tableIndex = Lua.gettop(luaState); //The variable position of the table. Used for paring the metatable wihth this table for attaching values.
+				var tableIndex = Lua.gettop(luaState); //The variable position of the table. Used for paring the metatable with this table and attaching variables.
 
 				Lua.pushstring(luaState, '__special_id'); //This is a helper var in the table that is used by the conversion functions to detect a special var.
 				Lua.pushinteger(luaState, location);
 				Lua.settable(luaState, tableIndex);
 
-				LuaL.getmetatable(luaState, "__scriptMetatable");
+                LuaL.getmetatable(luaState, "__scriptMetatable");
 				Lua.setmetatable(luaState, tableIndex);
+			case Type.ValueType.TObject:
+				var location = specialVars.indexOf(val);
+				if (location < 0) {
+					location = specialVars.length;
+					specialVars.push(val);
+				}
+	
+				Lua.newtable(luaState);
+				var tableIndex = Lua.gettop(luaState); //The variable position of the table. Used for paring the metatable with this table and attaching variables.
+	
+				Lua.pushstring(luaState, '__special_id'); //This is a helper var in the table that is used by the conversion functions to detect a special var.
+				Lua.pushinteger(luaState, location);
+				Lua.settable(luaState, tableIndex);
 
-				case Type.ValueType.TObject:
+				//Idk why it thinks static classes are objects but ok.
 				var className:String = Type.getClassName(val);
 				if (className != null) {
-					var location = specialVars.indexOf(val);
-					if (location < 0) {
-						location = specialVars.length;
-						specialVars.push(val);
-					}
-
-					Lua.newtable(luaState);
-					var tableIndex = Lua.gettop(luaState); // The variable position of the table. Used for pairing the metatable with this table and attaching variables.
-					Lua.pushvalue(luaState, tableIndex);
-
-					Lua.pushstring(luaState, '__special_id'); // This is a helper var in the table that is used by the conversion functions to detect a special var.
-					Lua.pushinteger(luaState, location);
-					Lua.settable(luaState, tableIndex);
-
-					//Idk why it thinks static classes are objects but ok.
-					var className:String = Type.getClassName(val);
-					if (className != null) {
-						Lua.pushstring(luaState, "new"); // This implements the work around function to create the class instance.
-					}
+					Lua.pushstring(luaState, "new"); //This implements the work around function to create the class instance.
 
 					Lua.pushcfunction(luaState, workaroundCallable);
 					Lua.rawset(luaState, tableIndex);
-
-					LuaL.getmetatable(luaState, "__scriptMetatable");
-					Lua.setmetatable(luaState, tableIndex);
-
-					return true;
 				}
+	
+				LuaL.getmetatable(luaState, "__scriptMetatable");
+				Lua.setmetatable(luaState, tableIndex);
 
-			default: // Didn't fit any of the var types. Assuming it's an instance/pointer, reating table, and attaching table to metatable.
+				return true;
+			default: //Didn't fit any of the var types. Assuming it's an instance/pointer, reating table, and attaching table to metatable.
 				var location = specialVars.indexOf(val);
 				if (location < 0) {
 					location = specialVars.length;
@@ -465,7 +463,7 @@ class LuaScript extends ScriptModule {
 				Lua.pushinteger(luaState, location);
 				Lua.settable(luaState, tableIndex);
 
-				LuaL.getmetatable(luaState, "__scriptMetatable");
+                LuaL.getmetatable(luaState, "__scriptMetatable");
 				Lua.setmetatable(luaState, tableIndex);
 
 				return false;

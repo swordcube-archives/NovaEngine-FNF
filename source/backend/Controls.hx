@@ -42,7 +42,8 @@ class Controls {
         // Engine controls
         "CHARTER" => [SEVEN, NUMPADSEVEN],
         "SWITCH_MOD" => [TAB, NONE],
-		"GAMEPLAY_MODIFIERS" => [SHIFT, NONE]
+		    "GAMEPLAY_MODIFIERS" => [SHIFT, NONE],
+        "SONG_SEARCH" => [F, NONE]
     ];
 
     public static var controlsList:Map<String, KeyList> = [];
@@ -152,6 +153,9 @@ class Controls {
 
     public var SWITCH_MOD(get, never):Bool;
     private function get_SWITCH_MOD() return __checkKeys(controlsList["SWITCH_MOD"], JUST_PRESSED);
+
+    public var SONG_SEARCH(get, never):Bool;
+    private function get_SONG_SEARCH() return __checkKeys(controlsList["SONG_SEARCH"], JUST_PRESSED);
 
     public var RESET(get, never):Bool;
     private function get_RESET() return __checkKeys(controlsList["RESET"], JUST_PRESSED);

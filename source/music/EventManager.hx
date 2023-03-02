@@ -48,7 +48,7 @@ class EventManager extends FlxBasic {
             case "Change Character":    new ChangeCharacter(charFromString(rawEvent.parameters[0]), rawEvent.parameters[1]);
             case "Change Scroll Speed": new ChangeScrollSpeed(rawEvent.parameters[0], Std.parseFloat(rawEvent.parameters[1]), Std.parseFloat(rawEvent.parameters[2]));
             case "Set GF Speed":        new SetGFSpeed(Std.parseInt(rawEvent.parameters[0]));
-            case "Hey!", "Hey":
+            case "Hey!", "Hey":         
                 var time:Float = Std.parseFloat(rawEvent.parameters[1]);
                 if(Math.isNaN(time)) time = 0.6;
 

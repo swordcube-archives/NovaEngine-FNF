@@ -234,7 +234,7 @@ class PlayState extends MusicBeatState {
 			}
 		}
 
-		//Preload music
+		// Preload music
 		var instPath:String = Paths.songInst(SONG.name, storyDifficulty, true);
 		FlxG.sound.playMusic(Paths.songInst(SONG.name, storyDifficulty), 0, false);
 		FlxG.sound.list.add(vocals = new FlxSound());
@@ -252,7 +252,7 @@ class PlayState extends MusicBeatState {
 
 		Conductor.songPosition = Conductor.crochet * -5;
 
-		//Load stages & characters
+		// Load stages & characters
 		add(stage = new Stage(SONG.stage));
 
 		add(gf = new Character(0, 0, SONG.spectator));
@@ -310,7 +310,7 @@ class PlayState extends MusicBeatState {
 		var stageShit:Array<Array<Dynamic>> = [
 			[stage.dadPos, dad],
 			[stage.gfPos, gf],
-			[stage.bfPos, boyfriend]
+			[stage.bfPos, boyfriend],
 		];
 		for(item in stageShit) {
 			var position:FlxPoint = item[0];
@@ -364,7 +364,7 @@ class PlayState extends MusicBeatState {
 			comboGroup.cameras = [camHUD];
 		
 		notes.addNotes(ChartParser.parseChart(SONG));
-		
+
 		// Load events
 		if(SONG.events != null && SONG.events.length > 0) {
 			for(group in SONG.events) {

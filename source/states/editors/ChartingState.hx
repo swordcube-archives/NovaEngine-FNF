@@ -581,7 +581,6 @@ class ChartingState extends MusicBeatState {
 
         if(Conductor.songPosition > sectionStartTime() + (4 * (1000 * (60 / Conductor.bpm)))) {
             changeSection(1);
-            Conductor.songPosition = sectionStartTime();
             Conductor.update();
             var playing = musicList[0].playing;
             for(music in musicList) {

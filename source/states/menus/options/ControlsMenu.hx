@@ -52,7 +52,8 @@ class ControlsMenu extends MusicBeatSubstate {
 		"Engine" => [
 			new Control("Charter",		"CHARTER"),
 			new Control("Switch Mod",	"SWITCH_MOD"),
-			new Control("Modifiers",    "GAMEPLAY_MODIFIERS") // Freeplay Modifiers, to be specific
+			new Control("Modifiers",    "GAMEPLAY_MODIFIERS"), // Freeplay Modifiers, to be specific
+			new Control("Song Search",	"SONG_SEARCH")
 		]
 	];
 
