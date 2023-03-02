@@ -1,0 +1,15 @@
+<character antialiasing="false" icon="spirit" atlasType="packer" flipX="false" x="-150" y="100" >
+    <anims>
+        <anim name="idle" anim="idle spirit_" fps="24" loop="false" x="-36.333333333333336" y="-46.666666666666664" />
+
+        <anim name="singLEFT" anim="left_" fps="24" loop="false" x="-33.333333333333336" y="-46.666666666666664" />
+        <anim name="singDOWN" anim="spirit down_" fps="24" loop="false" x="28.333333333333332" y="18.333333333333332" />
+        <anim name="singUP" anim="up_" fps="24" loop="false" x="-36.666666666666664" y="-40" />
+        <anim name="singRIGHT" anim="right_" fps="24" loop="false" x="-36.666666666666664" y="-46.666666666666664" />
+    </anims>
+
+    <scale x="6" y="6" />
+    <scrollFactor x="1" y="1" />
+
+    <healthColor rgb="255,60,110" />
+</character>

@@ -14,4 +14,7 @@ function onCreate() {
 	bg.scrollFactor.set(0.8, 0.9);
 	bg.scale.set(6, 6);
 	bg.antialiasing = false;
+
+	stage.bfPos.set(stage.bfPos.x + 200, stage.bfPos.y + 220);
+	stage.gfPos.set(stage.gfPos.x + 180, stage.gfPos.y + 300);
 }
