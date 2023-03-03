@@ -256,7 +256,7 @@ class PlayState extends MusicBeatState {
 		add(stage = new Stage(SONG.stage));
 
 		gf = new Character(0, 0, SONG.spectator);
-		if(dad.trail != null) add(gf.trail);
+		if(gf.trail != null) add(gf.trail);
 		add(gf);
 		gf.danceOnBeat = false;
 		add(stage.gfLayer);
@@ -265,14 +265,6 @@ class PlayState extends MusicBeatState {
 		if(dad.trail != null) add(dad.trail);
 		add(dad);
 		add(stage.dadLayer);
-
-		if(SONG.opponent == SONG.spectator) {
-			dad.setPosition(gf.x, gf.y);
-			gf.kill();
-			gf.destroy();
-			remove(gf, true);
-			gf = null;
-		}
 
 		boyfriend = new Character(0, 0, SONG.player, true);
 		if(boyfriend.trail != null) add(boyfriend.trail);
@@ -325,6 +317,15 @@ class PlayState extends MusicBeatState {
 			if (character == null) continue;
 
 			character.setPosition(position.x, position.y);
+		}
+
+		// tutoirial fix
+		if(SONG.opponent == SONG.spectator) {
+			dad.setPosition(gf.x, gf.y);
+			gf.kill();
+			gf.destroy();
+			remove(gf, true);
+			gf = null;
 		}
 
 		// Center the camera on the spectator/opponent (depends on if the spectator is null or not)

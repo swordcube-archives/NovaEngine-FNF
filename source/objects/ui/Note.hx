@@ -179,12 +179,10 @@ class Note extends FNFSprite {
 
         if(isSustainNote) {
             if(!isSustainTail) {
-                scale.y = 1 * ((stepCrochet / 100) * 1.05) * Math.abs(getScrollSpeed());
+                scale.y = initialScale * ((stepCrochet / 100) * 1.5) * Math.abs(getScrollSpeed());
 
                 if(skinData.isPixel)
-                    scale.y *= 1.19;
-
-                scale.y *= initialScale;
+                    scale.y *= 0.84;
             }
             updateHitbox();
             centerXOffset();
