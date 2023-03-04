@@ -8,6 +8,8 @@ import backend.dependency.ScriptHandler;
 class DummyScript extends ScriptModule {
     public function new(path:String, fileName:String = "dummy") {
         super(path, fileName);
+        #if debug
         Logs.trace('Either the script at path: $path couldn\'t be found, or this script is unsupported! Dummy script loaded instead.', ERROR);
+        #end
     }
 }

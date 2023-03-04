@@ -44,6 +44,45 @@ class SettingsAPI {
 
     // ^^^ -----------------------------------------------------------------------
 
+    // ------ HELPER VARIABLES & FUNCTIONS ---------------------------------------
+
+    /**
+     * This function is for getting a modded setting.
+     * This works for non-modded settings but it's recommended to do
+     * something like: `SettingsAPI.downscroll`.
+     * 
+     * @param saveData The name of the setting.
+     */
+    public static inline function get(saveData:String) {
+        var value:Bool = false;
+        if(Reflect.field(SettingsAPI, saveData) != null)
+            value = Reflect.field(SettingsAPI, saveData);
+
+        @:privateAccess {
+            if(Reflect.field(SettingsAPI.__save.data, saveData) != null && Reflect.field(SettingsAPI, saveData) == null)
+                value = Reflect.field(SettingsAPI.__save.data, saveData);
+        }
+
+        return value;
+    }
+
+    /**
+     * This function is for setting a modded setting.
+     * This works for non-modded settings but it's recommended to do
+     * something like: `SettingsAPI.downscroll = false;`.
+     * 
+     * Remember to do `SettingsAPI.save();` if you want to permanently save the setting.
+     * 
+     * @param saveData The name of the setting to set.
+     */
+    public static inline function set(saveData:String, value:Dynamic) {
+        if(Reflect.field(SettingsAPI.__save.data, saveData) != null && Reflect.field(SettingsAPI, saveData) == null) {
+            @:privateAccess
+            Reflect.setField(SettingsAPI.__save.data, saveData, !Reflect.field(SettingsAPI.__save.data, saveData));
+        } else
+            Reflect.setField(SettingsAPI, saveData, !Reflect.field(SettingsAPI, saveData));
+    }
+
     // ------ INTERNAL VARIABLES & FUNCTIONS -------------------------------------
 
     public static var controls:Controls;
