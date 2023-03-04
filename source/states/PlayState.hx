@@ -608,70 +608,83 @@ class PlayState extends MusicBeatState {
 	}
 
 	public function popUpScore(event:NoteHitEvent, rating:String, combo:Int) {
-		var rating:FNFSprite = comboGroup.recycle(FNFSprite).loadGraphic(Paths.image(event.ratingSprites+'/$rating'));
-		comboGroup.remove(rating, true);
-		rating.setPosition(-40, -60);
-		rating.antialiasing = event.ratingAntialiasing;
-		rating.scale.set(event.ratingScale, event.ratingScale);
-		rating.updateHitbox();
-		rating.alpha = 1;
+		if(event.cancelled) return;
 
-		rating.acceleration.y = 550;
-		rating.velocity.y = -FlxG.random.int(140, 175);
-		rating.velocity.x = -FlxG.random.int(0, 10);
+		var rating:FNFSprite = null;
+		if(event.showRating) {
+			rating = comboGroup.recycle(FNFSprite).loadGraphic(Paths.image(event.ratingSprites+'/$rating'));
+			comboGroup.remove(rating, true);
+			rating.setPosition(-40, -60);
+			rating.antialiasing = event.ratingAntialiasing;
+			rating.scale.set(event.ratingScale, event.ratingScale);
+			rating.updateHitbox();
+			rating.alpha = 1;
 
-		var comboSpr:FNFSprite = comboGroup.recycle(FNFSprite).loadGraphic(Paths.image(event.comboSprites+'/combo'));
-		comboGroup.remove(comboSpr, true);
-		comboSpr.setPosition(0, 0);
-		comboSpr.acceleration.y = 600;
-		comboSpr.velocity.y = -150;
-		comboSpr.velocity.x = FlxG.random.int(1, 10);
-		comboSpr.antialiasing = event.ratingAntialiasing;
-		comboSpr.scale.set(event.ratingScale, event.ratingScale);
-		comboSpr.updateHitbox();
-		comboSpr.alpha = 1;
+			rating.acceleration.y = 550;
+			rating.velocity.y = -FlxG.random.int(140, 175);
+			rating.velocity.x = -FlxG.random.int(0, 10);
+		}
 
-		var separatedScore:String = Std.string(combo).addZeros(3);
-		if (combo == 0 || combo >= 10) {
-			comboGroup.add(comboSpr);
-			for (i in 0...separatedScore.length) {
-				var numScore:FNFSprite = comboGroup.recycle(FNFSprite).loadGraphic(Paths.image(event.comboSprites+'/num${separatedScore.charAt(i)}'));
-				comboGroup.remove(numScore, true);
-				numScore.setPosition((43 * i) - 90, 80);
-				numScore.antialiasing = event.comboAntialiasing;
-				numScore.scale.set(event.comboScale, event.comboScale);
-				numScore.updateHitbox();
-				numScore.alpha = 1;
-	
-				numScore.acceleration.y = FlxG.random.int(200, 300);
-				numScore.velocity.y = -FlxG.random.int(140, 160);
-				numScore.velocity.x = FlxG.random.float(-5, 5);
+		var comboSpr:FNFSprite = null;
+		if(event.showCombo) {
+			comboSpr = comboGroup.recycle(FNFSprite).loadGraphic(Paths.image(event.comboSprites+'/combo'));
+			comboGroup.remove(comboSpr, true);
+			comboSpr.setPosition(0, 0);
+			comboSpr.acceleration.y = 600;
+			comboSpr.velocity.y = -150;
+			comboSpr.velocity.x = FlxG.random.int(1, 10);
+			comboSpr.antialiasing = event.ratingAntialiasing;
+			comboSpr.scale.set(event.ratingScale, event.ratingScale);
+			comboSpr.updateHitbox();
+			comboSpr.alpha = 1;
 
-				comboGroup.add(numScore);
-	
-				FlxTween.tween(numScore, {alpha: 0}, 0.2, {
-					onComplete: function(tween:FlxTween) {
-						numScore.kill();
-					},
-					startDelay: Conductor.crochet * 0.002
-				});
+			var separatedScore:String = Std.string(combo).addZeros(3);
+			if (combo == 0 || combo >= 10) {
+				comboGroup.add(comboSpr);
+				for (i in 0...separatedScore.length) {
+					var numScore:FNFSprite = comboGroup.recycle(FNFSprite).loadGraphic(Paths.image(event.comboSprites+'/num${separatedScore.charAt(i)}'));
+					comboGroup.remove(numScore, true);
+					numScore.setPosition((43 * i) - 90, 80);
+					numScore.antialiasing = event.comboAntialiasing;
+					numScore.scale.set(event.comboScale, event.comboScale);
+					numScore.updateHitbox();
+					numScore.alpha = 1;
+		
+					numScore.acceleration.y = FlxG.random.int(200, 300);
+					numScore.velocity.y = -FlxG.random.int(140, 160);
+					numScore.velocity.x = FlxG.random.float(-5, 5);
+
+					comboGroup.add(numScore);
+		
+					FlxTween.tween(numScore, {alpha: 0}, 0.2, {
+						onComplete: function(tween:FlxTween) {
+							numScore.kill();
+						},
+						startDelay: Conductor.crochet * 0.002
+					});
+				}
 			}
 		}
-		comboGroup.add(rating);
 
-		FlxTween.tween(rating, {alpha: 0}, 0.2, {
-			onComplete: function(tween:FlxTween) {
-				rating.kill();
-			},
-			startDelay: Conductor.crochet * 0.001
-		});
+		if(event.showRating && rating != null) {
+			comboGroup.add(rating);
 
-		FlxTween.tween(comboSpr, {alpha: 0}, 0.2, {
-			onComplete: function(tween:FlxTween) {
-				comboSpr.kill();
-			},
-			startDelay: Conductor.crochet * 0.001
-		});
+			FlxTween.tween(rating, {alpha: 0}, 0.2, {
+				onComplete: function(tween:FlxTween) {
+					rating.kill();
+				},
+				startDelay: Conductor.crochet * 0.001
+			});
+		}
+
+		if(event.showCombo && comboSpr != null) {
+			FlxTween.tween(comboSpr, {alpha: 0}, 0.2, {
+				onComplete: function(tween:FlxTween) {
+					comboSpr.kill();
+				},
+				startDelay: Conductor.crochet * 0.001
+			});
+		}
 	}
 
 	public function goodNoteHit(note:Note) {
