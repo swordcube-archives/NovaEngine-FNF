@@ -157,23 +157,19 @@ class Note extends FNFSprite {
     override function update(elapsed:Float) {
         super.update(elapsed);
 
-        if (mustPress) {
-            if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset
-                && strumTime < Conductor.songPosition + Conductor.safeZoneOffset)
-                canBeHit = true;
-            else
-                canBeHit = false;
-
-            if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit && !tooLate) {
-                tooLate = true;
-                for(note in sustainNotes) {
-                    note.tooLate = true;
-                    note.alpha = 0.3;
-                }
-            }
-        }
+        if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset
+            && strumTime < Conductor.songPosition + Conductor.safeZoneOffset)
+            canBeHit = true;
         else
             canBeHit = false;
+
+        if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit && !tooLate) {
+            tooLate = true;
+            for(note in sustainNotes) {
+                note.tooLate = true;
+                note.alpha = 0.3;
+            }
+        }
 
         if (tooLate) alpha = 0.3;
 
