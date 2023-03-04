@@ -54,7 +54,7 @@ class SettingsAPI {
      * @param saveData The name of the setting.
      */
     public static inline function get(saveData:String) {
-        var value:Bool = false;
+        var value:Dynamic = false;
         if(Reflect.field(SettingsAPI, saveData) != null)
             value = Reflect.field(SettingsAPI, saveData);
 
