@@ -684,7 +684,9 @@ class PlayState extends MusicBeatState {
 		// other function names u can use if you're used to how another engine does it
 		var funcNames:Array<Array<String>> = [
 			["onBfHit", "onDadHit"],
-			["goodNoteHit", "opponentNoteHit"]
+			["goodNoteHit", "opponentNoteHit"],
+			["bfHit", "onCPUHit"],
+			["playerHit", "onCpuHit"]
 		];
 		
 		var event = scripts.event(funcName, new NoteHitEvent(note, judgeData, note.mustPress ? judgeData.score : 0, note.mustPress && judgeData.showSplash));
