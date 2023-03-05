@@ -608,21 +608,22 @@ class PlayState extends MusicBeatState {
 	}
 
 	public function popUpScore(event:NoteHitEvent, rating:String, combo:Int) {
+		event = scripts.event("onPopUpScore", event);
 		if(event.cancelled) return;
 
-		var rating:FNFSprite = null;
+		var ratingSpr:FNFSprite = null;
 		if(event.showRating) {
-			rating = comboGroup.recycle(FNFSprite).loadGraphic(Paths.image(event.ratingSprites+'/$rating'));
-			comboGroup.remove(rating, true);
-			rating.setPosition(-40, -60);
-			rating.antialiasing = event.ratingAntialiasing;
-			rating.scale.set(event.ratingScale, event.ratingScale);
-			rating.updateHitbox();
-			rating.alpha = 1;
+			ratingSpr = comboGroup.recycle(FNFSprite).loadGraphic(Paths.image(event.ratingSprites+'/$rating'));
+			comboGroup.remove(ratingSpr, true);
+			ratingSpr.setPosition(-40, -60);
+			ratingSpr.antialiasing = event.ratingAntialiasing;
+			ratingSpr.scale.set(event.ratingScale, event.ratingScale);
+			ratingSpr.updateHitbox();
+			ratingSpr.alpha = 1;
 
-			rating.acceleration.y = 550;
-			rating.velocity.y = -FlxG.random.int(140, 175);
-			rating.velocity.x = -FlxG.random.int(0, 10);
+			ratingSpr.acceleration.y = 550;
+			ratingSpr.velocity.y = -FlxG.random.int(140, 175);
+			ratingSpr.velocity.x = -FlxG.random.int(0, 10);
 		}
 
 		var comboSpr:FNFSprite = null;
@@ -667,11 +668,11 @@ class PlayState extends MusicBeatState {
 		}
 
 		if(event.showRating && rating != null) {
-			comboGroup.add(rating);
+			comboGroup.add(ratingSpr);
 
-			FlxTween.tween(rating, {alpha: 0}, 0.2, {
+			FlxTween.tween(ratingSpr, {alpha: 0}, 0.2, {
 				onComplete: function(tween:FlxTween) {
-					rating.kill();
+					ratingSpr.kill();
 				},
 				startDelay: Conductor.crochet * 0.001
 			});
