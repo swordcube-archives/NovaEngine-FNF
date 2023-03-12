@@ -60,9 +60,14 @@ class MainMenuState extends MusicBeatState {
 			member.y -= (160 * (menuItems.length - 1.5)) * 0.5;
 		}
 
+		var modMetaData = ModUtil.metadataMap.get(ModUtil.currentMod);
+		
+		if(modMetaData == null)
+			modMetaData = ModUtil.metadataMap.get(ModUtil.fallbackMod);
+
 		var engineString:String = (
 			'${Main.engineName} v${Main.engineVersion}\n'+
-			'${ModUtil.metadataMap.get(ModUtil.currentMod).name} - Press ${CoolUtil.keyToString(Controls.controlsList["SWITCH_MOD"][0])} to switch mods'
+			'${modMetaData.name} - Press ${CoolUtil.keyToString(Controls.controlsList["SWITCH_MOD"][0])} to switch mods'
 		);
 		var engineText = new FlxText(5, FlxG.height, 0, engineString);
 		engineText.setFormat(Paths.font("vcr.ttf"), 16, 0xFFFFFFFF, LEFT, OUTLINE, 0xFF000000);
