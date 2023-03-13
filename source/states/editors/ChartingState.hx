@@ -582,13 +582,6 @@ class ChartingState extends MusicBeatState {
         if(Conductor.songPosition > sectionStartTime() + (4 * (1000 * (60 / Conductor.bpm)))) {
             changeSection(1);
             Conductor.update();
-            var playing = musicList[0].playing;
-            for(music in musicList) {
-                music.pause();
-                music.time = Conductor.songPosition;
-                if(playing)
-                    music.play();
-            }
         }
 
         var left:Bool = (FlxG.keys.justPressed.A || FlxG.keys.justPressed.LEFT);
@@ -597,12 +590,12 @@ class ChartingState extends MusicBeatState {
         if(left || right) {
             changeSection((right ? 1 : 0) + (left ? -1 : 0));
 
-            Conductor.songPosition = sectionStartTime();
+            Conductor.songPosition = sectionStartTime() + 2;
             if(Conductor.songPosition >= FlxG.sound.music.length) {
                 Conductor.songPosition = 0;
                 selectedSection = 0;
                 changeSection();
-            }
+            } 
             Conductor.update();
 
             for(music in musicList) {
