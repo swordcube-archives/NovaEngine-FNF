@@ -19,6 +19,10 @@ class Judgement {
         this.showSplash = showSplash;
     }
 
+    public function clone() {
+        return new Judgement(name, score, timing, accuracy, health, showSplash);
+    }
+
     public function toString() {
         return name;
     }
@@ -35,6 +39,10 @@ class Rank {
         this.color = color;
     }
 
+    public function clone() {
+        return new Rank(name, accuracyRequired, color);
+    }
+
     public function toString() {
         return name;
     }
@@ -47,6 +55,7 @@ class Ranking {
         new Judgement("bad",  100, 90,  0.3, 0,      false),
         new Judgement("shit", 50,  135, 0,   -0.175, false)
     ];
+    public static var defaultJudgements:Array<Judgement>;
 
     public static var ranks:Array<Rank> = [
         new Rank("S+", 100, 0xFF00CCFF),
@@ -59,6 +68,12 @@ class Ranking {
         new Rank("F",  30,  0xFFFF6600),
         new Rank("L",  0,   0xFFFF0000),
     ];
+    public static var defaultRanks:Array<Rank>;
+
+    public static function init() {
+        defaultJudgements = [for(i in judgements) i.clone()];
+        defaultRanks = [for(i in ranks) i.clone()];
+    }
 
     public static function judgementFromTime(time:Float):Judgement {
         for(judge in judgements) {

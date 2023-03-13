@@ -3,6 +3,7 @@ package;
 import lime.app.Application;
 import openfl.events.KeyboardEvent;
 import backend.Controls;
+import music.Ranking;
 import flixel.FlxState;
 import openfl.ui.Keyboard;
 import backend.modding.ModUtil;
@@ -16,6 +17,7 @@ class Init extends FlxState {
         Conductor.init();
         ScriptHandler.init();
         ModUtil.init();
+        Ranking.init();
 
         FlxG.fixedTimestep = false;
 

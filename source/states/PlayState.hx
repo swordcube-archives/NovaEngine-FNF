@@ -183,6 +183,9 @@ class PlayState extends MusicBeatState {
 		paused = false;
 		assetModifier = "base";
 		changeableSkin = "default";
+
+		Ranking.judgements = [for(i in Ranking.defaultJudgements) i.clone()];
+		Ranking.ranks = [for(i in Ranking.defaultRanks) i.clone()];
 	}
 
 	/**
