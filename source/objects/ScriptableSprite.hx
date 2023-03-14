@@ -37,6 +37,7 @@ class ScriptableSprite extends FNFSprite {
 
     override function destroy() {
         script.call("onDestroy");
+        script.destroy();
         super.destroy();
     }
 }
