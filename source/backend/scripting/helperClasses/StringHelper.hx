@@ -6,6 +6,10 @@ class StringHelper {
     public static function split(string:String, delimiter:String) {
         return string.split(delimiter);
     }
+    
+    public static function trim(string:String) {
+        return string.trim();
+    }
 
     public static function startsWith(string:String, delimiter:String) {
         return string.startsWith(delimiter);
