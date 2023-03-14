@@ -93,6 +93,9 @@ class Paths {
             '${backPath}mods/${ModUtil.currentMod}/$folderPath',
             './mods/${ModUtil.currentMod}/$folderPath',
 
+            '${backPath}mods/$folderPath',
+            './mods/$folderPath',
+
             '${backPath}assets/$folderPath',
             './assets/$folderPath'
         ];
@@ -135,6 +138,9 @@ class Paths {
         var pathsToCheck:Array<String> = [
             '${backPath}mods/$mod/$path',
             './mods/$mod/$path',
+
+            '${backPath}mods/$path',
+            './mods/$path',
 
             '${backPath}assets/$path'
         ];

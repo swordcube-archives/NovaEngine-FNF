@@ -10,6 +10,11 @@ import haxe.macro.Expr;
  */
 class ScriptsMacro {
     public static function addAdditionalClasses() {
+        Compiler.include("backend");
+        Compiler.include("game");
+        Compiler.include("music");
+        Compiler.include("objects");
+
         Compiler.include("flixel");
         #if (sys && !web)
         Compiler.include("sys");

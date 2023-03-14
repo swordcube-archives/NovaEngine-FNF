@@ -113,6 +113,7 @@ class ScriptHandler {
             "ModState" => states.ModState,
             "ModSubstate" => states.ModState.ModSubstate,
             "ModSubState" => states.ModState.ModSubstate,
+            "ScriptableSprite" => objects.ScriptableSprite,
             "Init" => Init,
             "Logs" => Logs,
 
