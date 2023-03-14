@@ -6,6 +6,10 @@ class LuaUtil {
 		return StringHelper:split(string, delimiter)
 	end
 
+	function string:trim(string)
+		return StringHelper:trim(string)
+	end
+
 	function string:startsWith(string, delimiter)
 		return StringHelper:startsWith(string, delimiter)
 	end
