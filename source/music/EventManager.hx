@@ -63,7 +63,7 @@ class EventManager extends FlxBasic {
     }
 
     public static inline function charFromString(string:String):CharacterType {
-        return switch(string) {
+        return switch(string.toLowerCase()) {
             case "1", "gf", "girlfriend", "spectator": SPECTATOR;
             case "2", "bf", "boyfriend", "player": PLAYER;
             default: OPPONENT;
