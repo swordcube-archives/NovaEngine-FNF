@@ -107,6 +107,7 @@ class AlphabetChar extends FNFSprite {
 
         this.font = font;
         this.char = char;
+	this.size = size;
         loadFont();
     }
 
