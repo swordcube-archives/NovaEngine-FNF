@@ -39,7 +39,7 @@ class PreferencesMenu extends PageSubState {
                 ),
 				new Number(
                     "Hitsound Volume",
-                    "Adjust how loud you want hitsounds to be. 0% turns them off entirely.",
+                    "Adjust how loud you want hitsounds to be.",
                     "hitsoundVolume", 
                     "%", // makes it display shit like 75%
                     0, 
@@ -95,7 +95,7 @@ class PreferencesMenu extends PageSubState {
                 ),
 				new Checkbox(
                     "Antialiasing", 
-                    "Gives the game a slight performance boost at the cost of worse looking graphics.", 
+                    "Gives the game a slight performance boost when disabled at the cost of worse looking graphics.", 
                     "antialiasing"
                 ),
                 new Checkbox(
