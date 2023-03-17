@@ -178,7 +178,7 @@ class NoteField extends NoteGroup {
 			}
 
 			// kill da note when it go off screen
-			if ((downscrollMultiplier < 0 && note.y > FlxG.height + note.height) || (downscrollMultiplier > 0 && note.y < -note.height)) {
+			if (!note.wasGoodHit && ((downscrollMultiplier < 0 && note.y > FlxG.height + note.height) || (downscrollMultiplier > 0 && note.y < -note.height))) {
 				var funcName:String = note.mustPress ? "onPlayerMiss" : "onOpponentMiss";
 				// other function names u can use if you're used to how another engine does it
 				var funcNames:Array<Array<String>> = [
