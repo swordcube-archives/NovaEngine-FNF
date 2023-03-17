@@ -1,0 +1,18 @@
+<character isPlayer="true" icon="tankman" flipX="true" x="100" y="240" camX="-100" camY="0" >
+    <anims>
+        <anim name="idle" anim="Tankman Idle Dance0" fps="24" loop="false" x="0" y="0" />
+
+        <anim name="singRIGHT" anim="Tankman Right Note0" fps="24" loop="false" x="-1" y="-7" />
+        <anim name="singDOWN" anim="Tankman DOWN note0" fps="24" loop="false" x="98" y="-90" />
+        <anim name="singUP" anim="Tankman UP note0" fps="24" loop="false" x="24" y="56" />
+        <anim name="singLEFT" anim="Tankman Note Left0" fps="24" loop="false" x="100" y="-14" />
+
+        <anim name="singDOWN-alt" anim="PRETTY GOOD tankman0" fps="24" loop="false" x="103" y="15" specialAnim="true"/>
+        <anim name="singUP-alt" anim="TANKMAN UGH0" fps="24" loop="false" x="-15" y="-8" />
+    </anims>
+
+    <scale x="1" y="1" />
+    <scrollFactor x="1" y="1" />
+
+    <healthColor rgb="0,0,0" />
+</character>

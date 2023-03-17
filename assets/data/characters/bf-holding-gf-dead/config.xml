@@ -1,0 +1,12 @@
+<character isPlayer="true" sprite="bf/holdinggf-dead" icon="bf" flipX="true" x="0" y="350" >
+    <anims>
+        <anim name="firstDeath" anim="BF Dies with GF" indices="" fps="24" loop="false" x="37" y="14" />
+        <anim name="deathLoop" anim="BF Dead with GF Loop" indices="" fps="24" loop="true" x="37" y="-3" />
+        <anim name="deathConfirm" anim="RETRY confirm holding gf" indices="" fps="24" loop="false" x="37" y="28" />
+    </anims>
+
+    <scale x="1" y="1" />
+    <scrollFactor x="1" y="1" />
+
+    <healthColor rgb="49,176,209" />
+</character>

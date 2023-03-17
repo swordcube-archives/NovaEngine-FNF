@@ -46,6 +46,8 @@ class HScript extends ScriptModule {
         
         interp = new Interp();
         interp.errorHandler = __errorHandler;
+        interp.staticVariables = ScriptHandler.staticVariables;
+        interp.allowStaticVariables = interp.allowPublicVariables = true;
 
         interp.variables.set("trace", Reflect.makeVarArgs((args) -> {
             var v:String = Std.string(args.shift());
@@ -58,12 +60,17 @@ class HScript extends ScriptModule {
         #end
     }
 
+    public override function setPublicMap(map:Map<String, Dynamic>) {
+        if(interp == null) return;
+        interp.publicVariables = map;
+    }
+
     /**
      * Runs the script.
      */
     override public function load() {
         // If the script failed to load, just treat it as a dummy script!
-        if(expr == null) return;
+        if(interp == null || expr == null) return;
         interp.execute(expr);
     }
 

@@ -1,0 +1,13 @@
+<character icon="gf" sprite="gf/tankmen" flipX="false" danceSteps="danceLeft,danceRight" >
+    <anims>
+        <anim name="danceLeft" anim="GF Dancing at Gunpoint" indices="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14" fps="24" loop="false" x="0" y="-9" />
+        <anim name="danceRight" anim="GF Dancing at Gunpoint" indices="15,16,17,18,19,20,21,22,23,24,25,26,27,28,29" fps="24" loop="false" x="0" y="-9" />
+
+        <anim name="sad" anim="GF Crying at Gunpoint " indices="0,1,2,3,4,5,6,7,8,9,10,11,12" fps="24" loop="true" x="0" y="-27" />
+    </anims>
+
+    <scale x="1" y="1" />
+    <scrollFactor x="0.95" y="0.95" />
+
+    <healthColor rgb="165,0,77" />
+</character>

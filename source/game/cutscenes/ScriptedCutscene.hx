@@ -1,5 +1,6 @@
 package game.cutscenes;
 
+import states.PlayState;
 import backend.scripting.DummyScript;
 import backend.dependency.ScriptHandler;
 
@@ -17,6 +18,7 @@ class ScriptedCutscene extends Cutscene {
         this.scriptPath = scriptPath;
 
         script = ScriptHandler.loadModule(Paths.script('data/cutscenes/$scriptPath'));
+        script.setPublicMap(PlayState.current.scripts.publicVariables);
         script.setParent(this);
         script.call("onCreate", []);
     }

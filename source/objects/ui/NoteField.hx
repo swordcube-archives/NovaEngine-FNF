@@ -201,6 +201,12 @@ class NoteField extends NoteGroup {
 						game.songScore -= event.score;
 
 						if(!note.isSustainNote) {
+							// i think a gf sad anim played
+							// if you lost a combo of 10+? i forget base game shits lol
+							if(game.combo >= 10) {
+								if(game.gf != null)
+									game.gf.playAnim("sad");
+							}
 							game.combo = 0;
 							game.songMisses++;
 						}

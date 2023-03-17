@@ -1,5 +1,6 @@
 package backend.scripting;
 
+import states.PlayState;
 import backend.scripting.lua.LuaUtil;
 #if linc_luajit
 import haxe.DynamicAccess;
@@ -221,6 +222,10 @@ class LuaScript extends ScriptModule {
 		#end
 		return null;
 	}
+
+	public override function setPublicMap(map:Map<String, Dynamic>) {
+        PlayState.current.global = map;
+    }
 
 	// A map of functions that have already shown an error
 	// used for functions like onUpdate that execute every frame

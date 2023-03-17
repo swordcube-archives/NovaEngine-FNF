@@ -40,6 +40,13 @@ class PlayState extends MusicBeatState {
 	public static var isStoryMode:Bool = false;
 	public static var campaignScore:Int = 0;
 
+	/**
+	 * A map of variables accessible from any gameplay script.
+	 * 
+	 * This variable is meant for LUA! For HScript, public  vars should be used instead.
+	 */
+	public var global:Map<String, Dynamic> = [];
+
 	public var playCutscenes:Bool = isStoryMode;
 
 	public var vocals:FlxSound;

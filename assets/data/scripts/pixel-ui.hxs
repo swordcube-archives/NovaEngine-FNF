@@ -3,7 +3,8 @@ function onCreate() {
 }
 
 function onCountdownTickPost(event) {
-    event.sprite.antialiasing = false;
+    if(event.sprite != null)
+        event.sprite.antialiasing = false;
 }
 
 function onOpponentHit(event) {shit(event);}

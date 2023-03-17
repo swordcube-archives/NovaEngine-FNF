@@ -55,6 +55,8 @@ class ModUtil {
         FlxG.save.data.currentMod = modName;
         FlxG.save.flush();
 
+        ScriptHandler.staticVariables = [];
+
         if(callback != null)
             callback();
     }

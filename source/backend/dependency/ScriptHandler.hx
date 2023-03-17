@@ -1,5 +1,6 @@
 package backend.dependency;
 
+import states.PlayState;
 import backend.scripting.events.CancellableEvent;
 import backend.scripting.*;
 import flixel.FlxBasic;
@@ -14,7 +15,15 @@ class ScriptHandler {
     public static var preset:Map<String, Dynamic>;
     public static var compilerFlags:Map<String, Dynamic>;
 
+    /**
+     * Static variables that retain their values even when going to a new state.
+     * 
+     * Only resets when you switch to a different mod.
+     */
+    public static var staticVariables:Map<String, Dynamic>;
+
     public static function init() {
+        staticVariables = [];
         preset = [
             // Classes [Haxe]
             "Type" => Type,
@@ -104,6 +113,7 @@ class ScriptHandler {
             "Controls" => Controls,
             "Paths" => Paths,
             "PlayState" => states.PlayState,
+            "BGSprite" => objects.BGSprite,
 
             // Classes [Nova]
             "ModUtil" => backend.modding.ModUtil,
@@ -132,6 +142,7 @@ class ScriptHandler {
             "platform" => CoolUtil.getPlatform(), // Shortcut to "CoolUtil.getPlatform()".
             "window" => lime.app.Application.current.window,
             "mod" => backend.modding.ModUtil.currentMod, // Shortcut to "ModUtil.currentMod".
+            "global" => ((PlayState.current != null) ? PlayState.current.global : new Map<String, Dynamic>()),
         ];
 
         compilerFlags = [
@@ -226,12 +237,15 @@ class ScriptModule extends FlxBasic {
     }
 
     public function setParent(parent:Dynamic) {}
+
+    public function setPublicMap(map:Map<String, Dynamic>) {}
 }
 
 /**
  * A group of `ScriptModule`, used primarily in `PlayState`.
  */
 class ScriptGroup extends FlxBasic {
+    public var publicVariables:Map<String, Dynamic> = [];
     public var additionalDefaultVariables:Map<String, Dynamic> = [];
     private var __scripts:Array<ScriptModule> = [];
     public var parent:Dynamic;
@@ -271,6 +285,7 @@ class ScriptGroup extends FlxBasic {
 
     private function __configureNewScript(script:ScriptModule) {
         if (parent != null) script.setParent(parent);
+        script.setPublicMap(publicVariables);
         for(k=>e in additionalDefaultVariables) script.set(k, e);
     }
 

@@ -87,7 +87,7 @@ class GameOverSubstate extends MusicBeatSubstate {
                     var exclude:Array<Int> = [];
                     // if (prefs.get("censor-naughty"))
                     // 	exclude = [1, 3, 8, 13, 17, 21];
-					FlxG.sound.play(Paths.sound("week7/jeffGameover/jeffGameover-" + FlxG.random.int(1, 25, exclude)), 1, false, null, true, () -> {
+					FlxG.sound.play(Paths.sound("game/week7/jeffGameover/jeffGameover-" + FlxG.random.int(1, 25, exclude)), 1, false, null, true, () -> {
 						FlxG.sound.music.fadeIn(4, 0.2, 1);
 					});
 				}
