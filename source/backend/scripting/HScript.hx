@@ -18,7 +18,10 @@ class HScript extends ScriptModule {
         var err = error.toString();
         if (err.startsWith(fn)) err = err.substr(fn.length);
 
-        Logs.trace('Error occured on script: $fileName at Line ${error.line} - $err', ERROR);
+        if(linesErrored[Std.string(error.line)] != true) {
+            WindowUtil.showMessage('Error occured on script: $fileName at Line ${error.line}', '$err', MSG_ERROR);
+            linesErrored[Std.string(error.line)] = true;
+        }
         #end
     }
 
@@ -83,6 +86,14 @@ class HScript extends ScriptModule {
         interp.variables.set(val, value);
     }
 
+    // A map of functions that have already shown an error
+	// used for functions like onUpdate that execute every frame
+	// and thus could error every frame
+	public var functionsErrored:Map<String, Bool> = [];
+
+    // functionsErrored but for specific lines instead
+	public var linesErrored:Map<String, Bool> = [];
+
     /**
      * Calls a function from this script and returns whatever the function returns (Can be `null`!).
      * @param funcName The name of the function to call.
@@ -92,9 +103,16 @@ class HScript extends ScriptModule {
         if(interp == null) return null;
         if(parameters == null) parameters = [];
 
-        var func:Dynamic = interp.variables.get(funcName);
-        if(func != null && Reflect.isFunction(func))
-            return (parameters != null && parameters.length > 0) ? Reflect.callMethod(null, func, parameters) : func();
+        try {
+            var func:Dynamic = interp.variables.get(funcName);
+            if(func != null && Reflect.isFunction(func))
+                return (parameters != null && parameters.length > 0) ? Reflect.callMethod(null, func, parameters) : func();
+        } catch(e) {
+            if(functionsErrored[funcName] != true) {
+				WindowUtil.showMessage('Error occured trying to run function ($funcName) on script ($fileName)', '$e', MSG_ERROR);
+				functionsErrored[funcName] = true;
+			}
+        }
 
         return null;
     }

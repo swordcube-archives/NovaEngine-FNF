@@ -199,7 +199,10 @@ class LuaScript extends ScriptModule {
 
 			// Calls the function of the script. If it does not return 0, will trace what went wrong.
 			if (Lua.pcall(luaState, nparams, 1, 0) != 0) {
-				WindowUtil.showMessage('Error occured while running function ($name)', '${Lua.tostring(luaState, -1)}', MSG_ERROR);
+				if(functionsErrored[name] != true) {
+					WindowUtil.showMessage('Error occured while running function ($name)', '${Lua.tostring(luaState, -1)}', MSG_ERROR);
+					functionsErrored[name] = true;
+				}
 				return null;
 			}
 
@@ -209,12 +212,20 @@ class LuaScript extends ScriptModule {
 			currentLua = lastLua;
 			return v;
 		} catch(e) {
-			WindowUtil.showMessage('Error occured trying to run lua function ($name)', '$e', MSG_ERROR);
+			if(functionsErrored[name] != true) {
+				WindowUtil.showMessage('Error occured trying to run lua function ($name)', '$e', MSG_ERROR);
+				functionsErrored[name] = true;
+			}
 		}
 		currentLua = lastLua;
 		#end
 		return null;
 	}
+
+	// A map of functions that have already shown an error
+	// used for functions like onUpdate that execute every frame
+	// and thus could error every frame
+	public var functionsErrored:Map<String, Bool> = [];
 
 	#if linc_luajit
 	// These functions are here because Callable seems like it wants an int return and whines when you do a non static function.
