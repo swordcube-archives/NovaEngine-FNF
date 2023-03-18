@@ -83,7 +83,7 @@ class Note extends FNFSprite {
     public var directionName(get, never):String;
     private function get_directionName() return extraKeyInfo[keyCount].directions[noteData];
 
-    public static var extraKeyInfo:Map<Int, Dynamic> = [
+    public static var extraKeyInfo:Map<Int, ExtraKeyData> = [
         4 => {
             directions: ["left", "down", "up", "right"]
         }

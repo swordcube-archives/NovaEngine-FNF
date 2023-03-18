@@ -93,7 +93,12 @@ class NoteField extends NoteGroup {
                     break;
                 }
             }
-        }
+        } else {
+			var e = game.scripts.event("onGhostTap", new GhostTapEvent(data));
+
+			if(!e.cancelled)
+				game.ghostMiss(e);
+		}
 
 		game.scripts.event("onKeyPressPost", event);
 	}

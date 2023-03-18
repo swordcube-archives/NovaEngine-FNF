@@ -1,6 +1,6 @@
 package states.menus;
 
-import objects.ui.SearchBox;
+import flixel.addons.ui.FlxUIInputText;
 import music.Song.ChartFormat;
 import flixel.util.FlxColor;
 import states.MusicBeat.MusicBeatState;
@@ -37,10 +37,10 @@ class FreeplayState extends MusicBeatState {
 	public var intendedScore:Int = 0;
 
     public var songs:Array<SongMetadata> = [];
+    public var loadedSongs:Array<SongMetadata> = [];
     
     public var grpSongs:FlxTypedGroup<Alphabet>;
     public var grpIcons:FlxTypedGroup<HealthIcon>;
-    public var searchBox:SearchBox;
 
     public var curSelected:Int = 0;
     public var curDifficulty:Int = 1;
@@ -53,6 +53,7 @@ class FreeplayState extends MusicBeatState {
 	public var songToPlay:Sound;
 
     public var searchingForSong:Bool = false;
+    public var searchBox:FlxUIInputText;
 
     override function create() {
         super.create();
@@ -97,7 +98,7 @@ class FreeplayState extends MusicBeatState {
         smallBannerBG.alpha = 0.6;
         smallBannerBG.scrollFactor.set();
 
-        var smallBannerText = new FlxText(5, FlxG.height, 0, 'Press ${CoolUtil.keyToString(Controls.controlsList['SWITCH_MOD'][0])} to switch mods / Press ${CoolUtil.keyToString(Controls.controlsList['GAMEPLAY_MODIFIERS'][0])} to change gameplay modifiers', 17);
+        var smallBannerText = new FlxText(5, FlxG.height, 0, 'Press ${CoolUtil.keyToString(Controls.controlsList['SWITCH_MOD'][0])} to switch mods / Press ${CoolUtil.keyToString(Controls.controlsList['GAMEPLAY_MODIFIERS'][0])} to change gameplay modifiers / Press ${CoolUtil.keyToString(Controls.controlsList['SONG_SEARCH'][0])} to search for songs', 17);
         smallBannerText.setFormat(Paths.font("vcr.ttf"), 17, FlxColor.WHITE, RIGHT);
         smallBannerText.y -= smallBannerText.height + 5;
         smallBannerText.scrollFactor.set();
@@ -109,9 +110,20 @@ class FreeplayState extends MusicBeatState {
         add(smallBannerBG);
         add(smallBannerText);
 
-        add(searchBox = new SearchBox(FlxG.width, smallBannerBG.y, 450, 50));
-        searchBox.x -= searchBox.width;
-        searchBox.y -= (smallBannerBG.height + searchBox.height) + 5;
+        searchBox = new FlxUIInputText(0, smallBannerBG.y, 450, "", 18, FlxColor.WHITE, FlxColor.BLACK);
+        @:privateAccess {
+            searchBox.fieldBorderSprite.alpha = 0.6;
+            searchBox.backgroundSprite.alpha = 0;
+        }
+        searchBox.y -= (smallBannerBG.height + 10);
+        searchBox.callback = (text:String, action:String) -> {
+            reloadSongs(songs.filter((song:SongMetadata) -> {
+                return song.displayName.toLowerCase().startsWith(text.toLowerCase());
+            }));
+            changeSelection();
+        };
+        searchBox.visible = false;
+        add(searchBox);
 
         changeSelection();
         positionHighscore();
@@ -140,6 +152,9 @@ class FreeplayState extends MusicBeatState {
         });
         grpIcons.clear();
 
+        curSongPlaying = -1;
+        curSelected = 0;
+
         // Reload the songs
         for(i => song in songs) {
             var songText = new Alphabet(0, (70 * i) + 30, Bold, (song.displayName != null) ? song.displayName : song.name);
@@ -153,6 +168,8 @@ class FreeplayState extends MusicBeatState {
             icon.tracked = songText;
             grpIcons.add(icon);
         }
+
+        loadedSongs = songs;
     }
 
 	public function positionHighscore() {
@@ -192,6 +209,8 @@ class FreeplayState extends MusicBeatState {
 
     public function toggleSongSearch() {
         searchingForSong = !searchingForSong;
+        searchBox.visible = searchBox.hasFocus = searchingForSong;
+        searchBox.text = "";
     }
 
     override function update(elapsed:Float) {
@@ -199,19 +218,20 @@ class FreeplayState extends MusicBeatState {
 
         if(!runDefaultCode) return;
 
-        if(controls.GAMEPLAY_MODIFIERS) {
-            persistentUpdate = false;
-			persistentDraw = true;
-			openSubState(new GameplayModifiers());
-        }
-
-        if(controls.SONG_SEARCH) toggleSongSearch();
+        if(controls.SONG_SEARCH && !searchBox.hasFocus)
+            toggleSongSearch();
 
         if(!searchingForSong) {
+            if(controls.GAMEPLAY_MODIFIERS) {
+                persistentUpdate = false;
+                persistentDraw = true;
+                openSubState(new GameplayModifiers());
+            }
+
             if(controls.ACCEPT) {
                 threadActive = false;
-                var selectedDiff:String = songs[curSelected].difficulties[curDifficulty];
-                PlayState.SONG = Song.loadChart(songs[curSelected].name, selectedDiff);
+                var selectedDiff:String = loadedSongs[curSelected].difficulties[curDifficulty];
+                PlayState.SONG = Song.loadChart(loadedSongs[curSelected].name, selectedDiff);
                 PlayState.isStoryMode = false;
                 PlayState.campaignScore = 0;
                 PlayState.storyDifficulty = selectedDiff;
@@ -252,7 +272,7 @@ class FreeplayState extends MusicBeatState {
             FlxG.sound.music.volume = 0.0;
             FlxG.sound.music.fadeIn(1.0, 0.0, 1.0);
             FlxG.sound.music.pitch = 1;
-            Conductor.changeBPM(songs[curSelected].bpm);
+            Conductor.changeBPM(loadedSongs[curSelected].bpm);
             songToPlay = null;
         }
         mutex.release();
@@ -262,7 +282,7 @@ class FreeplayState extends MusicBeatState {
         curSelected = FlxMath.wrap(curSelected + change, 0, grpSongs.length - 1);
 
         if(bgTween != null) bgTween.cancel();
-        var color:FlxColor = (songs[curSelected].bgColor != null) ? songs[curSelected].bgColor : 0xFF9271FD;
+        var color:FlxColor = (loadedSongs[curSelected].bgColor != null) ? loadedSongs[curSelected].bgColor : 0xFF9271FD;
         bgTween = FlxTween.color(bg, 0.35, bg.color, color);
 
         grpSongs.forEach((member:Alphabet) -> {
@@ -275,10 +295,10 @@ class FreeplayState extends MusicBeatState {
     }
 
     function changeDifficulty(?change:Int = 0) {
-        var diffs:Array<String> = songs[curSelected].difficulties;
+        var diffs:Array<String> = loadedSongs[curSelected].difficulties;
 
         curDifficulty = FlxMath.wrap(curDifficulty + change, 0, diffs.length - 1);
-        intendedScore = Highscore.getScore(songs[curSelected].name.toLowerCase(), diffs[curDifficulty]);
+        intendedScore = Highscore.getScore(loadedSongs[curSelected].name.toLowerCase(), diffs[curDifficulty]);
 
         var arrows:Array<String> = diffs.length <= 1 ? ["", ""] : ["< ", " >"];
         diffText.text = '${arrows[0]}${diffs[curDifficulty].toUpperCase()}${arrows[1]}';
@@ -293,8 +313,8 @@ class FreeplayState extends MusicBeatState {
 					var index:Null<Int> = Thread.readMessage(false);
 					if (index != null) {
 						if (index == curSelected && index != curSongPlaying) {
-							var inst:Sound = Sound.fromFile(Paths.songInst(songs[curSelected].name, true));
-							if (index == curSelected && threadActive && FileSystem.exists(Paths.songVoices(songs[curSelected].name, true))) {
+							var inst:Sound = Sound.fromFile(Paths.songInst(loadedSongs[curSelected].name, true));
+							if (index == curSelected && threadActive && FileSystem.exists(Paths.songVoices(loadedSongs[curSelected].name, true))) {
 								mutex.acquire();
 								songToPlay = inst;
 								mutex.release();

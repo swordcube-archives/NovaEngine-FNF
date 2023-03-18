@@ -64,8 +64,22 @@ class Paths {
     public static function returnJSON(path:String):Dynamic {
         if(!assetCache.exists(path))
             assetCache.set(path, new CacheAsset(try {
-                if(!FileSystem.exists(path))
-                    Logs.trace("JSON at path: "+path+" doesn't exist!", ERROR);
+                if(!FileSystem.exists(path)) {
+                    var blacklisted:Array<String> = [
+                        "customOptions.json"
+                    ];
+                    var doLog:Bool = true;
+
+                    for(item in blacklisted) {
+                        if(path.endsWith(item)) {
+                            doLog = false;
+                            break;
+                        }
+                    }
+
+                    if(doLog)
+                        Logs.trace("JSON at path: "+path+" doesn't exist!", ERROR);
+                }
 
                 Json.parse(FileSystem.exists(path) ? File.getContent(path) : '{"error":null}');
             } 

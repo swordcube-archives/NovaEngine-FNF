@@ -751,7 +751,6 @@ class PlayState extends MusicBeatState {
 			var singAnim:String = "sing"+event.note.directionName.toUpperCase();
 			if(event.characters != null && event.characters.length > 0) {
 				for(char in event.characters) {
-					char.holdTimer = 0;
 					var altShit:String = (note.altAnim && char.animation.exists(singAnim+"-alt")) ? "-alt" : "";
 					char.holdTimer = 0;
 					if(!char.specialAnim)
@@ -784,6 +783,42 @@ class PlayState extends MusicBeatState {
 		note.kill();
 		note.destroy();
 		notes.remove(note, true);
+	}
+
+	public function ghostMiss(event:GhostTapEvent) {
+		if(SettingsAPI.ghostTapping) return;
+
+		var singAnim:String = "sing"+Note.extraKeyInfo[playerStrums.keyCount].directions[event.direction].toUpperCase()+"miss";
+
+		if(event.characters != null && event.characters.length > 0) {
+			for(char in event.characters) {
+				char.holdTimer = 0;
+				if(!char.specialAnim)
+					char.playAnim(singAnim, true);
+			}
+		} else {
+			var char:Character = boyfriend;
+			char.holdTimer = 0;
+			if(!char.specialAnim)
+				char.playAnim(singAnim, true);
+		}
+
+		// i think a gf sad anim played
+		// if you lost a combo of 10+? i forget base game shits lol
+		if(combo >= 10) {
+			if(gf != null)
+				gf.playAnim("sad");
+		}
+		combo = 0;
+		songMisses++;
+		songScore -= 10;
+
+		vocals.volume = 0;
+
+		accuracyPressedNotes++;
+		updateScoreText();
+
+		health -= 0.0475 * SettingsAPI.healthLossMultiplier;
 	}
 
 	public function startCountdown() {
