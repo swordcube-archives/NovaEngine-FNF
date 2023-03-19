@@ -82,13 +82,24 @@ class NoteField extends NoteGroup {
         if(possibleNotes.length > 0) {
             var dontHit:Array<Bool> = [for(i in 0...game.playerStrums.keyCount) false];
 
-            for(note in possibleNotes) {
+            for(coolNote in possibleNotes) {
                 // Hit the note
-                if(!dontHit[data] && note.noteData == data) {
+                if(!dontHit[data] && coolNote.noteData == data) {
                     dontHit[data] = true;
 
                     receptor.playAnim("confirm");
-					game.goodNoteHit(note);
+					game.goodNoteHit(coolNote);
+
+					// fuck you stacked notes
+					// they can go kiss my juicy ass
+					if (possibleNotes.length > 1) {
+						for (i in 0...possibleNotes.length) {
+							if (i == 0) continue;
+							var note = possibleNotes[i];
+							if (Math.abs(note.strumTime - coolNote.strumTime) <= 5 && note.noteData == data)
+								destroyNote(note);
+						}
+					}
 
                     break;
                 }
@@ -201,7 +212,7 @@ class NoteField extends NoteGroup {
 					event = game.noteTypeScripts.get(note.noteType).event(note.mustPress ? f[0] : f[1], event);
 
 				if(!event.cancelled) {
-					if(note.mustPress && !note.wasGoodHit && note.shouldHit) {
+					if(note.mustPress && note.shouldHit) {
 						game.health -= event.healthLoss;
 						game.songScore -= event.score;
 
@@ -214,6 +225,9 @@ class NoteField extends NoteGroup {
 							}
 							game.combo = 0;
 							game.songMisses++;
+
+							if(SettingsAPI.missSounds)
+								FlxG.sound.play(Paths.soundRandom("game/missnote", 1, 3), FlxG.random.float(0.1, 0.2));
 						}
 
 						game.accuracyPressedNotes++;

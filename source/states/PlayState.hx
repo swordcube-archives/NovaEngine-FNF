@@ -813,6 +813,9 @@ class PlayState extends MusicBeatState {
 		songMisses++;
 		songScore -= 10;
 
+		if(SettingsAPI.missSounds)
+			FlxG.sound.play(Paths.soundRandom("game/missnote", 1, 3), FlxG.random.float(0.1, 0.2));
+
 		vocals.volume = 0;
 
 		accuracyPressedNotes++;

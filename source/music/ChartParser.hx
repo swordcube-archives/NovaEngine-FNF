@@ -89,7 +89,7 @@ class ChartParser {
 
         var oldNote:Note = null;
         for(note in notesOnly) {
-            if(oldNote != null && note.mustPress == oldNote.mustPress && note.noteData == oldNote.noteData && (note.strumTime - oldNote.strumTime) <= 5) {
+            if(oldNote != null && note.mustPress == oldNote.mustPress && note.noteData == oldNote.noteData && Math.abs(note.strumTime - oldNote.strumTime) <= 5) {
                 for(sus in note.sustainNotes) {
                     sus.kill();
                     sus.destroy();

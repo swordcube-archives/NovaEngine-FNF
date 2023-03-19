@@ -33,6 +33,11 @@ class PreferencesMenu extends PageSubState {
                     "ghostTapping"
                 ),
                 new Checkbox(
+                    "Miss Sounds", 
+                    "Whether or not a sound should play when missing a note during gameplay.", 
+                    "missSounds"
+                ),
+                new Checkbox(
                     "Disable Reset Button", 
                     "Whether or not pressing your RESET bind should kill you instantly during gameplay.", 
                     "disableResetButton"
