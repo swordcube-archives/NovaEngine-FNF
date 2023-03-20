@@ -8,7 +8,7 @@ import backend.dependency.ScriptHandler;
  * Can be used for separating certain stage elements to prevent clutter
  * and bloat in your stages.
  */
-class ScriptableSprite extends FNFSprite {
+class ModSprite extends FNFSprite {
     public var scriptName:String;
     public var script:ScriptModule;
 
@@ -18,6 +18,7 @@ class ScriptableSprite extends FNFSprite {
 
         script = ScriptHandler.loadModule(Paths.script('data/sprites/$scriptName'));
         script.setParent(this);
+        script.load();
         script.call("new", parameters);
         script.call("onNew", parameters);
         script.call("onCreate", parameters);
