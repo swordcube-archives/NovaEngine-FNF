@@ -205,13 +205,12 @@ class PlayState extends MusicBeatState {
 		FlxG.sound.music.stop();
 		vocals.stop();
 
-		endingSong = true;
-		persistentUpdate = false;
-		persistentDraw = false;
+		paused = endingSong = true;
+		persistentUpdate = persistentDraw = false;
 
 		openSubState(new GameOverSubstate(
-			boyfriend != null ? boyfriend.getScreenPosition().x : 700, 
-			boyfriend != null ? boyfriend.getScreenPosition().y : 360
+			(boyfriend != null) ? boyfriend.getScreenPosition().x : 700, 
+			(boyfriend != null) ? boyfriend.getScreenPosition().y : 360
 		));
 	}
 	
