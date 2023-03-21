@@ -113,6 +113,10 @@ class Conductor {
 
 	public static var stepsPerSection:Int = 16;
 
+	static var oldStep:Int = 0;
+	static var storedSteps:Array<Int> = [];
+	static var skippedSteps:Array<Int> = [];
+
 	public static function init() {
 		FlxG.signals.preUpdate.add(update);
 		reset();
@@ -122,7 +126,8 @@ class Conductor {
 		songPosition = preciseBeat = preciseStep = preciseMeasure = curBeat = curStep = curMeasure = 0;
 		bpmChangeMap = [];
 		timeScaleChangeMap = [];
-		changeBPM(0);
+		storedSteps = [];
+		skippedSteps = [];
 	}
 
 	public static function update() {
@@ -165,17 +170,44 @@ class Conductor {
 		preciseBeat = preciseStep / stepsPerBeat;
 		preciseMeasure = preciseBeat / beatsPerMeasure;
 
-		if (Std.int(preciseStep) > 0 && curStep != (curStep = Std.int(preciseStep))) {
+		curStep = Std.int(preciseStep);
+
+		var trueStep:Int = curStep;
+		for (i in storedSteps)
+			if (i < oldStep)
+				storedSteps.remove(i);
+
+		for (i in oldStep...trueStep) {
+			if (!storedSteps.contains(i) && i > 0) {
+				curStep = i;
+				stepHit(true, true);
+				skippedSteps.push(i);
+			}
+		}
+		if (skippedSteps.length > 0)
+			skippedSteps = [];
+
+		curStep = trueStep;
+
+		if (oldStep != curStep && curStep > 0 && !storedSteps.contains(curStep)) {
 			var updateBeat:Bool = curBeat != (curBeat = Std.int(preciseBeat));
 			var updateMeasure:Bool = updateBeat && (curMeasure != (curMeasure = Std.int(preciseMeasure)));
-
-			onStepHit.dispatch(curStep);
-			if (updateBeat)
-				onBeatHit.dispatch(curBeat);
-
-			if (updateMeasure)
-				onMeasureHit.dispatch(curMeasure);
+			stepHit(updateBeat, updateMeasure);
 		}
+
+		oldStep = curStep;
+	}
+
+	public static function stepHit(updateBeat:Bool, updateMeasure:Bool) {
+		onStepHit.dispatch(curStep);
+		if (updateBeat)
+			onBeatHit.dispatch(curBeat);
+
+		if (updateMeasure)
+			onMeasureHit.dispatch(curMeasure);
+
+		if (!storedSteps.contains(curStep))
+			storedSteps.push(curStep);
 	}
 
 	public static function mapBPMChanges(song:SongData) {

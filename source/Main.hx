@@ -1,7 +1,6 @@
 package;
 
-import flixel.FlxGame;
-import flixel.math.FlxMath;
+import game.FNFGame;
 import openfl.display.Sprite;
 
 class Main extends Sprite {
@@ -52,7 +51,7 @@ class Main extends Sprite {
 
 		// no one line shit because null object reference!!
 		fpsOverlay = new FPSOverlay(10, 3);
-		addChild(new FlxGame(gameSettings.width, gameSettings.height, Init, gameSettings.framerate, gameSettings.framerate, gameSettings.skipSplash, gameSettings.fullscreen));
+		addChild(new FNFGame(gameSettings.width, gameSettings.height, Init, gameSettings.framerate, gameSettings.framerate, gameSettings.skipSplash, gameSettings.fullscreen));
 		addChild(fpsOverlay);
 	}
 }
