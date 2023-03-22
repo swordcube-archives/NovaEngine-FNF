@@ -120,9 +120,11 @@ class PauseSubState extends MusicBeatSubstate {
         });
         FlxG.camera.followLerp = oldFollowLerp;
         PlayState.paused = false;
-        FlxG.sound.music.play();
-        game.vocals.play();
-        game.resyncVocals();
+        if(!game.startingSong && !game.endingSong) {
+            FlxG.sound.music.play();
+            game.vocals.play();
+            game.resyncVocals();
+        }
         close();
     }
 
