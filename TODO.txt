@@ -1,14 +1,2 @@
--- HARD TASKS --
-No hard tasks here!
-
--- MED TASKS (amogus) --
-Pixel Notes [DONE]
-Chart Editor
-	Section switching kind of glitchy [FIXED (in like the laziest way possible)]
-
--- EASY TASKS --
-Discord RPC
-Controls Menu [DONE]
-'inCutscene' kinda works (but not fully) [FIXED]
-Week 5 Alt Anims no work :( [FIXED]
-Make subtitles option work
+go to this to see the todo list!!
+https://trello.com/b/9dO3G6cI/nova-engine
