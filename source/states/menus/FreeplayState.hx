@@ -58,13 +58,8 @@ class FreeplayState extends MusicBeatState {
     override function create() {
         super.create();
 
-        DiscordRPC.changePresence(
-			"In the Freeplay Menu", 
-			null
-		);
-
         if (FlxG.sound.music == null || (FlxG.sound.music != null && !FlxG.sound.music.playing))
-			CoolUtil.playMusic(Paths.music("freakyMenu"));
+			NovaTools.playMenuMusic("freakyMenu");
 
         if(!runDefaultCode) return;
 

@@ -120,7 +120,21 @@ class LuaScript extends ScriptModule {
 		// callbacks are dumb >:(
 		LuaL.dostring(luaState, LuaUtil.STRING_HELPER);
 
-        if (LuaL.dostring(luaState, File.getContent(path)) != 0) {
+		var code:String = File.getContent(path);
+		var replaceMap:Map<String, String> = [
+			// really stupid workaround for from functions
+			// returning the wrong colors
+			// everything else i tried didn't work
+			"FlxColor:fromRGB(" => "FlxColor:new():setRGB(",
+			"FlxColor:fromRGBFloat(" => "FlxColor:new():setRGBFloat(",
+			"FlxColor:fromHSV(" => "FlxColor:new():setHSV(",
+			"FlxColor:fromHSB(" => "FlxColor:new():setHSB(",
+			"FlxColor:fromCMYK(" => "FlxColor:new():setCMYK("
+		];
+		for(from => to in replaceMap)
+			code = code.replace(from, to);
+
+        if (LuaL.dostring(luaState, code) != 0) {
 			var error = Lua.tostring(luaState, -1);
             var msg:String = 'Lua file at path: $path couldn\'t be ran! Here\'s the error message:\n$error';
 

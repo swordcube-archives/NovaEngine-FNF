@@ -94,12 +94,15 @@ class PauseSubState extends MusicBeatSubstate {
         grpAlphabet.createItem("Resume", resumeGame);
         grpAlphabet.createItem("Restart Song", () -> FlxG.resetState());
         grpAlphabet.createItem("Change Options", () -> {
+            NovaTools.playMenuMusic("freakyMenu");
             OptionsMenuState.stateData = {
                 state: PlayState
             };
             FlxG.switchState(new OptionsMenuState());
         });
         grpAlphabet.createItem("Exit To Menu", () -> {
+            NovaTools.playMenuMusic("freakyMenu");
+
             // gotta fix for story mode eventually
             FlxG.switchState(new FreeplayState());
         });

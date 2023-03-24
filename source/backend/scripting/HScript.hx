@@ -37,7 +37,21 @@ class HScript extends ScriptModule {
             if(!FileSystem.exists(path))
                 throw 'Script doesn\'t exist at path: $path';
             
-            expr = parser.parseString(File.getContent(path));
+            var code:String = File.getContent(path);
+            var replaceMap:Map<String, String> = [
+                // really stupid workaround for from functions
+                // returning the wrong colors
+                // everything else i tried didn't work
+                "FlxColor.fromRGB(" => "new FlxColor().setRGB(",
+                "FlxColor.fromRGBFloat(" => "new FlxColor().setRGBFloat(",
+                "FlxColor.fromHSV(" => "new FlxColor().setHSV(",
+                "FlxColor.fromHSB(" => "new FlxColor().setHSB(",
+                "FlxColor.fromCMYK(" => "new FlxColor().setCMYK("
+            ];
+            for(from => to in replaceMap)
+                code = code.replace(from, to);
+
+            expr = parser.parseString(code);
         } 
         catch(e) {
             expr = null;

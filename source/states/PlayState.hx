@@ -669,6 +669,8 @@ class PlayState extends MusicBeatState {
 					FlxTween.tween(numScore, {alpha: 0}, 0.2, {
 						onComplete: function(tween:FlxTween) {
 							numScore.kill();
+							numScore.destroy();
+							comboGroup.remove(numScore, true);
 						},
 						startDelay: Conductor.crochet * 0.002
 					});
@@ -682,6 +684,8 @@ class PlayState extends MusicBeatState {
 			FlxTween.tween(ratingSpr, {alpha: 0}, 0.2, {
 				onComplete: function(tween:FlxTween) {
 					ratingSpr.kill();
+					ratingSpr.destroy();
+					comboGroup.remove(ratingSpr, true);
 				},
 				startDelay: Conductor.crochet * 0.001
 			});
@@ -691,6 +695,8 @@ class PlayState extends MusicBeatState {
 			FlxTween.tween(comboSpr, {alpha: 0}, 0.2, {
 				onComplete: function(tween:FlxTween) {
 					comboSpr.kill();
+					comboSpr.destroy();
+					comboGroup.remove(comboSpr, true);
 				},
 				startDelay: Conductor.crochet * 0.001
 			});

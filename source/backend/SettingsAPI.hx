@@ -54,8 +54,8 @@ class SettingsAPI {
      * 
      * @param saveData The name of the setting.
      */
-    public static inline function get(saveData:String) {
-        var value:Dynamic = false;
+    public static inline function get(saveData:String):Dynamic {
+        var value:Dynamic = null;
         if(Reflect.field(SettingsAPI, saveData) != null)
             value = Reflect.field(SettingsAPI, saveData);
 
@@ -76,12 +76,14 @@ class SettingsAPI {
      * 
      * @param saveData The name of the setting to set.
      */
+    // omfg how did i not realize this was broken for so long
+    // wtf 😭😭😭😭
     public static inline function set(saveData:String, value:Dynamic) {
-        if(Reflect.field(SettingsAPI.__save.data, saveData) != null && Reflect.field(SettingsAPI, saveData) == null) {
+        if((Reflect.field(SettingsAPI.__save.data, saveData) != null && Reflect.field(SettingsAPI, saveData) == null) || (Reflect.field(SettingsAPI.__save.data, saveData) == null && Reflect.field(SettingsAPI, saveData) == null)) {
             @:privateAccess
-            Reflect.setField(SettingsAPI.__save.data, saveData, !Reflect.field(SettingsAPI.__save.data, saveData));
+            Reflect.setField(SettingsAPI.__save.data, saveData, value);
         } else
-            Reflect.setField(SettingsAPI, saveData, !Reflect.field(SettingsAPI, saveData));
+            Reflect.setField(SettingsAPI, saveData, value);
     }
 
     // ------ INTERNAL VARIABLES & FUNCTIONS -------------------------------------

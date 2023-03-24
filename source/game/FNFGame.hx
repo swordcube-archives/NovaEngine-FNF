@@ -78,6 +78,7 @@ class FNFGame extends FlxGame {
 		controlsText += '\nPress SPACE to go to our GitHub Page\n';
 		controlsText += '\nPress ESCAPE to restart the game\n';
 
+        Logs.trace("Error occured: "+e.toString(), ERROR);
 		for (item in errorStack) {
 			switch (item) {
 				case FilePos(s, file, line, column):
@@ -89,7 +90,13 @@ class FNFGame extends FlxGame {
 					#end
 			}
 		}
+        Logs.trace("If the crash handler screen does not show up, Restart your game.", ERROR);
 
+        // we need to switch instantly
+        // otherwise we won't go to the state sometimes
+        FlxTransitionableState.skipNextTransIn = true;
+        FlxTransitionableState.skipNextTransOut = true;
+        
         return FlxG.switchState(Type.createInstance(PanicState, [
             '${fileStack}\nCaught: ${e}\n
 			${controlsText}'
