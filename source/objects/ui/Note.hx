@@ -75,7 +75,6 @@ class Note extends FNFSprite {
         return PlayState.current.scrollSpeed;
     }
     
-    public var noteAngle:Float = 0;
     public var stepCrochet:Float = 0;
 
     public var strumLine:StrumLine;

@@ -146,13 +146,13 @@ class NoteField extends NoteGroup {
 			var receptor:Receptor = strumLine.members[note.noteData];
 
 			note.x = (receptor.x - psuedoX)
-                + (Math.cos(FlxAngle.asRadians(note.noteAngle)) * psuedoX)
-				+ (Math.sin(FlxAngle.asRadians(note.noteAngle)) * psuedoY)
+                + (Math.cos(FlxAngle.asRadians(-note.angle)) * psuedoX)
+				+ (Math.sin(FlxAngle.asRadians(-note.angle)) * psuedoY)
 				+ note.offsetX;
 
 			note.y = receptor.y
-                + (Math.cos(FlxAngle.asRadians(note.noteAngle)) * psuedoY) 
-                + (Math.sin(FlxAngle.asRadians(note.noteAngle)) * psuedoX)
+                + (Math.cos(FlxAngle.asRadians(-note.angle)) * psuedoY) 
+                + (Math.sin(FlxAngle.asRadians(-note.angle)) * psuedoX)
 				+ note.offsetY;
 
 			if (note.isSustainNote) {
@@ -167,8 +167,6 @@ class NoteField extends NoteGroup {
 				note.y += Note.swagWidth;
 				note.y -= note.height;
 			}
-
-			note.angle = -note.noteAngle;
 
 			// automatically hitting notes for opponent
 			if (strumLine.autoplay && !note.wasGoodHit && note.strumTime <= Conductor.songPosition && note.shouldHit) {
