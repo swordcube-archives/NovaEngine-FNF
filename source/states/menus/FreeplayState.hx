@@ -1,5 +1,6 @@
 package states.menus;
 
+import backend.modding.ModUtil;
 import flixel.addons.ui.FlxUIInputText;
 import music.Song.ChartFormat;
 import flixel.util.FlxColor;
@@ -293,7 +294,7 @@ class FreeplayState extends MusicBeatState {
         var diffs:Array<String> = loadedSongs[curSelected].difficulties;
 
         curDifficulty = FlxMath.wrap(curDifficulty + change, 0, diffs.length - 1);
-        intendedScore = Highscore.getScore(loadedSongs[curSelected].name.toLowerCase(), diffs[curDifficulty]);
+        intendedScore = Highscore.getScore(loadedSongs[curSelected].name.toLowerCase()+":"+ModUtil.currentMod, diffs[curDifficulty]);
 
         var arrows:Array<String> = diffs.length <= 1 ? ["", ""] : ["< ", " >"];
         diffText.text = '${arrows[0]}${diffs[curDifficulty].toUpperCase()}${arrows[1]}';

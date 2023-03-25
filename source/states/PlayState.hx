@@ -579,6 +579,8 @@ class PlayState extends MusicBeatState {
 	}
 
 	public function finishSong(?ignoreNoteOffset:Bool = false) {
+		endingSong = true;
+		
 		FlxG.sound.music.volume = 0;
 		FlxG.sound.music.pause();
 		vocals.volume = 0;
@@ -606,7 +608,12 @@ class PlayState extends MusicBeatState {
 		var event = scripts.event("onEndSong", new CancellableEvent());
 		event = scripts.event("onSongEnd", event);
 
+		Conductor.bpm = 0;
+		Conductor.reset();
 		if(event.cancelled) return;
+
+		persistentUpdate = false;
+		persistentDraw = true;
 
 		if(isStoryMode)
 			FlxG.switchState(new StoryMenuState());
@@ -1000,7 +1007,7 @@ class PlayState extends MusicBeatState {
 			}
 		}
 
-		if(!endingSong && !inCutscene) {
+		if(!inCutscene) {
 			Conductor.songPosition += elapsed * 1000;
 			if(Conductor.songPosition >= 0 && startingSong)
 				startSong();
@@ -1026,7 +1033,7 @@ class PlayState extends MusicBeatState {
 	}
 
 	override public function beatHit(curBeat:Int) {
-		if(FlxG.sound.music.time >= FlxG.sound.music.length || endingSong) return;
+		if(FlxG.sound.music.time >= (FlxG.sound.music.length - 100) || endingSong) return;
 
 		super.beatHit(curBeat);
 		
@@ -1054,7 +1061,7 @@ class PlayState extends MusicBeatState {
 	}
 
 	override public function stepHit(curStep:Int) {
-		if(FlxG.sound.music.time >= FlxG.sound.music.length || endingSong) return;
+		if(FlxG.sound.music.time >= (FlxG.sound.music.length - 100) || endingSong) return;
 
 		super.stepHit(curStep);
 
@@ -1070,7 +1077,7 @@ class PlayState extends MusicBeatState {
 	}
 
 	override public function measureHit(curMeasure:Int) {
-		if(FlxG.sound.music.time >= FlxG.sound.music.length || endingSong) return;
+		if(FlxG.sound.music.time >= (FlxG.sound.music.length - 100) || endingSong) return;
 
 		super.measureHit(curMeasure);
 

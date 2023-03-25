@@ -67,6 +67,8 @@ class ScriptHandler {
             "FlxBackdrop" => flixel.addons.display.FlxBackdrop,
             "FlxTypedGroup" => flixel.group.FlxGroup.FlxTypedGroup,
             "FlxGroup" => flixel.group.FlxGroup,
+            "FlxTypedSpriteGroup" => flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup,
+            "FlxSpriteGroup" => flixel.group.FlxSpriteGroup,
 
             "FlxUITabMenu" => flixel.addons.ui.FlxUITabMenu,
             "FlxInputText" => flixel.addons.ui.FlxInputText,
