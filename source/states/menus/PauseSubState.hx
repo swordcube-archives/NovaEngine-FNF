@@ -102,9 +102,12 @@ class PauseSubState extends MusicBeatSubstate {
         });
         grpAlphabet.createItem("Exit To Menu", () -> {
             NovaTools.playMenuMusic("freakyMenu");
+            FlxG.sound.music.pitch = 1;
 
-            // gotta fix for story mode eventually
-            FlxG.switchState(new FreeplayState());
+            if(PlayState.isStoryMode)
+                FlxG.switchState(new StoryMenuState());
+            else
+                FlxG.switchState(new FreeplayState());
         });
         // ^^^ -------------------------
 

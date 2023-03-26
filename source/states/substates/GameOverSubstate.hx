@@ -65,7 +65,8 @@ class GameOverSubstate extends MusicBeatSubstate {
 			if (controls.ACCEPT) endBullshit();
 
 			if (controls.BACK) {
-				FlxG.sound.music.stop();
+				NovaTools.playMenuMusic("freakyMenu");
+				FlxG.sound.music.pitch = 1;
 
 				if (PlayState.isStoryMode)
 					FlxG.switchState(new states.menus.StoryMenuState());
@@ -96,12 +97,14 @@ class GameOverSubstate extends MusicBeatSubstate {
 				coolStartDeath();
 			}
 
-			if (FlxG.sound.music.playing) Conductor.songPosition = FlxG.sound.music.time;
+			if (FlxG.sound.music.playing)
+				Conductor.songPosition = FlxG.sound.music.time;
 		}
 	}
 
 	public function coolStartDeath(?startVol:Float = 1) {
 		FlxG.sound.playMusic(Paths.music(loopSoundName), startVol);
+		FlxG.sound.music.pitch = 1;
 	}
 
 	public var isEnding:Bool = false;

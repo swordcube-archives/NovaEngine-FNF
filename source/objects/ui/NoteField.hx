@@ -133,7 +133,7 @@ class NoteField extends NoteGroup {
 
 	override public function update(elapsed:Float) {
 		super.update(elapsed);
-		forEach((note:Note) -> {
+		forEachAlive((note:Note) -> {
 			if (note.noteData < 0) return;
 
 			var strumLine:StrumLine = note.strumLine;
@@ -192,75 +192,78 @@ class NoteField extends NoteGroup {
 			}
 
 			// kill da note when it go off screen
-			if (!note.wasGoodHit && ((downscrollMultiplier < 0 && note.y > FlxG.height + note.height) || (downscrollMultiplier > 0 && note.y < -note.height))) {
-				var funcName:String = note.mustPress ? "onPlayerMiss" : "onOpponentMiss";
-				// other function names u can use if you're used to how another engine does it
-				var funcNames:Array<Array<String>> = [
-					["onBfMiss", "onDadMiss"],
-					["noteMiss", "opponentNoteMiss"]
-				];
-					
-				var event = game.scripts.event(funcName, new NoteMissEvent(note, 10));
-				event = game.noteTypeScripts.get(note.noteType).event(funcName, event);
-		
-				for(f in funcNames)
-					event = game.scripts.event(note.mustPress ? f[0] : f[1], event);
-		
-				for(f in funcNames)
-					event = game.noteTypeScripts.get(note.noteType).event(note.mustPress ? f[0] : f[1], event);
+			if ((downscrollMultiplier < 0 && note.y > FlxG.height) || (downscrollMultiplier > 0 && note.y < -note.height)) {
+				// oh no!! nesting!!!!
+				// what will i ever do!!
+				if(!note.wasGoodHit) {
+					var funcName:String = note.mustPress ? "onPlayerMiss" : "onOpponentMiss";
+					// other function names u can use if you're used to how another engine does it
+					var funcNames:Array<Array<String>> = [
+						["onBfMiss", "onDadMiss"],
+						["noteMiss", "opponentNoteMiss"]
+					];
+						
+					var event = game.scripts.event(funcName, new NoteMissEvent(note, 10));
+					event = game.noteTypeScripts.get(note.noteType).event(funcName, event);
+			
+					for(f in funcNames)
+						event = game.scripts.event(note.mustPress ? f[0] : f[1], event);
+			
+					for(f in funcNames)
+						event = game.noteTypeScripts.get(note.noteType).event(note.mustPress ? f[0] : f[1], event);
 
-				if(!event.cancelled) {
-					if(note.mustPress && note.shouldHit) {
-						game.health -= event.healthLoss;
-						game.songScore -= event.score;
+					if(!event.cancelled) {
+						if(note.mustPress && note.shouldHit) {
+							game.health -= event.healthLoss;
+							game.songScore -= event.score;
 
-						if(!note.isSustainNote) {
-							// i think a gf sad anim played
-							// if you lost a combo of 10+? i forget base game shits lol
-							if(game.combo >= 10) {
-								if(game.gf != null)
-									game.gf.playAnim("sad");
+							if(!note.isSustainNote) {
+								// i think a gf sad anim played
+								// if you lost a combo of 10+? i forget base game shits lol
+								if(game.combo >= 10) {
+									if(game.gf != null)
+										game.gf.playAnim("sad");
+								}
+								game.combo = 0;
+								game.songMisses++;
+
+								if(SettingsAPI.missSounds)
+									FlxG.sound.play(Paths.soundRandom("game/missnote", 1, 3), FlxG.random.float(0.1, 0.2));
 							}
-							game.combo = 0;
-							game.songMisses++;
 
-							if(SettingsAPI.missSounds)
-								FlxG.sound.play(Paths.soundRandom("game/missnote", 1, 3), FlxG.random.float(0.1, 0.2));
-						}
+							game.accuracyPressedNotes++;
+							game.updateScoreText();
 
-						game.accuracyPressedNotes++;
-						game.updateScoreText();
-
-						if(!event.cancelSingAnim) {
-							var singAnim:String = "sing"+event.note.directionName.toUpperCase()+"miss";
-							if(event.characters != null && event.characters.length > 0) {
-								for(char in event.characters) {
-									char.holdTimer = 0;
+							if(!event.cancelSingAnim) {
+								var singAnim:String = "sing"+event.note.directionName.toUpperCase()+"miss";
+								if(event.characters != null && event.characters.length > 0) {
+									for(char in event.characters) {
+										char.holdTimer = 0;
+										var altShit:String = (note.altAnim && char.animation.exists(singAnim+"-alt")) ? "-alt" : "";
+										char.holdTimer = 0;
+										if(!char.specialAnim)
+											char.playAnim(singAnim+altShit, true);
+									}
+								} else {
+									var char:Character = (note.mustPress) ? game.boyfriend : game.dad;
 									var altShit:String = (note.altAnim && char.animation.exists(singAnim+"-alt")) ? "-alt" : "";
 									char.holdTimer = 0;
 									if(!char.specialAnim)
 										char.playAnim(singAnim+altShit, true);
 								}
-							} else {
-								var char:Character = (note.mustPress) ? game.boyfriend : game.dad;
-								var altShit:String = (note.altAnim && char.animation.exists(singAnim+"-alt")) ? "-alt" : "";
-								char.holdTimer = 0;
-								if(!char.specialAnim)
-									char.playAnim(singAnim+altShit, true);
 							}
+
+							if(note.shouldHit)
+								game.vocals.volume = 0;
 						}
 
-						if(note.shouldHit)
-							game.vocals.volume = 0;
+						if(!note.isSustainNote && note.shouldHit) {
+							for(note in note.sustainNotes)
+								note.tooLate = true;
+						}
 					}
-
-					if(!note.isSustainNote && note.shouldHit) {
-						for(note in note.sustainNotes)
-							note.tooLate = true;
-					}
-					
-					destroyNote(note);
 				}
+				destroyNote(note);
 			}
 		});
 	}

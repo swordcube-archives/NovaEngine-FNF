@@ -615,12 +615,13 @@ class PlayState extends MusicBeatState {
 		persistentUpdate = false;
 		persistentDraw = true;
 
+		NovaTools.playMenuMusic("freakyMenu");
+		FlxG.sound.music.pitch = 1;
+
 		if(isStoryMode)
 			FlxG.switchState(new StoryMenuState());
 		else
 			FlxG.switchState(new FreeplayState());
-
-		NovaTools.playMenuMusic("freakyMenu");
 	}
 
 	public function popUpScore(event:NoteHitEvent, rating:String, combo:Int) {
@@ -964,7 +965,9 @@ class PlayState extends MusicBeatState {
 			autoplayTxt.alpha = 1 - Math.sin((Math.PI * autoplaySine) / 180);
 		}
 
-		if(health <= 0 || (controls.RESET && !SettingsAPI.disableResetButton)) gameOver();
+		if(health <= 0 || (controls.RESET && !SettingsAPI.disableResetButton))
+			gameOver();
+		
 		if(controls.CHARTER) {
 			FlxG.sound.music.stop();
 			vocals.stop();
