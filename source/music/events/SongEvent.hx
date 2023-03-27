@@ -20,10 +20,17 @@ class SongEvent {
         fired = true;
 
         var eventScript = game.eventScripts.get(name);
-        if(eventScript == null) return Logs.trace('Event called "$name" doesn\'t exist!', ERROR);
+        if(eventScript != null) {
+            // call onEvent for event script
+            parameters.insert(0, name);
+            eventScript.call("onEvent", parameters);
+            parameters.splice(0, 1);
+        } else
+            Logs.trace('Event called "$name" doesn\'t exist!', ERROR);
 
-        parameters.insert(0, group.time);
-        eventScript.call("onEvent", parameters);
+        // call onEvent for every other script
+        parameters.insert(0, name);
+        game.scripts.call("onEvent", parameters);
         parameters.splice(0, 1);
     }
 }

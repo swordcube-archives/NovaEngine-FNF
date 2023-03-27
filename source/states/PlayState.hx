@@ -937,14 +937,38 @@ class PlayState extends MusicBeatState {
 		scoreTxt.x = Math.floor((FlxG.width - scoreTxt.width) * 0.5);
 	}
 
+	/**
+	 * Calls a function on note type & event scripts.
+	 * 
+	 * @param func The function to call.
+	 * @param parameters The parameters given to the function.
+	 */
+	public function callOnOtherScripts(func:String, ?parameters:Array<Dynamic>) {
+		for(group in [noteTypeScripts, eventScripts]) {
+			for(script in group)
+				script.call(func, parameters);
+		}
+	}
+
+	/**
+	 * Destroys every note type and event script.
+	 */
+	public function destroyOtherScripts() {
+		for(group in [noteTypeScripts, eventScripts]) {
+			for(script in group) {
+				script.call("onDestroy");
+				script.destroy();
+			}
+		}
+	}
+
 	public var autoplaySine:Float = 0;
 
 	override public function update(elapsed:Float) {
 		super.update(elapsed);
 
 		scripts.call("onUpdate", [elapsed]);
-		for(script in noteTypeScripts)
-			script.call("onUpdate", [elapsed]);
+		callOnOtherScripts("onUpdate", [elapsed]);
 
 		@:privateAccess
 		if (!startingSong && !inCutscene && !Conductor.isAudioSynced(FlxG.sound.music) || (vocals._sound != null && !Conductor.isAudioSynced(vocals)))
@@ -1017,22 +1041,19 @@ class PlayState extends MusicBeatState {
 		}
 
 		scripts.call("onUpdatePost", [elapsed]);
-		for(script in noteTypeScripts)
-			script.call("onUpdatePost", [elapsed]);
+		callOnOtherScripts("onUpdatePost", [elapsed]);
 	}
 
 	override public function fixedUpdate(elapsed:Float) {
 		super.fixedUpdate(elapsed);
 		scripts.call("onFixedUpdate", [elapsed]);
-		for(script in noteTypeScripts)
-			script.call("onFixedUpdate", [elapsed]);
+		callOnOtherScripts("onFixedUpdate", [elapsed]);
 	}
 
 	override public function fixedUpdatePost(elapsed:Float) {
 		super.fixedUpdatePost(elapsed);
 		scripts.call("onFixedUpdatePost", [elapsed]);
-		for(script in noteTypeScripts)
-			script.call("onFixedUpdatePost", [elapsed]);
+		callOnOtherScripts("onFixedUpdatePost", [elapsed]);
 	}
 
 	override public function beatHit(curBeat:Int) {
@@ -1059,8 +1080,7 @@ class PlayState extends MusicBeatState {
 		positionIcons();
 
 		scripts.call("onBeatHit", [curBeat]);
-		for(script in noteTypeScripts)
-			script.call("onBeatHit", [curBeat]);
+		callOnOtherScripts("onBeatHit", [curBeat]);
 	}
 
 	override public function stepHit(curStep:Int) {
@@ -1069,8 +1089,7 @@ class PlayState extends MusicBeatState {
 		super.stepHit(curStep);
 
 		scripts.call("onStepHit", [curStep]);
-		for(script in noteTypeScripts)
-			script.call("onStepHit", [curStep]);
+		callOnOtherScripts("onStepHit", [curStep]);
 	}
 
 	public function updateCamera() {
@@ -1095,8 +1114,7 @@ class PlayState extends MusicBeatState {
 		updateCamera();
 
 		scripts.call("onMeasureHit", [curMeasure]);
-		for(script in noteTypeScripts)
-			script.call("onMeasureHit", [curMeasure]);
+		callOnOtherScripts("onMeasureHit", [curMeasure]);
 	}
 
 	public function resyncVocals() {
@@ -1113,8 +1131,7 @@ class PlayState extends MusicBeatState {
 		}
 
 		scripts.call("onResyncVocals", []);
-		for(script in noteTypeScripts)
-			script.call("onResyncVocals", []);
+		callOnOtherScripts("onResyncVocals", []);
 	}
 
 	public function startSong() {
@@ -1131,22 +1148,18 @@ class PlayState extends MusicBeatState {
 			FlxTween.tween(obj, {alpha: 1}, 0.5, {ease: FlxEase.cubeOut});
 
 		resyncVocals();
-		scripts.call("onStartSong", []);
-		scripts.call("onSongStart", []);
-		for(script in noteTypeScripts) {
-			script.call("onStartSong", []);
-			script.call("onSongStart", []);
+
+		for(f in ["onStartSong", "onSongStart"]) {
+			scripts.call(f);
+			callOnOtherScripts(f);
 		}
 	}
 
 	override public function destroy() {
 		current = null;
+		destroyOtherScripts();
 		scripts.call("onDestroy", []);
 		scripts.destroy();
-		for(script in noteTypeScripts) {
-			script.call("onDestroy", []);
-			script.destroy();
-		}
 		super.destroy();
 	}
 }

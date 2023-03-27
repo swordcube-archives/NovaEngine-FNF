@@ -310,7 +310,7 @@ class ScriptGroup extends FlxBasic {
      * @param parameters The parameters/arguments to give the function when calling it.
      * @param defaultReturn The default return value if none of the scripts return anything.
      */
-    public function call(funcName:String, parameters:Array<Dynamic>, ?defaultReturn:Dynamic = null):Dynamic {
+    public function call(funcName:String, ?parameters:Array<Dynamic>, ?defaultReturn:Dynamic = null):Dynamic {
         var finalizedReturn:Dynamic = defaultReturn;
 
         for(script in __scripts) {

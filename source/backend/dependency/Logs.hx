@@ -1,5 +1,6 @@
 package backend.dependency;
 
+import haxe.PosInfos;
 import flixel.system.debug.log.LogStyle;
 import flixel.system.frontEnds.LogFrontEnd;
 
@@ -32,7 +33,7 @@ class Logs {
     
     public static function init() {
         haxe.Log.trace = (v, ?pos) -> {
-            Logs.trace('${pos.fileName} - Line ${pos.lineNumber}: $v', TRACE);
+            Logs.trace('${pos.fileName} - Line ${pos.lineNumber}: $v', TRACE, true, pos);
         };
 
         LogFrontEnd.onLogs = (Data, Style, FireOnce) -> {
@@ -54,9 +55,9 @@ class Logs {
 		};
     }
 
-    public static function trace(value:Dynamic, type:LogType, ?showTag:Bool = true) {
+    public static function trace(value:Dynamic, type:LogType, ?showTag:Bool = true, ?infos:PosInfos) {
         var time = Date.now();
-        var timeStr:String = '${colors["green"]}[${Std.string(time.getHours()).addZeros(2)}:${Std.string(time.getMinutes()).addZeros(2)}:${Std.string(time.getSeconds()).addZeros(2)}] ';
+        var timeStr:String = '${colors["green"]}[${infos.className.split(".").last()}.${infos.methodName}():L${infos.lineNumber} | ${Std.string(time.getHours()).addZeros(2)}:${Std.string(time.getMinutes()).addZeros(2)}:${Std.string(time.getSeconds()).addZeros(2)}] ';
 
         Sys.println(switch(type) {
             case WARNING: timeStr + colors["yellow"] +  (showTag ? "[ 🟡 WARNING ] " : "") + value + colors["reset"];

@@ -44,9 +44,19 @@ class Stage extends StageLayer {
     public var gfLayer:StageLayer = new StageLayer();
     public var bfLayer:StageLayer = new StageLayer();
 
+    public var globalSprites:Map<String, FlxBasic> = [];
+
     public function new(?stage:String = "stage") {
         super();
         load(stage);
+    }
+
+    public function getSprite(name:String) {
+        var sprite = globalSprites.get(name);
+        if(!globalSprites.exists(name) || sprite == null)
+            Logs.trace('Sprite called "$name" doesn\'t exist in the current stage!', ERROR);
+        
+        return sprite;
     }
 
     /**
@@ -91,15 +101,16 @@ class Stage extends StageLayer {
 			return Paths.getPackerAtlas('game/stages/$curStage/$path', mod);
 		});
 
-        script.set("add", (object:FlxBasic, ?layer:OneOfTwo<String, Int> = 0) -> {
-            var val:OneOfTwo<String, Int> = layer is String ? cast(layer, String).toLowerCase() : layer;
-            switch(val) {
-                case 1, "dad", "opponent": dadLayer.add(object);
-                case 2, "gf", "girlfriend", "speakers": gfLayer.add(object);
-                case 3, "bf", "boyfriend", "foreground", "fg": bfLayer.add(object);
-                default: add(object);
-            }
+        script.set("add", addObject);
+
+        // basically a duplicate of add
+        // EXCEPT anything added thru this function
+        // can be accessed in scripts that aren't stage scripts
+        script.set("addGlobally", (name:String, object:FlxBasic, ?layer:OneOfTwo<String, Int> = 0) -> {
+            addObject(object, layer);
+            globalSprites.set(name, object);
         });
+
         script.set("remove", (object:FlxBasic) -> {
             for(layer in [this, dadLayer, gfLayer, bfLayer]) {
                 if(layer.members.contains(object)) {
@@ -107,6 +118,11 @@ class Stage extends StageLayer {
                     break;
                 } else
                     continue;
+            }
+
+            for(key => sprite in globalSprites) {
+                if(sprite == object)
+                    globalSprites.remove(key);
             }
         });
         if(!firstLoad) {
@@ -116,5 +132,15 @@ class Stage extends StageLayer {
         firstLoad = false;
         game.scripts.add(script);
         return this;
+    }
+
+    function addObject(object:FlxBasic, ?layer:OneOfTwo<String, Int> = 0) {
+        var val:OneOfTwo<String, Int> = layer is String ? cast(layer, String).toLowerCase() : layer;
+        switch(val) {
+            case 1, "dad", "opponent": dadLayer.add(object);
+            case 2, "gf", "girlfriend", "speakers": gfLayer.add(object);
+            case 3, "bf", "boyfriend", "foreground", "fg": bfLayer.add(object);
+            default: add(object);
+        }
     }
 }
