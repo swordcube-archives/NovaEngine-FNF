@@ -306,7 +306,7 @@ class PlayState extends MusicBeatState {
 				continue;
 			
 			scripts.add(ScriptHandler.loadModule(path));
-		}
+		}	
 
 		scripts.load();
 		scripts.call("onCreate", []);
@@ -390,12 +390,17 @@ class PlayState extends MusicBeatState {
 					
 					if(eventScripts.exists(event.name)) continue;
 					var script = ScriptHandler.loadModule(Paths.script('data/events/${event.name}'));
+					script.load();
 					eventScripts.set(event.name, script);
-					scripts.add(script);
 				}
 				events.add(group.time, EventManager.generateList(group));
 			}
 		}
+
+		for(script in eventScripts)
+			script.setParent(this);
+
+		callOnOtherScripts("onCreate");	
 
 		// Generate health bar & icons
 		healthBarBG = new TrackingSprite(0, FlxG.height * (SettingsAPI.downscroll ? 0.1 : 0.9)).loadGraphic(Paths.image("UI/base/healthBar"));

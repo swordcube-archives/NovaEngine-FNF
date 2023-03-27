@@ -29,7 +29,7 @@ class ChartParser {
                 if(!game.noteTypeScripts.exists(daNoteType)) {
                     var script = ScriptHandler.loadModule(Paths.script('data/notetypes/$daNoteType'));
                     script.setParent(game);
-                    script.call("onCreate", []);
+                    script.load();
                     game.noteTypeScripts.set(daNoteType, script);
                 }
 
