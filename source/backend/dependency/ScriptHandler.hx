@@ -342,6 +342,8 @@ class ScriptGroup extends FlxBasic {
         for(script in __scripts)
             script.destroy();
 
+        __scripts = [];
+
         super.destroy();
     }
 }

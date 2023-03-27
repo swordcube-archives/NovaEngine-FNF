@@ -122,6 +122,7 @@ class HScript extends ScriptModule {
      */
      override public function call(funcName:String, ?parameters:Array<Dynamic>):Dynamic {
         if(interp == null) return null;
+        if(parameters == null) parameters = [];
 
         try {
             var func:Dynamic = interp.variables.get(funcName);
@@ -148,6 +149,7 @@ class HScript extends ScriptModule {
 
     override public function destroy() {
         interp = null;
+        expr = null;
         super.destroy();
     }
 

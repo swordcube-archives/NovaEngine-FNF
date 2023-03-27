@@ -945,8 +945,12 @@ class PlayState extends MusicBeatState {
 	 */
 	public function callOnOtherScripts(func:String, ?parameters:Array<Dynamic>) {
 		for(group in [noteTypeScripts, eventScripts]) {
-			for(script in group)
+			if(group == null) continue;
+			
+			for(script in group) {
+				if(script == null) continue;
 				script.call(func, parameters);
+			}
 		}
 	}
 
@@ -954,11 +958,19 @@ class PlayState extends MusicBeatState {
 	 * Destroys every note type and event script.
 	 */
 	public function destroyOtherScripts() {
-		for(group in [noteTypeScripts, eventScripts]) {
-			for(script in group) {
-				script.call("onDestroy");
-				script.destroy();
+		try {
+			for(group in [noteTypeScripts, eventScripts]) {
+				if(group == null) continue;
+
+				for(script in group) {
+					if(script == null) continue;
+					script.destroy();
+				}
 			}
+			noteTypeScripts = [];
+			eventScripts = [];
+		} catch(e) {
+			Logs.trace('Note type & event scripts failed to destroy! - $e', ERROR);
 		}
 	}
 
@@ -1157,9 +1169,9 @@ class PlayState extends MusicBeatState {
 
 	override public function destroy() {
 		current = null;
-		destroyOtherScripts();
 		scripts.call("onDestroy", []);
 		scripts.destroy();
+		destroyOtherScripts();
 		super.destroy();
 	}
 }
