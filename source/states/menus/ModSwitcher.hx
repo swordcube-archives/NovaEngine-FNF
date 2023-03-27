@@ -83,6 +83,8 @@ class ModSwitcher extends MusicBeatSubstate {
         curSelected = mods.indexOf(ModUtil.currentMod);
         if(curSelected <= -1) curSelected = 0;
         changeSelection();
+
+        cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
     }
 
     public function addModToList(name:String, raw:String) {

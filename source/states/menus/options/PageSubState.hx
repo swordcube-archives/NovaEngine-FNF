@@ -90,6 +90,8 @@ class PageSubState extends MusicBeatSubstate {
 
 		for(obj in [bg, tabStrip, tabName, tabArrows, tabIndicatorBox, tabIndicatorTxt, tooltipBG, tooltipTxt])
 			obj.scrollFactor.set();
+
+		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
     }
 
 	override function switchTo(state:flixel.FlxState) {
