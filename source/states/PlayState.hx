@@ -390,6 +390,7 @@ class PlayState extends MusicBeatState {
 					
 					if(eventScripts.exists(event.name)) continue;
 					var script = ScriptHandler.loadModule(Paths.script('data/events/${event.name}'));
+					script.setParent(this);
 					script.load();
 					eventScripts.set(event.name, script);
 				}
