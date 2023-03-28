@@ -201,8 +201,10 @@ class LuaScript extends ScriptModule {
 			Lua.settop(luaState, 0);
 			Lua.getglobal(luaState, name); // Finds the function from the script.
 
-			if (!Lua.isfunction(luaState, -1))
+			if (!Lua.isfunction(luaState, -1)) {
+				currentLua = lastLua;
 				return null;
+			}
 
 			// Pushes the parameters of the script.
 			var nparams:Int = 0;
@@ -218,6 +220,7 @@ class LuaScript extends ScriptModule {
 					WindowUtil.showMessage('Error occured while running function ($name)', '${Lua.tostring(luaState, -1)}', MSG_ERROR);
 					functionsErrored[name] = true;
 				}
+				currentLua = lastLua;
 				return null;
 			}
 
@@ -231,6 +234,7 @@ class LuaScript extends ScriptModule {
 				WindowUtil.showMessage('Error occured trying to run lua function ($name)', '$e', MSG_ERROR);
 				functionsErrored[name] = true;
 			}
+			currentLua = lastLua;
 		}
 		currentLua = lastLua;
 		#end

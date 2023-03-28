@@ -393,7 +393,7 @@ class PlayState extends MusicBeatState {
 					script.load();
 					eventScripts.set(event.name, script);
 				}
-				events.add(group.time, EventManager.generateList(group));
+				events.add(group.time + SettingsAPI.noteOffset, EventManager.generateList(group));
 			}
 		}
 
