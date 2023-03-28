@@ -12,7 +12,7 @@ import states.PlayState;
 
 class NoteField extends NoteGroup {
 	private var game = PlayState.current;
-	private var __pressedKeys:Array<Bool> = [];
+	public var pressedKeys:Array<Bool> = [];
 
 	public function new() {
 		super();
@@ -22,10 +22,10 @@ class NoteField extends NoteGroup {
 	}
 
 	public function fillUpPressedKeys(length:Int) {
-		if(!(__pressedKeys.length < length)) return;
+		if(!(pressedKeys.length < length)) return;
 
-		while(__pressedKeys.length < length)
-			__pressedKeys.push(false);
+		while(pressedKeys.length < length)
+			pressedKeys.push(false);
 	}
 
 	public function sortHitNotes(a:Note, b:Note):Int {
@@ -54,12 +54,12 @@ class NoteField extends NoteGroup {
 		fillUpPressedKeys(keyBinds.length);
 		var data:Int = keyFromEvent(event.keyCode);
 
-		if(PlayState.paused || data == -1 || __pressedKeys[data] || game.playerStrums.autoplay) return;
+		if(PlayState.paused || data == -1 || pressedKeys[data] || game.playerStrums.autoplay) return;
 
 		var event = game.scripts.event("onKeyPress", new InputSystemEvent(data));
 		if(event.cancelled) return;
 
-		__pressedKeys[data] = true;
+		pressedKeys[data] = true;
 
 		var receptor:Receptor = game.playerStrums.members[data];
 		receptor.playAnim("pressed");
@@ -123,7 +123,7 @@ class NoteField extends NoteGroup {
 		var event = game.scripts.event("onKeyRelease", new InputSystemEvent(data));
 		if(event.cancelled) return;
 
-		__pressedKeys[data] = false;
+		pressedKeys[data] = false;
 
 		var receptor:Receptor = game.playerStrums.members[data];
 		receptor.playAnim("static");
@@ -175,7 +175,7 @@ class NoteField extends NoteGroup {
 			}
 
 			// sustain input
-			if(note.isSustainNote && !strumLine.autoplay && __pressedKeys[note.noteData] && note.strumTime <= Conductor.songPosition && !note.wasGoodHit && !note.tooLate) {
+			if(note.isSustainNote && !strumLine.autoplay && pressedKeys[note.noteData] && note.strumTime <= Conductor.songPosition && !note.wasGoodHit && !note.tooLate) {
 				receptor.playAnim("confirm", true);
 				game.goodNoteHit(note);
 			}
