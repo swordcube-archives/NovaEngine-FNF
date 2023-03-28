@@ -4,44 +4,40 @@ import flixel.util.typeLimit.OneOfTwo;
 import states.PlayState;
 
 enum abstract CharacterType(Int) to Int from Int {
-    var DAD = 0;
-    var OPPONENT = 1;
-    var GIRLFRIEND = 2;
-    var GF = 3;
-    var SPECTATOR = 4;
-    var PLAYER = 5;
-    var BOYFRIEND = 6;
-    var BF = 7;
+    var OPPONENT = 0;
+    var SPECTATOR = 1;
+    var PLAYER = 2;
 }
 
 class ChangeCharacter extends SongEvent {
-    public var toModify:OneOfTwo<CharacterType, String>;
+    public var toModify:CharacterType;
     public var characterName:String;
 
-    public function new(toModify:OneOfTwo<CharacterType, String>, characterName:String) {
+    public function new(toModify:CharacterType, characterName:String) {
         super("Change Character");
         this.toModify = toModify;
         this.characterName = characterName;
+
+        this.parameters = [toModify, characterName];
     }
 
     override function fire() {
         if(fired) return;
         super.fire();
 
-        if(toModify is String) toModify = cast(toModify, String).toLowerCase();
-
         switch(toModify) {
-            case "dad", "opponent", CharacterType.DAD, CharacterType.OPPONENT:
+            case CharacterType.OPPONENT:
                 if(game.dad != null)
                     game.dad.loadCharacter(characterName);
 
                 game.iconP2.loadIcon((game.dad != null) ? game.dad.healthIcon : PlayState.SONG.opponent);
                 game.positionIcons();
 
-            case "gf", "girlfriend", "spectator", CharacterType.GIRLFRIEND, CharacterType.SPECTATOR, CharacterType.GF:
-                game.gf.loadCharacter(characterName);
+            case CharacterType.SPECTATOR:
+                if(game.gf != null)
+                    game.gf.loadCharacter(characterName);
 
-            case "bf", "boyfriend", "player", CharacterType.BOYFRIEND, CharacterType.PLAYER, CharacterType.BF:
+            case CharacterType.PLAYER:
                 if(game.boyfriend != null)
                     game.boyfriend.loadCharacter(characterName);
                 

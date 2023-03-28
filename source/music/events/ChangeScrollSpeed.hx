@@ -20,6 +20,8 @@ class ChangeScrollSpeed extends SongEvent {
         this.strumLine = strumLine;
         this.mult = mult;
         this.duration = duration;
+
+        this.parameters = [strumLine, mult, duration];
     }
 
     override function fire() {

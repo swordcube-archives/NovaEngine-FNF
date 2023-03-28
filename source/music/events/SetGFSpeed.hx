@@ -6,6 +6,8 @@ class SetGFSpeed extends SongEvent {
     public function new(speed:Int) {
         super("Set GF Speed");
         this.speed = speed;
+
+        this.parameters = [speed];
     }
 
     override function fire() {

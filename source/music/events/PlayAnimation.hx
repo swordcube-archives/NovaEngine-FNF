@@ -11,6 +11,8 @@ class PlayAnimation extends SongEvent {
         super("Play Animation");
         this.character = character;
         this.animation = animation;
+
+        this.parameters = [character, animation];
     }
 
     override function fire() {
@@ -18,9 +20,9 @@ class PlayAnimation extends SongEvent {
         super.fire();
 
         var characterToAnimate:Character = switch(character) {
-            case DAD, OPPONENT: game.dad;
-            case GIRLFRIEND, SPECTATOR, GF: game.gf;
-            case BOYFRIEND, PLAYER, BF: game.boyfriend;
+            case OPPONENT: game.dad;
+            case SPECTATOR: game.gf;
+            case PLAYER: game.boyfriend;
             default: null;
         };
 

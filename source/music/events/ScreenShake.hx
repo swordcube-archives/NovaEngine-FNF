@@ -12,6 +12,8 @@ class ScreenShake extends SongEvent {
         this.camera = camera;
         this.intensity = intensity;
         this.duration = duration;
+
+        this.parameters = [camera, intensity, duration];
     }
 
     override function fire() {

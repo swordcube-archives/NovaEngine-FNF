@@ -11,6 +11,8 @@ class HeyEvent extends SongEvent {
         super("Hey!");
         this.character = character;
         this.animTimer = animTimer;
+
+        this.parameters = [character, animTimer];
     }
 
     override function fire() {
@@ -18,9 +20,9 @@ class HeyEvent extends SongEvent {
         super.fire();
 
         var heyCharacter:Character = switch(character) {
-            case DAD, OPPONENT: game.dad;
-            case GIRLFRIEND, SPECTATOR, GF: game.gf;
-            case BOYFRIEND, PLAYER, BF: game.boyfriend;
+            case OPPONENT: game.dad;
+            case SPECTATOR: game.gf;
+            case PLAYER: game.boyfriend;
             default: null;
         };
 

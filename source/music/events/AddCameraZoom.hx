@@ -8,6 +8,8 @@ class AddCameraZoom extends SongEvent {
         super("Add Camera Zoom");
         this.gameAmount = gameAmount;
         this.hudAmount = hudAmount;
+        
+        this.parameters = [gameAmount, hudAmount];
     }
 
     override function fire() {
