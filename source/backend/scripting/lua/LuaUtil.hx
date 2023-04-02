@@ -41,5 +41,5 @@ class LuaUtil {
     function string:charAt(string, char)
 		return StringHelper:charAt(string, char)
 	end
-	";
+	\n";
 }

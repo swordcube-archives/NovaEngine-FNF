@@ -116,10 +116,6 @@ class LuaScript extends ScriptModule {
 		};
 		specialVars[0] = script;
 
-		// idk how else to allow splitting string like a normal lua function
-		// callbacks are dumb >:(
-		LuaL.dostring(luaState, LuaUtil.STRING_HELPER);
-
 		var code:String = File.getContent(path);
 		var replaceMap:Map<String, String> = [
 			// really stupid workaround for from functions
@@ -134,7 +130,10 @@ class LuaScript extends ScriptModule {
 		for(from => to in replaceMap)
 			code = code.replace(from, to);
 
-        if (LuaL.dostring(luaState, code) != 0) {
+		// idk how else to allow splitting string like a normal lua function
+		// callbacks are dumb >:(
+		// i shouldn't have been calling dostring twice!
+        if (LuaL.dostring(luaState, LuaUtil.STRING_HELPER + code) != 0) {
 			var error = Lua.tostring(luaState, -1);
             var msg:String = 'Lua file at path: $path couldn\'t be ran! Here\'s the error message:\n$error';
 
