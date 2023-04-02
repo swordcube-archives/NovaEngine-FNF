@@ -107,6 +107,9 @@ class ControlsMenu extends MusicBeatSubstate {
 						note.animation.add("penis", [piss.indexOf(control.saveData)], 0, true);
 						note.animation.play("penis");
 						note.scrollFactor.x = 0;
+						note.tracked = controlName;
+						note.trackingMode = LEFT;
+						note.trackingOffset.set(-90, 0);
 						add(note);
 
 						controlName.x += 90;
