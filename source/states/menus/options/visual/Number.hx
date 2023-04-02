@@ -54,8 +54,6 @@ class Number extends Option {
         add(arrows = new Alphabet(0, 0, Default, "<        >"));
         add(valueTxt = new Alphabet(0, 0, Default, "0"));
 
-        arrows.color = valueTxt.color = 0xFF000000;
-
         this.value = value;
     }
 

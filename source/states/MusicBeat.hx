@@ -1,5 +1,6 @@
 package states;
 
+import backend.scripting.events.CancellableEvent;
 import backend.dependency.ScriptHandler;
 import flixel.addons.ui.FlxUISubState;
 import flixel.addons.ui.FlxUIState;
@@ -113,6 +114,12 @@ class MusicBeatState extends FlxUIState implements MusicHandler {
             fixedUpdatePost(fixedUpdateTimer);
             fixedUpdateTimer = 0;
         }
+    }
+
+    override function draw() {
+        call("onDraw", []);
+        super.draw();
+        call("onDrawPost", []);
     }
 
     public function fixedUpdate(elapsed:Float) {

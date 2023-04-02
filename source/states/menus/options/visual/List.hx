@@ -40,8 +40,6 @@ class List extends Option {
         add(arrows = new Alphabet(0, 0, Default, "<        >"));
         add(valueTxt = new Alphabet(0, 0, Default, "???"));
 
-        arrows.color = valueTxt.color = 0xFF000000;
-
         this.value = value;
     }
 

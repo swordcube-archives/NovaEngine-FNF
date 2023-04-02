@@ -1,5 +1,6 @@
 package objects.fonts;
 
+import flixel.util.FlxColor;
 import flixel.math.FlxPoint;
 import flixel.math.FlxMath;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
@@ -79,7 +80,11 @@ class Alphabet extends FlxTypedSpriteGroup<AlphabetChar> {
             if(!AlphabetChar.supportedChars.contains(char)) continue;
 
             var alphaChar:AlphabetChar = new AlphabetChar(xPos, yPos, font, char, size);
-            alphaChar.color = color;
+            if(font == Default)
+                alphaChar.color = FlxColor.BLACK;
+            else
+                alphaChar.color = color;
+
             if(char != "\n") add(alphaChar);
 
             if(char == "\n") {
@@ -112,22 +117,6 @@ class AlphabetChar extends FNFSprite {
     }
 
     override function draw() {
-        if (font == Bold && !useOutline) {
-            colorTransform.redMultiplier = color.redFloat;
-            colorTransform.greenMultiplier = color.greenFloat;
-            colorTransform.blueMultiplier = color.blueFloat;
-            colorTransform.redOffset = 0;
-            colorTransform.greenOffset = 0;
-            colorTransform.blueOffset = 0;
-        } else {
-            colorTransform.redMultiplier = 0;
-            colorTransform.greenMultiplier = 0;
-            colorTransform.blueMultiplier = 0;
-            colorTransform.redOffset = color.red;
-            colorTransform.greenOffset = color.green;
-            colorTransform.blueOffset = color.blue;
-        }
-
         if (useOutline) {
             shader = new shaders.OutlineShader();
             var fr = frame.frame;
