@@ -30,6 +30,8 @@ import states.PlayState;
 class Note extends FNFSprite {
     public var keyCount:Int = 4;
 
+    public var noteSkin:String;
+
     public var rawNoteData:Int = 0;
     public var noteData:Int = 0;
 
@@ -95,6 +97,7 @@ class Note extends FNFSprite {
 
     public function new(?x:Float = 0, ?y:Float = 0, ?skin:String = "default", ?keyCount:Int = 4, ?noteData:Int = 0, ?isSustainNote:Bool = false, ?isSustainTail:Bool = false) {
         super(x, y);
+        this.noteSkin = skin;
         this.keyCount = keyCount;
         this.noteData = noteData;
         this.isSustainNote = isSustainNote;
@@ -120,6 +123,15 @@ class Note extends FNFSprite {
         } else
             loadAtlas(Paths.getSparrowAtlas(skinImageAsset));
 
+        setupAnims();
+        antialiasing = (skinData.antialiasing) ? SettingsAPI.antialiasing : false;
+        
+        initialScale = skinData.scale;
+        scale.set(initialScale, initialScale);
+        updateHitbox();
+    }
+
+    public function setupAnims() {
         for(animation in skinData.animations) {
             animation.setFieldDefault("fps", 24);
             animation.setFieldDefault("loop", false);
@@ -136,11 +148,6 @@ class Note extends FNFSprite {
             }
         }
         resetAnim();
-        antialiasing = (skinData.antialiasing) ? SettingsAPI.antialiasing : false;
-        
-        initialScale = skinData.scale;
-        scale.set(initialScale, initialScale);
-        updateHitbox();
     }
 
     public function resetAnim() {
@@ -204,5 +211,24 @@ class Note extends FNFSprite {
 			offset.y -= 156 * (initialScale * 0.5);
 		} else
             centerOffsets();
+    }
+
+    override function clone():Note {
+        // this is a fucking mess
+        var note = new Note(-9999, -9999, noteSkin, keyCount, noteData, isSustainNote, isSustainTail);
+        note.strumTime = strumTime;
+        note.curSection = curSection;
+        note.prevNote = prevNote;
+        note.mustPress = mustPress;
+        note.strumLine = strumLine;
+        note.rawNoteData = rawNoteData;
+        note.flipY = flipY;
+        note.alpha = alpha;
+        note.parentNote = parentNote;
+        note.stepCrochet = stepCrochet;
+        note.noteType = noteType;
+        note.altAnim = altAnim;
+
+        return note;
     }
 }

@@ -1,5 +1,6 @@
 package states;
 
+import music.SongFormat.SectionNote;
 import states.editors.ChartingState;
 import states.substates.GameOverSubstate;
 import backend.modding.ModUtil;
@@ -172,6 +173,12 @@ class PlayState extends MusicBeatState {
 	private function set_misses(v:Int):Int {
 		return songMisses = v;
 	}
+
+	/**
+	 * A list of basic note data used to spawn notes as the song goes on.
+	 * Only used if you have the Preload Notes setting turned off.
+	 */
+	public var noteDataArray:Array<SectionNote> = [];
 
 	public var sicks:Int = 0;
 	public var goods:Int = 0;
@@ -379,7 +386,10 @@ class PlayState extends MusicBeatState {
 		if(SettingsAPI.judgementCamera.toLowerCase() == "hud")
 			comboGroup.cameras = [camHUD];
 		
-		notes.addNotes(ChartParser.parseChart(SONG));
+		if(SettingsAPI.preloadNotes)
+			notes.addNotes(ChartParser.parseChart(SONG));
+		else
+			loadNoteData();
 
 		// Load events
 		if(SONG.events != null && SONG.events.length > 0) {
@@ -486,7 +496,7 @@ class PlayState extends MusicBeatState {
 			FlxG.sound.play(Paths.sound("game/hitsound"), 0);
 		
 		// Preload note splashes
-		if(SettingsAPI.noteSplashes) {
+		if(SettingsAPI.noteSplashes && SettingsAPI.preloadNotes) {
 			var loadedSplashes:Array<String> = [];
 			for(note in notes.members) {
 				if(!loadedSplashes.contains(note.splashSkin)) {
@@ -497,6 +507,60 @@ class PlayState extends MusicBeatState {
 				}
 			}
 		}
+	}
+
+	/**
+	 * A map of notes to copy when notes should spawn.
+	 * Only used when the Preload Notes settings is off.
+	 */
+	public var templateNotes:Map<String, Note> = [];
+
+	public function loadNoteData() {
+		var loadedSplashes:Array<String> = [];
+		for(sectionID => section in SONG.sections) {
+			for(note in section.notes) {
+				noteDataArray.push({
+					strumTime: note.strumTime,
+					noteData: note.noteData,
+					sustainLength: note.sustainLength,
+					noteType: note.noteType,
+					playerSection: section.playerSection,
+					sectionID: sectionID
+				});
+				// loading note type scripts
+				var daNoteType:String = (note.noteType != null && note.noteType is String) ? note.noteType : "Default";
+				if((note.noteType is Bool) && note.noteType == true)
+					daNoteType = "Alt Animation"; // week 7 chart compatibility
+
+				if(!noteTypeScripts.exists(daNoteType)) {
+					var script = ScriptHandler.loadModule(Paths.script('data/notetypes/$daNoteType'));
+					script.setParent(this);
+					script.load();
+					noteTypeScripts.set(daNoteType, script);
+				}
+				// loading template notes
+				if(!templateNotes.exists(note.noteType)) {
+					var n = new Note(0, 0, changeableSkin, SONG.keyCount);
+
+					// lazy way of loading the texture this note type uses
+					var script = ScriptHandler.loadModule(Paths.script('data/notetypes/${note.noteType}'));
+					script.load();
+					script.call("onCreate");
+					script.event("onNoteCreation", new SimpleNoteEvent(n));
+					script.destroy();
+
+					if(!loadedSplashes.contains(n.splashSkin)) {
+						var noteSplash = new NoteSplash(-10000, -10000, n.splashSkin, n.keyCount, n.noteData);
+						noteSplash.alpha = 0.00001;
+						grpNoteSplashes.add(noteSplash);
+						loadedSplashes.push(n.splashSkin);
+					}
+
+					templateNotes.set(note.noteType, n);
+				}
+			}
+		}
+		noteDataArray.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
 	}
 
 	override public function createPost() {
@@ -1065,6 +1129,11 @@ class PlayState extends MusicBeatState {
 	override public function fixedUpdate(elapsed:Float) {
 		super.fixedUpdate(elapsed);
 		scripts.call("onFixedUpdate", [elapsed]);
+
+		// loading new notes as song goes on (preload notes off)
+		if(!SettingsAPI.preloadNotes)
+			ChartParser.spawnNotes();
+
 		callOnOtherScripts("onFixedUpdate", [elapsed]);
 	}
 

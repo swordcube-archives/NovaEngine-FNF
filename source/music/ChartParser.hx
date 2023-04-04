@@ -106,4 +106,71 @@ class ChartParser {
 
         return noteArray;
     }
+
+    public static inline function spawnNotes() {
+        var game:PlayState = PlayState.current;
+        var SONG = PlayState.SONG;
+
+        for(note in game.noteDataArray) {
+            if(note.strumTime > Conductor.songPosition + (1500 / game.scrollSpeed))
+                break;
+
+            var daNoteType:String = (note.noteType != null && note.noteType is String) ? note.noteType : "Default";
+            if((note.noteType is Bool) && note.noteType == true)
+                daNoteType = "Alt Animation"; // week 7 chart compatibility
+
+            var gottaHitNote:Bool = note.playerSection;
+    
+            if(note.noteData > SONG.keyCount - 1)
+                gottaHitNote = !note.playerSection;
+
+            var newNote:Note = game.templateNotes[daNoteType].clone();
+            newNote.strumTime = note.strumTime;
+            newNote.curSection = note.sectionID;
+            newNote.prevNote = game.notes.members.last();
+            newNote.noteData = note.noteData % SONG.keyCount;
+            newNote.sustainLength = note.sustainLength;
+            newNote.strumLine = (gottaHitNote) ? game.playerStrums : game.cpuStrums;
+            newNote.mustPress = gottaHitNote;
+            newNote.rawNoteData = note.noteData;
+            newNote.altAnim = (daNoteType == "Alt Animation") || SONG.sections[note.sectionID].altAnim;
+            newNote.setupAnims();
+            game.notes.add(newNote);
+
+            game.noteTypeScripts.get(daNoteType).event("onNoteCreation", new SimpleNoteEvent(newNote));
+
+            var susserLength:Float = (note.sustainLength / Conductor.stepCrochet);
+            var susLength:Int = Math.floor(susserLength);
+
+            if(susserLength >= 0.75) susLength++;
+
+            for(i in 0...susLength) {
+                var susNote:Note = game.templateNotes[daNoteType].clone();
+                susNote.strumTime = note.strumTime + (Conductor.stepCrochet * i);
+                susNote.curSection = note.sectionID;
+                susNote.prevNote = game.notes.members.last();
+                susNote.noteData = note.noteData % SONG.keyCount;
+                susNote.mustPress = gottaHitNote;
+                susNote.strumLine = newNote.strumLine;
+                susNote.rawNoteData = note.noteData;
+                susNote.flipY = susNote.strumLine.downscroll;
+                susNote.alpha = (SettingsAPI.opaqueSustains) ? 1 : 0.6;
+                susNote.parentNote = newNote;
+                susNote.stepCrochet = Conductor.stepCrochet;
+                susNote.noteType = daNoteType;
+                susNote.altAnim = (daNoteType == "Alt Animation") || SONG.sections[note.sectionID].altAnim;
+                susNote.isSustainNote = true;
+                susNote.isSustainTail = (i >= susLength - 1);
+                susNote.setupAnims();
+                game.notes.add(susNote);
+
+                newNote.sustainNotes.push(susNote);
+
+                game.noteTypeScripts.get(daNoteType).event("onNoteCreation", new SimpleNoteEvent(susNote));
+            }
+
+            game.notes.sortNotes();
+            game.noteDataArray.remove(note);
+        }
+    }
 }

@@ -53,6 +53,9 @@ typedef SectionNote = {
 	var noteData:Int;
 	var sustainLength:Null<Float>;
 	var noteType:OneOfTwo<String, Bool>; // Can be String (Nova / Psych charts) or Bool (Week 7 charts)
+
+	@:optional var playerSection:Bool;
+	@:optional var sectionID:Int;
 }
 
 // Compatibility with charts not made in Nova Engine

@@ -11,7 +11,7 @@ class PreferencesMenu extends PageSubState {
         FlxG.sound.play(Paths.sound("game/hitsound"), 0);
 
 		call("onPreGenerateTabs", []);
-		tabs = ["Gameplay", "Appearance", "Tools", "Miscellaneous"];
+		tabs = ["Gameplay", "Appearance", "Tools", "Miscellaneous", "Experimental"];
 		call("onGenerateTabs", []);
 
 		call("onPreGenerateOptions", []);
@@ -165,6 +165,13 @@ class PreferencesMenu extends PageSubState {
                     "Sets the FPS cap to the monitor's refresh rate when enabled.\nDefaults to 60 if the monitor refresh rate couldn't be gotten.",
                     "vsync",
                     (value:Bool) -> Main.setFPSCap(SettingsAPI.fpsCap)
+                )
+            ],
+            "Experimental" => [
+                new Checkbox(
+                    "Preload Notes",
+                    "Preloads all of the notes when the gameplay loads in.\nDisable this setting to allow the notes to spawn as the song goes on.",
+                    "preloadNotes"
                 )
             ]
 		];

@@ -17,6 +17,7 @@ class SettingsAPI {
     public static var ghostTapping:Bool = true;
     public static var missSounds:Bool = true;
     public static var disableResetButton:Bool = true;
+    public static var preloadNotes:Bool = true;
     public static var hitsoundVolume:Int = 0; // Ranges from 0% to 100%
     public static var noteOffset:Float = 0; // In milliseconds
     public static var scrollSpeed:Float = 0; // 0 = Chart's scroll speed
