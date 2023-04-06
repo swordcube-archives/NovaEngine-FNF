@@ -111,6 +111,8 @@ class ChartParser {
         var game:PlayState = PlayState.current;
         var SONG = PlayState.SONG;
 
+        if(game.noteDataArray == null || game.noteDataArray.length < 1) return;
+
         for(note in game.noteDataArray) {
             if(note.strumTime > Conductor.songPosition + (1500 / game.scrollSpeed))
                 break;
