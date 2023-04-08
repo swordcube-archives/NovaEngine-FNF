@@ -673,7 +673,7 @@ class PlayState extends MusicBeatState {
 
 		// make sure it's fair to set the score before setting it
 		if(!usedAutoplay && SettingsAPI.healthGainMultiplier <= 1 && SettingsAPI.healthLossMultiplier >= 1)
-			Highscore.setScore(SONG.name+":"+ModUtil.currentMod, storyDifficulty, songScore);
+			Highscore.setScore(SONG.name.toLowerCase()+":"+ModUtil.currentMod, storyDifficulty, songScore);
 
 		var event = scripts.event("onEndSong", new CancellableEvent());
 		event = scripts.event("onSongEnd", event);
